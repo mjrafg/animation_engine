@@ -56,13 +56,10 @@ export const AssetSchema = z
 
 export const CameraSchema = z
   .object({
-    /** Camera pan in world pixels. (0,0) = no pan. Positive x moves the camera right (scene slides left). */
-    x: num().default(0),
-    y: num().default(0),
-    /** Zoom factor about the view centre. 1 = no zoom, 2 = everything twice as large. Must be > 0. */
-    scale: num().gt(0).default(1),
-    /** Camera roll in degrees. Positive rotates the camera clockwise (scene appears counter-clockwise). */
-    rotation: num().default(0),
+    x: num().default(0).describe("Pan in world px. 0 = none; +x moves the camera right (the scene slides left). The view centre looks at world (width/2 + x, height/2 + y)."),
+    y: num().default(0).describe("Pan in world px; +y moves the camera down."),
+    scale: num().gt(0).default(1).describe("Zoom about the view centre: 1 = none, 2 = everything twice as large. Must be > 0."),
+    rotation: num().default(0).describe("Camera roll in degrees; positive turns the camera clockwise (scene appears counter-clockwise)."),
   })
   .strict();
 
@@ -91,38 +88,49 @@ export const MaskSchema = z.discriminatedUnion("type", [
 
 export const LayerSchema = z
   .object({
-    id: IdSchema,
-    /** Key in `scene.assets`. Omit/null for a pure transform node (group) or a `fill` rectangle. */
-    asset: IdSchema.nullable().optional(),
-    /** Solid colour rectangle filling the layer box (drawn only when there is no asset). */
-    fill: ColorSchema.optional(),
-    /** Transform parent (layer id). Controls inherited transform ONLY, never render order. */
-    parent: IdSchema.nullable().optional(),
-    /**
-     * Optional attachment point of the parent to use as this layer's origin instead of the
-     * parent's pivot. x/y are then offsets from that point (in the parent's pivot space).
-     */
-    parentPoint: IdSchema.optional(),
-
-    x: num().default(0),
-    y: num().default(0),
-    /** Base box size in pixels before scale. Defaults to the asset's natural pixel size (or 0). */
-    width: num().min(0).optional(),
-    height: num().min(0).optional(),
-    scaleX: num().default(1),
-    scaleY: num().default(1),
-    anchorX: num().min(0).max(1).default(0.5),
-    anchorY: num().min(0).max(1).default(0.5),
-    rotation: num().default(0),
-    opacity: num().min(0).max(1).default(1),
-    visible: z.boolean().default(true),
-    /** Global render order. Higher draws later (on top). Ties keep document order. */
-    z: num().default(0),
-    mask: MaskSchema.optional(),
-    /** Extra/overriding attachment points in normalised layer-box coordinates. */
-    attachmentPoints: AttachmentPointsSchema.optional(),
-    /** Free-form notes for agents/tools; ignored by the renderer. */
-    meta: z.record(z.string(), z.unknown()).optional(),
+    id: IdSchema.describe("Unique layer id within the scene."),
+    asset: IdSchema.nullable()
+      .optional()
+      .describe("Id of the image asset this layer shows. Omit for a transform-only group node or a `fill` rectangle."),
+    fill: ColorSchema.optional().describe("Solid colour rectangle filling the layer box (#rrggbb). Used only when there is no asset."),
+    parent: IdSchema.nullable()
+      .optional()
+      .describe(
+        "Transform parent layer id. The layer inherits the parent's position/rotation/scale (and opacity/visibility). It does NOT affect render order: that is `z` only.",
+      ),
+    parentPoint: IdSchema.optional().describe(
+      "Name of an attachment point on the parent. When set, x/y are offsets from that point instead of from the parent's pivot.",
+    ),
+    x: num().default(0).describe("X of this layer's PIVOT, in the parent's pivot space (canvas pixels for root layers)."),
+    y: num().default(0).describe("Y of this layer's PIVOT (+y is down)."),
+    width: num()
+      .min(0)
+      .optional()
+      .describe("Unscaled box width in px. Defaults to the asset's pixel width (0 for groups). Rendered width = width*scaleX."),
+    height: num().min(0).optional().describe("Unscaled box height in px. Defaults to the asset's pixel height."),
+    scaleX: num().default(1).describe("Horizontal scale about the pivot. Negative mirrors."),
+    scaleY: num().default(1).describe("Vertical scale about the pivot."),
+    anchorX: num()
+      .min(0)
+      .max(1)
+      .default(0.5)
+      .describe("Pivot position inside the box: 0 = left edge, 0.5 = centre, 1 = right edge. Rotation/scale happen around the pivot."),
+    anchorY: num().min(0).max(1).default(0.5).describe("Pivot position inside the box: 0 = top edge, 0.5 = centre, 1 = bottom edge."),
+    rotation: num().default(0).describe("Degrees, positive = clockwise, around the pivot. Added to the parent's rotation."),
+    opacity: num().min(0).max(1).default(1).describe("0..1, multiplied by ancestors' opacity."),
+    visible: z.boolean().default(true).describe("false hides this layer and all its descendants."),
+    z: num()
+      .default(0)
+      .describe(
+        "GLOBAL render order across the whole scene: higher draws on top; ties keep layer order. A child can have a higher or lower z than its parent or than unrelated layers.",
+      ),
+    mask: MaskSchema.optional().describe(
+      "Optional mask: {type:'rect', x,y,width,height, space:'world'|'layer'} or {type:'layer', layer:<id>} (uses that layer's alpha).",
+    ),
+    attachmentPoints: AttachmentPointsSchema.optional().describe(
+      "Named points {name:{x,y}} in normalised box coordinates (0,0 top-left, 1,1 bottom-right); override the asset's points.",
+    ),
+    meta: z.record(z.string(), z.unknown()).optional().describe("Free-form notes; ignored by the renderer."),
   })
   .strict();
 
@@ -132,12 +140,15 @@ export type Interpolation = z.infer<typeof InterpolationSchema>;
 
 export const KeyframeSchema = z
   .object({
-    frame: z.number().int().min(0),
-    value: z.union([num(), z.string(), z.boolean()]),
-    /** Interpolation used from THIS keyframe to the next one. */
-    interpolation: InterpolationSchema.optional(),
-    /** Control points [x1, y1, x2, y2] for `cubic-bezier` (CSS semantics, x in [0,1]). */
-    bezier: z.tuple([num().min(0).max(1), num(), num().min(0).max(1), num()]).optional(),
+    frame: z.number().int().min(0).describe("Frame number (integer, 0-based)."),
+    value: z.union([num(), z.string(), z.boolean()]).describe("Number for continuous properties; asset id string for `asset`; boolean for `visible`."),
+    interpolation: InterpolationSchema.optional().describe(
+      "How to move from THIS keyframe to the next: step | linear | ease-in | ease-out | ease-in-out | cubic-bezier. Default linear (continuous) or step (discrete: asset, visible, z, fill).",
+    ),
+    bezier: z
+      .tuple([num().min(0).max(1), num(), num().min(0).max(1), num()])
+      .optional()
+      .describe("[x1,y1,x2,y2] control points for cubic-bezier (CSS semantics)."),
   })
   .strict();
 

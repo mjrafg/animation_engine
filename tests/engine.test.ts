@@ -309,8 +309,8 @@ describe("rendering", () => {
 
   it("rejects out-of-range frames", async () => {
     const e = await engine(baseScene());
-    await expect(e.renderFrame(20)).rejects.toThrow(RangeError);
-    expect(() => e.measureLayout(-1)).toThrow(RangeError);
-    expect(() => e.measureLayout(1.5)).toThrow(RangeError);
+    await expect(e.renderFrame(20)).rejects.toMatchObject({ code: "INVALID_FRAME" });
+    expect(() => e.measureLayout(-1)).toThrow(/frame must be an integer/);
+    expect(() => e.measureLayout(1.5)).toThrow(expect.objectContaining({ code: "INVALID_FRAME" }));
   });
 });

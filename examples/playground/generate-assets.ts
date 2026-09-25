@@ -82,7 +82,7 @@ async function asset(
   };
 }
 
-function rr(ctx: SKRSContext2D, x: number, y: number, w: number, h: number, r: number, fill: string, stroke = OUTLINE, lw = 2.5) {
+function rr(ctx: SKRSContext2D, x: number, y: number, w: number, h: number, r: number, fill: string, stroke: string | null = OUTLINE, lw = 2.5) {
   ctx.beginPath();
   ctx.roundRect(x, y, w, h, r);
   ctx.fillStyle = fill;

@@ -40,6 +40,8 @@ export interface EncodeOptions {
 export interface VideoEncoder {
   write(rgba: Buffer): Promise<void>;
   finish(): Promise<void>;
+  /** Kills FFmpeg immediately and removes the partial output file. */
+  abort(): Promise<void>;
 }
 
 export function startEncoder(o: EncodeOptions): VideoEncoder {
@@ -124,6 +126,12 @@ export function startEncoder(o: EncodeOptions): VideoEncoder {
     async finish() {
       proc.stdin.end();
       await exited;
+    },
+    async abort() {
+      proc.stdin.destroy();
+      proc.kill("SIGKILL");
+      await exited.catch(() => undefined);
+      await fs.promises.rm(o.out, { force: true });
     },
   };
 }

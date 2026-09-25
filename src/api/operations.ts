@@ -16,7 +16,7 @@ import {
   LayerSchema,
 } from "../scene/schema.js";
 import { validateScene, type ValidationIssue } from "../scene/validate.js";
-import type { z } from "zod";
+import { z } from "zod";
 
 // Documents are plain JSON; keep types loose on purpose (the validator is the source of truth).
 export type SceneDoc = Record<string, any>;
@@ -303,5 +303,116 @@ export function setTrack(doc: SceneDoc, track: unknown): OpResult {
     const t = findTrack(d, p.data.target, p.data.property);
     if (t >= 0) d.animations[t] = clone(track);
     else d.animations.push(clone(track));
+  });
+}
+
+/** Removes a whole animation track; the property falls back to its static value. */
+export function removeTrack(doc: SceneDoc, args: { target: string; property: string }): OpResult {
+  const t = findTrack(doc, args.target, args.property);
+  if (t < 0) return { ok: false, errors: [issue("MISSING_TRACK", ["target"], `No track ${args.target}.${args.property}`)] };
+  return transact(doc, (d) => {
+    d.animations.splice(t, 1);
+  });
+}
+
+/**
+ * Adds several layers in ONE validated step, so a batch may contain a child before its parent.
+ * Either every layer is added or none is.
+ */
+export function addLayers(doc: SceneDoc, layers: Record<string, unknown>[]): OpResult<{ added: string[] }> {
+  const ids = new Set<string>((doc.layers ?? []).map((l: any) => l.id));
+  for (let i = 0; i < layers.length; i++) {
+    const p = LayerSchema.safeParse(layers[i]);
+    if (!p.success) return { ok: false, errors: zodIssues(p.error, ["layers", i]) };
+    if (ids.has(p.data.id)) {
+      return { ok: false, errors: [issue("DUPLICATE_LAYER_ID", ["layers", i, "id"], `Layer "${p.data.id}" already exists`)] };
+    }
+    ids.add(p.data.id);
+  }
+  return transact(doc, (d) => {
+    d.layers = [...(d.layers ?? []), ...layers.map((l) => clone(l))];
+    return { added: layers.map((l) => String(l.id)) };
+  });
+}
+
+// ------------------------------------------------------------------------------------------
+// Batch timeline operations (shared schema: used by the core API and by the MCP server)
+
+const TargetProp = { target: z.string().min(1), property: z.string().min(1) };
+const FrameInt = z.number().int().min(0);
+
+export const TimelineOpSchema = z.discriminatedUnion("type", [
+  z
+    .object({
+      type: z.literal("keyframe.add"),
+      ...TargetProp,
+      frame: FrameInt,
+      value: z.union([z.number(), z.string(), z.boolean()]),
+      interpolation: KeyframeSchema.shape.interpolation,
+      bezier: KeyframeSchema.shape.bezier,
+    })
+    .strict(),
+  z
+    .object({
+      type: z.literal("keyframe.update"),
+      ...TargetProp,
+      frame: FrameInt,
+      patch: z.record(z.string(), z.unknown()),
+    })
+    .strict(),
+  z.object({ type: z.literal("keyframe.remove"), ...TargetProp, frame: FrameInt }).strict(),
+  z.object({ type: z.literal("track.set"), ...TargetProp, keyframes: z.array(KeyframeSchema).min(1) }).strict(),
+  z.object({ type: z.literal("track.remove"), ...TargetProp }).strict(),
+]);
+export type TimelineOp = z.infer<typeof TimelineOpSchema>;
+
+/**
+ * Applies timeline operations in order, atomically: if any operation fails, the returned error
+ * names it (`details.opIndex`, path prefixed with ["operations", i]) and the document is unchanged.
+ */
+export function applyTimelineOps(doc: SceneDoc, ops: unknown[]): OpResult<{ applied: number }> {
+  let cur = doc;
+  const warnings: ValidationIssue[] = [];
+  for (let i = 0; i < ops.length; i++) {
+    const parsed = TimelineOpSchema.safeParse(ops[i]);
+    const fail = (errors: ValidationIssue[]): OpResult<{ applied: number }> => ({
+      ok: false,
+      errors: errors.map((e) => ({ ...e, path: ["operations", i, ...e.path], details: { ...e.details, opIndex: i } })),
+    });
+    if (!parsed.success) return fail(zodIssues(parsed.error, []));
+    const op = parsed.data;
+    let r: OpResult<unknown>;
+    switch (op.type) {
+      case "keyframe.add": {
+        const kf: Record<string, unknown> = { frame: op.frame, value: op.value };
+        if (op.interpolation !== undefined) kf.interpolation = op.interpolation;
+        if (op.bezier !== undefined) kf.bezier = op.bezier;
+        r = addKeyframe(cur, { target: op.target, property: op.property, keyframe: kf });
+        break;
+      }
+      case "keyframe.update":
+        r = updateKeyframe(cur, op);
+        break;
+      case "keyframe.remove":
+        r = removeKeyframe(cur, op);
+        break;
+      case "track.set":
+        r = setTrack(cur, { target: op.target, property: op.property, keyframes: op.keyframes });
+        break;
+      case "track.remove":
+        r = removeTrack(cur, op);
+        break;
+    }
+    if (!r.ok) return fail(r.errors);
+    cur = r.scene;
+    warnings.push(...r.warnings);
+  }
+  return { ok: true, scene: cur, result: { applied: ops.length }, warnings };
+}
+
+/** Replaces the scene's audio tracks ({src, startFrame, volume}[]). */
+export function setAudio(doc: SceneDoc, audio: unknown[]): OpResult {
+  return transact(doc, (d) => {
+    d.audio = clone(audio);
   });
 }

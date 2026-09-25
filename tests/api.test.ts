@@ -84,7 +84,7 @@ describe("agent tool session", () => {
     expect(await s.call("measure_layout", { frame: "x" })).toMatchObject({ ok: false, errors: [{ code: "INVALID_ARGUMENT", path: ["frame"] }] });
     expect(await s.call("render_preview", { frame: 0, out: "x.png" })).toMatchObject({ ok: false, errors: [{ code: "NO_SCENE" }] });
     await s.call("create_scene", { canvas: { width: 64, height: 64, fps: 10 }, duration: 5, baseDir: tmpDir() });
-    expect(await s.call("measure_layout", { frame: 99 })).toMatchObject({ ok: false, errors: [{ code: "OUT_OF_RANGE" }] });
+    expect(await s.call("measure_layout", { frame: 99 })).toMatchObject({ ok: false, errors: [{ code: "INVALID_FRAME" }] });
   });
 
   it("builds, measures, corrects and renders a scene purely through tools", async () => {

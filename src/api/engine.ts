@@ -9,6 +9,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { AssetCatalog } from "../engine/assets.js";
+import { EngineError } from "../errors.js";
 import { buildDebugOverlay, type DebugOptions } from "../engine/debugOverlay.js";
 import { buildDisplayList, type DisplayList } from "../engine/displayList.js";
 import { measureResolvedLayout, type FrameLayout } from "../engine/layout.js";
@@ -29,6 +30,8 @@ export interface RenderVideoOptions {
   /** Include scene audio tracks (default true). */
   audio?: boolean;
   onProgress?: (frame: number, total: number) => void;
+  /** Aborting stops rendering, kills FFmpeg, deletes the partial file and throws RENDER_CANCELLED. */
+  signal?: AbortSignal;
 }
 
 export class AnimationEngine {
@@ -90,7 +93,10 @@ export class AnimationEngine {
 
   private checkFrame(frame: number) {
     if (!Number.isInteger(frame) || frame < 0 || frame >= this.scene.duration) {
-      throw new RangeError(`frame must be an integer in [0, ${this.scene.duration - 1}], got ${frame}`);
+      throw new EngineError("INVALID_FRAME", `frame must be an integer in [0, ${this.scene.duration - 1}], got ${frame}`, {
+        frame,
+        duration: this.scene.duration,
+      });
     }
   }
 
@@ -106,9 +112,17 @@ export class AnimationEngine {
     return buildDisplayList(this.scene, this.resolve(frame));
   }
 
-  measureLayout(frame: number): FrameLayout {
+  /** Geometry of every layer at `frame` (optionally only the listed layer ids, in document order). */
+  measureLayout(frame: number, opts: { layers?: string[] } = {}): FrameLayout {
     this.checkFrame(frame);
-    return measureResolvedLayout(this.resolve(frame));
+    const layout = measureResolvedLayout(this.resolve(frame));
+    if (opts.layers) {
+      const want = new Set(opts.layers);
+      const unknown = opts.layers.filter((id) => !layout.layers.some((l) => l.id === id));
+      if (unknown.length) throw new EngineError("LAYER_NOT_FOUND", `Unknown layer(s): ${unknown.join(", ")}`, { layers: unknown });
+      layout.layers = layout.layers.filter((l) => want.has(l.id));
+    }
+    return layout;
   }
 
   private async ensureRendererAssets() {
@@ -147,7 +161,11 @@ export class AnimationEngine {
     const start = o.startFrame ?? 0;
     const end = o.endFrame ?? scene.duration;
     if (!(Number.isInteger(start) && Number.isInteger(end) && start >= 0 && end <= scene.duration && end > start)) {
-      throw new RangeError(`invalid frame range [${start}, ${end}) for duration ${scene.duration}`);
+      throw new EngineError("INVALID_FRAME", `invalid frame range [${start}, ${end}) for duration ${scene.duration}`, {
+        startFrame: start,
+        endFrame: end,
+        duration: scene.duration,
+      });
     }
     await this.ensureRendererAssets();
     await fs.mkdir(path.dirname(path.resolve(out)), { recursive: true });
@@ -170,12 +188,20 @@ export class AnimationEngine {
       crf: o.crf,
       preset: o.preset,
     });
-    for (let f = start; f < end; f++) {
-      const frame = await this.renderer.render(this.displayList(f));
-      await enc.write(frame.rgba());
-      o.onProgress?.(f, end);
+    try {
+      for (let f = start; f < end; f++) {
+        if (o.signal?.aborted) throw new EngineError("RENDER_CANCELLED", "Render cancelled", { frame: f });
+        const frame = await this.renderer.render(this.displayList(f));
+        await enc.write(frame.rgba());
+        o.onProgress?.(f - start + 1, end - start);
+      }
+      await enc.finish();
+    } catch (e) {
+      await enc.abort();
+      if (e instanceof EngineError) throw e;
+      const msg = e instanceof Error ? e.message : String(e);
+      throw new EngineError(/ffmpeg/i.test(msg) ? "FFMPEG_FAILED" : "RENDER_FAILED", msg);
     }
-    await enc.finish();
     return { file: out, frames: end - start, seconds: (end - start) / fps };
   }
 }

@@ -16,6 +16,7 @@ import { processAsset } from "../assets/pipeline.js";
 import { trimTransparent } from "../assets/trim.js";
 import { SceneValidationError, validateScene, type ValidationIssue } from "../scene/validate.js";
 import { AnimationEngine } from "./engine.js";
+import { EngineError } from "../errors.js";
 import * as ops from "./operations.js";
 
 const Json = z.record(z.string(), z.unknown());
@@ -177,6 +178,7 @@ export class EngineSession {
       return await this.run(name as ToolName, parsed.data as any);
     } catch (e) {
       if (e instanceof SceneValidationError) return { ok: false, errors: e.issues };
+      if (e instanceof EngineError) return fail(e.code, e.message);
       return fail(e instanceof RangeError ? "OUT_OF_RANGE" : "INTERNAL_ERROR", (e as Error).message);
     }
   }

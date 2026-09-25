@@ -22,3 +22,8 @@ export * from "./assets/pipeline.js";
 export { AnimationEngine } from "./api/engine.js";
 export * as ops from "./api/operations.js";
 export { EngineSession, TOOLS, toolDefinitions } from "./api/tools.js";
+export * from "./errors.js";
+export { engineCapabilities, engineVersion, type EngineCapabilities } from "./capabilities.js";
+export * from "./workspace/paths.js";
+export * from "./workspace/workspace.js";
+export * from "./workspace/jobs.js";

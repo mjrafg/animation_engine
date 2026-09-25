@@ -20,7 +20,7 @@ import { detectBackground, type BackgroundDetection, type ContractIssue, type De
 import { findComponents, removeComponents, type Component } from "./components.js";
 import { readRgba, writeMaskPng, writePng, type RgbaImage } from "./image.js";
 import { removeBackground, type Hole, type RemovalOptions } from "./removal.js";
-import { originalPixelToTrimmedNorm, trimTransparent, type TrimInfo, type TrimOptions } from "./trim.js";
+import { originalPixelToTrimmedNorm, trimBounds, trimTransparent, type TrimInfo, type TrimOptions } from "./trim.js";
 
 export type ProcessMode = "auto" | "transparent" | "color-key";
 
@@ -200,4 +200,51 @@ export async function processAsset(input: string, outDir: string, opts: ProcessO
   await writePng(trimmed, path.join(outDir, files.processed));
   await fs.writeFile(path.join(outDir, files.metadata), JSON.stringify(meta, null, 2));
   return meta;
+}
+
+export interface ImageInspection {
+  width: number;
+  height: number;
+  format: string | undefined;
+  alpha: AlphaDiagnostics;
+  /** Border background analysis (only meaningful for opaque images). */
+  background: Pick<BackgroundDetection, "ok" | "detectedColorHex" | "borderUniformity" | "sideUniformity" | "sideColorSpread" | "confidence" | "issues"> | null;
+  /** Tight bounds of visible pixels (alpha > 4), right/bottom exclusive; null if fully transparent. */
+  visibleBounds: { left: number; top: number; right: number; bottom: number } | null;
+  /**
+   * What processAsset would do / what the image is:
+   *  native-alpha: has real transparency (trim only)
+   *  color-key:    opaque with a uniform solid border (background removal candidate)
+   *  opaque:       opaque, non-uniform border (a full-frame plate/background; use as-is)
+   */
+  suggestedPath: "native-alpha" | "color-key" | "opaque";
+}
+
+/** Non-destructive diagnostics of an image: size, alpha, border background, visible bounds. */
+export async function inspectImage(input: string | Buffer, detect?: DetectOptions): Promise<ImageInspection> {
+  const { image, hasAlpha, format } = await readRgba(input);
+  const alpha = analyzeAlpha(image, hasAlpha);
+  const nativeAlpha = hasAlpha && alpha.borderTransparentFraction >= 0.5;
+  let background: ImageInspection["background"] = null;
+  if (!nativeAlpha) {
+    const d = detectBackground(image, detect);
+    background = {
+      ok: d.ok,
+      detectedColorHex: d.detectedColorHex,
+      borderUniformity: d.borderUniformity,
+      sideUniformity: d.sideUniformity,
+      sideColorSpread: d.sideColorSpread,
+      confidence: d.confidence,
+      issues: d.issues,
+    };
+  }
+  return {
+    width: image.width,
+    height: image.height,
+    format,
+    alpha,
+    background,
+    visibleBounds: trimBounds(image, 4),
+    suggestedPath: nativeAlpha ? "native-alpha" : background?.ok ? "color-key" : "opaque",
+  };
 }
