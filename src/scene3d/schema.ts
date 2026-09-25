@@ -11,6 +11,7 @@
 import { z } from "zod";
 import { AnimationSchema, AudioSchema, CanvasSchema, ColorSchema, IdSchema } from "../scene/schema.js";
 import type { PropertySpec } from "../scene/schema.js";
+import { CharacterInstanceSchema } from "../characters/schema.js";
 
 const num = () => z.number();
 
@@ -129,6 +130,7 @@ export const Scene3DSchema = z
     objects: z.array(Object3DSchema).default([]),
     animations: z.array(AnimationSchema).default([]),
     audio: z.array(AudioSchema).default([]),
+    characters: z.array(CharacterInstanceSchema).optional().describe("Prepared characters with high-level actions; compiled into objects and tracks owned by each instance."),
     overlay: z
       .object({ scene: IdSchema.describe("Id of a 2D scene in the same workspace (same canvas size and fps) drawn on top of every frame.") })
       .strict()

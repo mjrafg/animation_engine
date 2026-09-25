@@ -5,7 +5,8 @@ Builds the engine's reusable 3D test assets (GLB) with Blender, fully procedural
 
   character.glb  rigged low-poly character "Mika": 16 bones (root, hips, spine, neck, head,
                  upper_arm/forearm/hand .L/.R, thigh/shin .L/.R), clips idle (2 s), walk (1 s,
-                 in place), wave (1.5 s, right arm), face morph targets on separate meshes:
+                 in place), run (0.6 s, in place), wave (1.5 s, right arm), point (4 s: raise,
+                 hold, lower), face morph targets on separate meshes:
                  mouth_open, smile, mouth_oh (mouth) and blink (eyes). Front faces +Z (glTF).
   mug.glb        prop, origin at the bottom centre, 10 cm tall.
   room.glb       environment: floor, two walls, window, rug, table (origin at floor centre).
@@ -259,6 +260,25 @@ def build_character():
         ("upper_arm.R", Y, [(1, 0), (9, 155), (n - 7, 155), (1 + n, 0)]),
         ("forearm.R", Y, [(1, 0), (9, 0), (13, 30), (18, -25), (23, 30), (28, -25), (n - 7, 0), (1 + n, 0)]),
         ("head", Z, [(1, 0), (9, -8), (n - 7, -8), (1 + n, 0)]),
+    ])
+    n = int(0.6 * FPS)  # run: 0.6 s cycle, in place, leaning forward
+    h = n // 2
+    clip("run", n, [
+        ("thigh.L", X, [(1, -45), (1 + h, 40), (1 + n, -45)]),
+        ("thigh.R", X, [(1, 40), (1 + h, -45), (1 + n, 40)]),
+        ("shin.L", X, [(1, 15), (1 + h // 2, 80), (1 + h, 15), (1 + n, 15)]),
+        ("shin.R", X, [(1, 15), (1 + h, 15), (1 + h + h // 2, 80), (1 + n, 15)]),
+        ("upper_arm.L", X, [(1, 40), (1 + h, -40), (1 + n, 40)]),
+        ("upper_arm.R", X, [(1, -40), (1 + h, 40), (1 + n, -40)]),
+        ("forearm.L", X, [(1, -75), (1 + n, -75)]),
+        ("forearm.R", X, [(1, -75), (1 + n, -75)]),
+        ("spine", X, [(1, 12), (1 + n, 12)]),
+    ], [("hips", [(1, (0, 0, 0)), (1 + h // 2, (0, 0.05, 0)), (1 + h, (0, 0, 0)), (1 + h + h // 2, (0, 0.05, 0)), (1 + n, (0, 0, 0))])])
+    n = 4 * FPS  # point: raise the right arm forward, hold, lower at the end
+    clip("point", n, [
+        ("upper_arm.R", X, [(1, 0), (8, -85), (n - 7, -85), (1 + n, 0)]),
+        ("forearm.R", X, [(1, 0), (8, -8), (n - 7, -8), (1 + n, 0)]),
+        ("head", Z, [(1, 0), (8, 0), (1 + n, 0)]),
     ])
     export(os.path.join(OUT, "character.glb"), animations=True)
 

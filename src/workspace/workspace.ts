@@ -36,6 +36,9 @@ import * as ops3d from "../scene3d/operations.js";
 import { measure3D, modelThumbnail, renderFrames3D, type Measure3DOptions, type Scene3DContext } from "../scene3d/render.js";
 import type { Scene3D } from "../scene3d/schema.js";
 import { validateScene3D, type AssetLookup3D } from "../scene3d/validate.js";
+import { describeCharacter } from "../characters/capabilities.js";
+import type { CharacterContext } from "../characters/operations.js";
+import { CharacterDefinitionSchema, SpeechTimingSchema, type CharacterDefinition, type SpeechTiming } from "../characters/schema.js";
 import { checkEntityId, checkWorkspaceId, readJson, resolveInside, toPosix, writeFileAtomic } from "./paths.js";
 
 export const IMAGE_EXT = new Set([".png", ".jpg", ".jpeg", ".webp"]);
@@ -266,6 +269,37 @@ export class WorkspaceManager {
     };
     walk(start);
     return out;
+  }
+
+  /** Character packages (directories with a character.json) inside a library. */
+  listCharacterPackages(name: string) {
+    const root = fs.realpathSync(this.libraryRoot(name));
+    const out: { path: string; characterId: string; name: string; kind: string; description?: string }[] = [];
+    const walk = (dir: string, depth: number) => {
+      const f = path.join(dir, "character.json");
+      if (fs.existsSync(f)) {
+        try {
+          const j = JSON.parse(fs.readFileSync(f, "utf8"));
+          out.push({ path: toPosix(path.relative(root, dir)) || ".", characterId: j.id, name: j.name ?? j.id, kind: j.kind, ...(j.description ? { description: j.description } : {}) });
+        } catch {
+          /* not a valid package: skipped */
+        }
+        return;
+      }
+      if (depth <= 0) return;
+      for (const e of fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) if (e.isDirectory()) walk(path.join(dir, e.name), depth - 1);
+    };
+    walk(root, 3);
+    return out;
+  }
+
+  /** Directory of a character package inside a library (must contain character.json). */
+  resolveLibraryDir(name: string, rel: string): string {
+    const dir = resolveInside(this.libraryRoot(name), rel || ".");
+    if (!fs.existsSync(path.join(dir, "character.json"))) {
+      throw new EngineError("CHARACTER_NOT_FOUND", `No character package (character.json) at "${rel}" in library "${name}"`, { library: name, path: rel, packages: this.listCharacterPackages(name).map((p) => p.path) });
+    }
+    return dir;
   }
 
   resolveLibraryFile(name: string, rel: string): string {
@@ -682,6 +716,7 @@ export class VideoWorkspace {
           duration: doc.duration,
           ...(ops.is3D(doc) ? { objects: (doc.objects ?? []).length, lights: (doc.lights ?? []).length } : { layers: (doc.layers ?? []).length }),
           tracks: (doc.animations ?? []).length,
+          ...(doc.characters?.length ? { characters: doc.characters.map((c: any) => `${c.id} (${c.character})`) } : {}),
         };
       });
   }
@@ -900,6 +935,139 @@ export class VideoWorkspace {
 
   async measureLayout(id: string, frame: number, layers?: string[]): Promise<FrameLayout> {
     return (await this.engine(id)).measureLayout(frame, { layers });
+  }
+
+  // ---- prepared characters -----------------------------------------------------------------
+
+  private characterDir(id: string) {
+    return path.join(this.dir, "characters", id);
+  }
+
+  hasCharacter(id: string) {
+    return /^[A-Za-z_][A-Za-z0-9_\-.]*$/.test(id) && fs.existsSync(path.join(this.characterDir(id), "character.json"));
+  }
+
+  /**
+   * Prepares a character in this workspace ONCE from a package directory (character.json + its
+   * files): every file becomes a workspace asset (<id>.<name>), the definition is stored with
+   * asset ids. Importing the same package again is a no-op (reused: true); a changed package
+   * needs replace: true.
+   */
+  async importCharacter(pkgDir: string, opts: { characterId?: string; replace?: boolean; origin?: Record<string, unknown> } = {}) {
+    let raw: any;
+    try {
+      raw = JSON.parse(fs.readFileSync(path.join(pkgDir, "character.json"), "utf8"));
+    } catch (e) {
+      throw new EngineError("INVALID_ASSET", `Unreadable character.json: ${e instanceof Error ? e.message : e}`);
+    }
+    if (opts.characterId) raw.id = opts.characterId;
+    const parsed = CharacterDefinitionSchema.safeParse(raw);
+    if (!parsed.success) {
+      throw new EngineError("INVALID_ASSET", `Invalid character definition: ${parsed.error.issues[0]?.path.join(".")}: ${parsed.error.issues[0]?.message}`, {
+        issues: parsed.error.issues.slice(0, 20).map((i) => ({ path: i.path.map(String), message: i.message })),
+      });
+    }
+    const def = parsed.data;
+    checkEntityId("character", def.id);
+    const files: [string, string][] = def.kind === "2d" ? Object.entries(def.assets) : [["model", def.model]];
+    const hashes = files.map(([n, f]) => {
+      const file = resolveInside(pkgDir, f);
+      if (!fs.existsSync(file)) throw new EngineError("INVALID_ASSET", `Character package file missing: ${f}`, { asset: n });
+      return `${n}:${crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex")}`;
+    });
+    const packageSha = crypto.createHash("sha256").update(JSON.stringify(def)).update(hashes.sort().join("|")).digest("hex");
+    if (this.hasCharacter(def.id)) {
+      const meta = readJson<{ packageSha: string }>(path.join(this.characterDir(def.id), "meta.json"));
+      if (meta.packageSha === packageSha) return { character: this.getCharacter(def.id), reused: true };
+      if (!opts.replace) {
+        throw new EngineError("CHARACTER_EXISTS", `Character "${def.id}" is already prepared in this workspace from a different package; pass replace: true to update it`, { characterId: def.id });
+      }
+    }
+    const mapped: Record<string, string> = {};
+    for (const [name, f] of files) {
+      const assetId = `${def.id}.${name.replace(/[^A-Za-z0-9_\-.]/g, "_")}`;
+      const file = resolveInside(pkgDir, f);
+      const sha = crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");
+      if (this.hasAsset(assetId)) {
+        if (this.getAsset(assetId).sha256 === sha) {
+          mapped[name] = assetId;
+          continue;
+        }
+        fs.rmSync(this.assetDir(assetId), { recursive: true, force: true });
+        this.engines.clear();
+      }
+      await this.importAsset({ kind: "file", file, origin: { character: def.id, file: f, ...opts.origin } }, { assetId, name: `${def.id} ${name}`, tags: ["character", def.id] });
+      mapped[name] = assetId;
+    }
+    const stored: CharacterDefinition = def.kind === "2d" ? { ...def, assets: mapped } : { ...def, model: mapped.model };
+    const sha = crypto.createHash("sha256").update(JSON.stringify(stored)).digest("hex");
+    writeFileAtomic(path.join(this.characterDir(def.id), "character.json"), JSON.stringify(stored, null, 2));
+    writeFileAtomic(path.join(this.characterDir(def.id), "meta.json"), JSON.stringify({ characterId: def.id, sha, packageSha, importedAt: now(), origin: opts.origin ?? {} }, null, 2));
+    return { character: this.getCharacter(def.id), reused: false };
+  }
+
+  getCharacter(id: string): { def: CharacterDefinition; sha: string; meta: Record<string, unknown> } {
+    checkEntityId("character", id);
+    if (!this.hasCharacter(id)) {
+      throw new EngineError("CHARACTER_NOT_FOUND", `No prepared character "${id}" in workspace "${this.id}" (character_import it from a library first)`, {
+        characterId: id,
+        available: this.listCharacters().map((c) => c.characterId),
+      });
+    }
+    const def = CharacterDefinitionSchema.parse(readJson(path.join(this.characterDir(id), "character.json")));
+    const meta = readJson<Record<string, unknown>>(path.join(this.characterDir(id), "meta.json"));
+    return { def, sha: String(meta.sha), meta };
+  }
+
+  listCharacters() {
+    const dir = path.join(this.dir, "characters");
+    if (!fs.existsSync(dir)) return [];
+    return fs
+      .readdirSync(dir)
+      .filter((id) => this.hasCharacter(id))
+      .sort()
+      .map((id) => {
+        const { def, sha } = this.getCharacter(id);
+        const d = describeCharacter(def);
+        return { characterId: id, name: d.name, kind: def.kind, sha256: sha, actions: d.actions.map((a) => a.name), expressions: d.expressions };
+      });
+  }
+
+  describeCharacter(id: string) {
+    const { def, sha } = this.getCharacter(id);
+    return describeCharacter(def, sha);
+  }
+
+  saveSpeechTiming(id: string, timing: unknown) {
+    checkEntityId("speech", id);
+    const p = SpeechTimingSchema.safeParse(timing);
+    if (!p.success) throw new EngineError("INVALID_ARGUMENT", `Invalid speech timing: ${p.error.issues[0]?.path.join(".")}: ${p.error.issues[0]?.message}`);
+    if (p.data.audio) {
+      const rec = this.getAsset(p.data.audio);
+      if (rec.kind !== "audio") throw new EngineError("INVALID_ASSET", `Asset "${p.data.audio}" is not audio`, { assetId: p.data.audio });
+    }
+    writeFileAtomic(path.join(this.dir, "speech", `${id}.json`), JSON.stringify(timing, null, 2));
+    return p.data;
+  }
+
+  getSpeechTiming(id: string): SpeechTiming | undefined {
+    if (!/^[A-Za-z_][A-Za-z0-9_\-.]*$/.test(id)) return undefined;
+    const f = path.join(this.dir, "speech", `${id}.json`);
+    return fs.existsSync(f) ? SpeechTimingSchema.parse(readJson(f)) : undefined;
+  }
+
+  listSpeechTimings() {
+    const dir = path.join(this.dir, "speech");
+    return fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5)).sort() : [];
+  }
+
+  /** Lookups the character runtime needs (definitions, speech timings, audio files). */
+  characterContext(): CharacterContext {
+    return {
+      definition: (id) => (this.hasCharacter(id) ? this.getCharacter(id) : undefined),
+      speech: (id) => this.getSpeechTiming(id),
+      audioSrc: (assetId) => (/^[A-Za-z_][A-Za-z0-9_\-.]*$/.test(assetId) && this.hasAsset(assetId) && this.getAsset(assetId).kind === "audio" ? this.getAsset(assetId).file : undefined),
+    };
   }
 
   // ---- 3D ------------------------------------------------------------------------------------
