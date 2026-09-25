@@ -1,0 +1,309 @@
+{
+  "version": 1,
+  "kind": "3d",
+  "name": "Studio 3D clip",
+  "canvas": {
+    "width": 1280,
+    "height": 720,
+    "fps": 24,
+    "background": "#101014"
+  },
+  "duration": 96,
+  "render": {
+    "quality": "standard",
+    "transparentBackground": false,
+    "engine": "eevee"
+  },
+  "world": {
+    "color": "#9b978f",
+    "strength": 0.14
+  },
+  "camera": {
+    "position": {
+      "x": -0.9,
+      "y": 1.45,
+      "z": 3.4
+    },
+    "rotation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "fov": 40,
+    "near": 0.1,
+    "far": 60,
+    "lookAt": {
+      "x": -2,
+      "y": 1,
+      "z": 0
+    }
+  },
+  "lights": [
+    {
+      "id": "key",
+      "type": "area",
+      "intensity": 260,
+      "size": 2,
+      "position": {
+        "x": 2.6,
+        "y": 3,
+        "z": 2.6
+      },
+      "rotation": {
+        "x": -27.5,
+        "y": 45,
+        "z": 0
+      },
+      "color": "#fff4e6",
+      "shadows": true
+    },
+    {
+      "id": "fill",
+      "type": "area",
+      "intensity": 90,
+      "size": 3,
+      "position": {
+        "x": -3,
+        "y": 2,
+        "z": 2.5
+      },
+      "rotation": {
+        "x": -14.2,
+        "y": -50.2,
+        "z": 0
+      },
+      "color": "#dce8ff",
+      "shadows": false
+    }
+  ],
+  "objects": [
+    {
+      "id": "room",
+      "asset": "room",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "id": "hero",
+      "asset": "character",
+      "position": {
+        "x": -2.6,
+        "y": 0,
+        "z": 0
+      },
+      "rotation": {
+        "x": 0,
+        "y": 90,
+        "z": 0
+      },
+      "clip": "walk",
+      "clipSpeed": 1,
+      "clipLoop": true,
+      "clipBlend": 8
+    },
+    {
+      "id": "mug",
+      "asset": "mug",
+      "attach": {
+        "object": "hero",
+        "bone": "rightHand",
+        "follow": "position"
+      },
+      "position": {
+        "x": 0.02,
+        "y": -0.055,
+        "z": 0.06
+      },
+      "rotation": {
+        "x": 0,
+        "y": -20,
+        "z": 0
+      }
+    }
+  ],
+  "animations": [
+    {
+      "target": "hero",
+      "property": "position.x",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": -2.6,
+          "interpolation": "linear"
+        },
+        {
+          "frame": 38,
+          "value": -0.6,
+          "interpolation": "ease-out"
+        },
+        {
+          "frame": 46,
+          "value": -0.35,
+          "interpolation": "linear"
+        }
+      ]
+    },
+    {
+      "target": "hero",
+      "property": "rotation.y",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 90,
+          "interpolation": "linear"
+        },
+        {
+          "frame": 46,
+          "value": 90,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 58,
+          "value": 10,
+          "interpolation": "linear"
+        }
+      ]
+    },
+    {
+      "target": "hero",
+      "property": "clip",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": "walk",
+          "interpolation": "step"
+        },
+        {
+          "frame": 44,
+          "value": "idle",
+          "interpolation": "step"
+        },
+        {
+          "frame": 60,
+          "value": "wave",
+          "interpolation": "step"
+        }
+      ]
+    },
+    {
+      "target": "hero",
+      "property": "morph.smile",
+      "keyframes": [
+        {
+          "frame": 68,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 80,
+          "value": 0.9,
+          "interpolation": "linear"
+        },
+        {
+          "frame": 95,
+          "value": 0.9,
+          "interpolation": "linear"
+        }
+      ]
+    },
+    {
+      "target": "hero",
+      "property": "morph.blink",
+      "keyframes": [
+        {
+          "frame": 30,
+          "value": 0,
+          "interpolation": "linear"
+        },
+        {
+          "frame": 33,
+          "value": 1,
+          "interpolation": "linear"
+        },
+        {
+          "frame": 36,
+          "value": 0,
+          "interpolation": "linear"
+        }
+      ]
+    },
+    {
+      "target": "camera",
+      "property": "position.x",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": -0.9,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 95,
+          "value": 0.25,
+          "interpolation": "linear"
+        }
+      ]
+    },
+    {
+      "target": "camera",
+      "property": "position.z",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 3.55,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 95,
+          "value": 3.25,
+          "interpolation": "linear"
+        }
+      ]
+    },
+    {
+      "target": "camera",
+      "property": "lookAt.x",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": -1.55,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 46,
+          "value": -0.35,
+          "interpolation": "linear"
+        },
+        {
+          "frame": 95,
+          "value": -0.35,
+          "interpolation": "linear"
+        }
+      ]
+    },
+    {
+      "target": "camera",
+      "property": "lookAt.y",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 0.95,
+          "interpolation": "linear"
+        },
+        {
+          "frame": 95,
+          "value": 0.95,
+          "interpolation": "linear"
+        }
+      ]
+    }
+  ],
+  "audio": []
+}

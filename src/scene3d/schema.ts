@@ -36,10 +36,13 @@ export const AttachSchema = z
   .object({
     object: IdSchema.describe("Id of a rigged model object in this scene."),
     bone: z.string().min(1).describe("Joint name or semantic socket (rightHand, leftHand, head, neck, spine, hips, root, rightFoot, ...)."),
-    follow: z.enum(["full", "position"]).default("full").describe("full: follow the bone's position and rotation; position: follow only its position."),
+    follow: z
+      .enum(["full", "position"])
+      .default("full")
+      .describe("full: follow the bone's position and rotation (a held prop turns with the hand); position: follow only its position, keeping the target character's orientation (a prop stays upright)."),
   })
   .strict()
-  .describe("Attach this object to a bone of another object. Its position/rotation are then offsets in the bone's local frame (metres/degrees); it follows the bone through animation.");
+  .describe("Attach this object to a bone of another object; it follows the bone through animation. Its position/rotation/scale become OFFSETS anchored at the joint (bone head: for a hand, the wrist) and expressed in the TARGET CHARACTER's own axes at its rest pose (+y up, +z the character's front, +x the character's left) — not the bone's axes. Zero offset puts the object's origin at the joint, usually inside the hand mesh: offset a held prop slightly (e.g. y -0.1, z 0.05) and check with measure_layout / a preview.");
 
 export const Object3DSchema = z
   .object({
@@ -69,7 +72,9 @@ export const Light3DSchema = z
     position: vec(0, 3, 3),
     rotation: vec(-45, 0, 0).describe("Degrees; lights shine along their local -Z (like the camera)."),
     color: ColorSchema.default("#ffffff"),
-    intensity: num().min(0).describe("sun: strength (W/m², typical 1-5); point/spot/area: power in watts (typical 100-2000)."),
+    intensity: num()
+      .min(0)
+      .describe("sun: strength in W/m² (typical 1-4). point/spot/area: power in watts; for a person-sized scene a few metres away use about 50-300 W (more for distant or large lights). Check a preview: white walls blowing out = too bright."),
     size: num().min(0).default(0.25).describe("Light size in metres (soft shadows); sun: angular size in degrees."),
     spotAngle: num().gt(0).max(180).default(45).describe("spot only: cone angle in degrees."),
     shadows: z.boolean().default(true),

@@ -1,0 +1,328 @@
+[
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_engine_capabilities",
+  "status": "done",
+  "durationMs": 191
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_engine_health",
+  "status": "done",
+  "durationMs": 1566
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_workspace_create",
+  "status": "done",
+  "durationMs": 5
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_library_list",
+  "status": "done",
+  "durationMs": 9
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_asset_import",
+  "status": "done",
+  "durationMs": 9
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_asset_import",
+  "status": "done",
+  "durationMs": 4
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_asset_import",
+  "status": "done",
+  "durationMs": 6
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_asset_inspect",
+  "status": "done",
+  "durationMs": 2520
+ },
+ {
+  "kind": "file_read",
+  "path": "/home/user/tandem-e2e/video-workspaces/studio3d/assets/character/view.jpg"
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_scene_create",
+  "status": "done",
+  "durationMs": 9
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_object_add",
+  "status": "done",
+  "durationMs": 11
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_scene_settings_3d",
+  "status": "done",
+  "durationMs": 9
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_timeline_apply",
+  "status": "done",
+  "durationMs": 19
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_measure_layout",
+  "status": "done",
+  "durationMs": 748
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_measure_layout",
+  "status": "done",
+  "durationMs": 682
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_measure_layout",
+  "status": "done",
+  "durationMs": 796
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_measure_layout",
+  "status": "done",
+  "durationMs": 763
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_timeline_apply",
+  "status": "done",
+  "durationMs": 10
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_measure_layout",
+  "status": "done",
+  "durationMs": 728
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_measure_layout",
+  "status": "done",
+  "durationMs": 742
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_measure_layout",
+  "status": "done",
+  "durationMs": 774
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_render_preview",
+  "status": "done",
+  "durationMs": 3333
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_render_preview",
+  "status": "done",
+  "durationMs": 2728
+ },
+ {
+  "kind": "file_read",
+  "path": "/home/user/tandem-e2e/video-workspaces/studio3d/previews/clip3d_f70_debug_1.view.jpg"
+ },
+ {
+  "kind": "file_read",
+  "path": "/home/user/tandem-e2e/video-workspaces/studio3d/previews/clip3d_f0_preview_1.view.jpg"
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_object_update",
+  "status": "done",
+  "durationMs": 10
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_scene_settings_3d",
+  "status": "done",
+  "durationMs": 5
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_render_preview",
+  "status": "done",
+  "durationMs": 4765
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_render_preview",
+  "status": "done",
+  "durationMs": 4723
+ },
+ {
+  "kind": "file_read",
+  "path": "/home/user/tandem-e2e/video-workspaces/studio3d/previews/clip3d_f70_preview_2.view.jpg"
+ },
+ {
+  "kind": "file_read",
+  "path": "/home/user/tandem-e2e/video-workspaces/studio3d/previews/clip3d_f20_preview_3.view.jpg"
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_object_update",
+  "status": "done",
+  "durationMs": 7
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_measure_layout",
+  "status": "done",
+  "durationMs": 767
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_object_update",
+  "status": "done",
+  "durationMs": 7
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_measure_layout",
+  "status": "done",
+  "durationMs": 680
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_object_update",
+  "status": "done",
+  "durationMs": 5
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_render_preview",
+  "status": "done",
+  "durationMs": 4559
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_measure_layout",
+  "status": "done",
+  "durationMs": 772
+ },
+ {
+  "kind": "file_read",
+  "path": "/home/user/tandem-e2e/video-workspaces/studio3d/previews/clip3d_f70_preview_4.view.jpg"
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_render_preview",
+  "status": "done",
+  "durationMs": 4457
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_render_preview",
+  "status": "done",
+  "durationMs": 4587
+ },
+ {
+  "kind": "file_read",
+  "path": "/home/user/tandem-e2e/video-workspaces/studio3d/previews/clip3d_f14_preview_5.view.jpg"
+ },
+ {
+  "kind": "file_read",
+  "path": "/home/user/tandem-e2e/video-workspaces/studio3d/previews/clip3d_f88_preview_6.view.jpg"
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_scene_settings_3d",
+  "status": "done",
+  "durationMs": 6
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_render_preview",
+  "status": "done",
+  "durationMs": 4465
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_render_preview",
+  "status": "done",
+  "durationMs": 4567
+ },
+ {
+  "kind": "file_read",
+  "path": "/home/user/tandem-e2e/video-workspaces/studio3d/previews/clip3d_f0_preview_8.view.jpg"
+ },
+ {
+  "kind": "file_read",
+  "path": "/home/user/tandem-e2e/video-workspaces/studio3d/previews/clip3d_f88_preview_7.view.jpg"
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_render_preview",
+  "status": "done",
+  "durationMs": 3072
+ },
+ {
+  "kind": "file_read",
+  "path": "/home/user/tandem-e2e/video-workspaces/studio3d/previews/clip3d_f52_debug_2.view.jpg"
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_render_video_start",
+  "status": "done",
+  "durationMs": 33
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_render_video_status",
+  "status": "done",
+  "durationMs": 45005
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_render_video_status",
+  "status": "done",
+  "durationMs": 45009
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_render_video_status",
+  "status": "done",
+  "durationMs": 45003
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_render_video_status",
+  "status": "done",
+  "durationMs": 45008
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_render_video_status",
+  "status": "done",
+  "durationMs": 45008
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_render_video_status",
+  "status": "done",
+  "durationMs": 45005
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_render_video_status",
+  "status": "done",
+  "durationMs": 27611
+ }
+]

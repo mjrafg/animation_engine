@@ -1,10 +1,10 @@
 {
   "quality": "standard",
-  "seconds": 392.2,
-  "renderSeconds": 373.42,
+  "seconds": 385.3,
+  "renderSeconds": 366.03,
   "video": {
     "file": "examples/3d-proof/out/mika_3d.mp4",
-    "bytes": 528487,
+    "bytes": 521128,
     "frames": 120,
     "fps": 24,
     "width": 1280,
@@ -184,20 +184,20 @@
         "y": 0,
         "z": 0
       },
-      "fov": 57,
-      "near": 0.05,
-      "far": 500,
       "lookAt": {
         "x": 0,
         "y": 1.1,
         "z": 0
-      }
+      },
+      "fov": 57,
+      "near": 0.05,
+      "far": 500
     },
     "lights": [
       {
         "id": "key",
         "type": "sun",
-        "intensity": 3.2,
+        "intensity": 2.2,
         "rotation": {
           "x": -50,
           "y": -35,
@@ -208,7 +208,7 @@
       {
         "id": "fill",
         "type": "area",
-        "intensity": 250,
+        "intensity": 120,
         "position": {
           "x": 2.5,
           "y": 2.6,
