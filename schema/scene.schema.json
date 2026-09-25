@@ -115,19 +115,23 @@
       "properties": {
         "x": {
           "default": 0,
+          "description": "Pan in world px. 0 = none; +x moves the camera right (the scene slides left). The view centre looks at world (width/2 + x, height/2 + y).",
           "type": "number"
         },
         "y": {
           "default": 0,
+          "description": "Pan in world px; +y moves the camera down.",
           "type": "number"
         },
         "scale": {
           "default": 1,
+          "description": "Zoom about the view centre: 1 = none, 2 = everything twice as large. Must be > 0.",
           "type": "number",
           "exclusiveMinimum": 0
         },
         "rotation": {
           "default": 0,
+          "description": "Camera roll in degrees; positive turns the camera clockwise (scene appears counter-clockwise).",
           "type": "number"
         }
       },
@@ -141,9 +145,11 @@
         "properties": {
           "id": {
             "type": "string",
-            "pattern": "^[A-Za-z_][A-Za-z0-9_\\-.]*$"
+            "pattern": "^[A-Za-z_][A-Za-z0-9_\\-.]*$",
+            "description": "Unique layer id within the scene."
           },
           "asset": {
+            "description": "Id of the image asset this layer shows. Omit for a transform-only group node or a `fill` rectangle.",
             "anyOf": [
               {
                 "type": "string",
@@ -155,10 +161,12 @@
             ]
           },
           "fill": {
+            "description": "Solid colour rectangle filling the layer box (#rrggbb). Used only when there is no asset.",
             "type": "string",
             "pattern": "^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$"
           },
           "parent": {
+            "description": "Transform parent layer id. The layer inherits the parent's position/rotation/scale (and opacity/visibility). It does NOT affect render order: that is `z` only.",
             "anyOf": [
               {
                 "type": "string",
@@ -170,64 +178,78 @@
             ]
           },
           "parentPoint": {
+            "description": "Name of an attachment point on the parent. When set, x/y are offsets from that point instead of from the parent's pivot.",
             "type": "string",
             "pattern": "^[A-Za-z_][A-Za-z0-9_\\-.]*$"
           },
           "x": {
             "default": 0,
+            "description": "X of this layer's PIVOT, in the parent's pivot space (canvas pixels for root layers).",
             "type": "number"
           },
           "y": {
             "default": 0,
+            "description": "Y of this layer's PIVOT (+y is down).",
             "type": "number"
           },
           "width": {
+            "description": "Unscaled box width in px. Defaults to the asset's pixel width (0 for groups). Rendered width = width*scaleX.",
             "type": "number",
             "minimum": 0
           },
           "height": {
+            "description": "Unscaled box height in px. Defaults to the asset's pixel height.",
             "type": "number",
             "minimum": 0
           },
           "scaleX": {
             "default": 1,
+            "description": "Horizontal scale about the pivot. Negative mirrors.",
             "type": "number"
           },
           "scaleY": {
             "default": 1,
+            "description": "Vertical scale about the pivot.",
             "type": "number"
           },
           "anchorX": {
             "default": 0.5,
+            "description": "Pivot position inside the box: 0 = left edge, 0.5 = centre, 1 = right edge. Rotation/scale happen around the pivot.",
             "type": "number",
             "minimum": 0,
             "maximum": 1
           },
           "anchorY": {
             "default": 0.5,
+            "description": "Pivot position inside the box: 0 = top edge, 0.5 = centre, 1 = bottom edge.",
             "type": "number",
             "minimum": 0,
             "maximum": 1
           },
           "rotation": {
             "default": 0,
+            "description": "Degrees, positive = clockwise, around the pivot. Added to the parent's rotation.",
             "type": "number"
           },
           "opacity": {
             "default": 1,
+            "description": "0..1, multiplied by ancestors' opacity.",
             "type": "number",
             "minimum": 0,
             "maximum": 1
           },
           "visible": {
             "default": true,
+            "description": "false hides this layer and all its descendants.",
             "type": "boolean"
           },
           "z": {
             "default": 0,
+            "description": "GLOBAL render order across the whole scene: higher draws on top; ties keep layer order. A child can have a higher or lower z than its parent or than unrelated layers.",
             "type": "number"
           },
           "mask": {
+            "description": "Optional mask: {type:'rect', x,y,width,height, space:'world'|'layer'} or {type:'layer', layer:<id>} (uses that layer's alpha).",
             "oneOf": [
               {
                 "type": "object",
@@ -297,6 +319,7 @@
             ]
           },
           "attachmentPoints": {
+            "description": "Named points {name:{x,y}} in normalised box coordinates (0,0 top-left, 1,1 bottom-right); override the asset's points.",
             "type": "object",
             "propertyNames": {
               "type": "string",
@@ -320,6 +343,7 @@
             }
           },
           "meta": {
+            "description": "Free-form notes; ignored by the renderer.",
             "type": "object",
             "propertyNames": {
               "type": "string"
@@ -356,9 +380,11 @@
                 "frame": {
                   "type": "integer",
                   "minimum": 0,
-                  "maximum": 9007199254740991
+                  "maximum": 9007199254740991,
+                  "description": "Frame number (integer, 0-based)."
                 },
                 "value": {
+                  "description": "Number for continuous properties; asset id string for `asset`; boolean for `visible`.",
                   "type": [
                     "number",
                     "string",
@@ -366,6 +392,7 @@
                   ]
                 },
                 "interpolation": {
+                  "description": "How to move from THIS keyframe to the next: step | linear | ease-in | ease-out | ease-in-out | cubic-bezier. Default linear (continuous) or step (discrete: asset, visible, z, fill).",
                   "type": "string",
                   "enum": [
                     "step",
@@ -377,6 +404,7 @@
                   ]
                 },
                 "bezier": {
+                  "description": "[x1,y1,x2,y2] control points for cubic-bezier (CSS semantics).",
                   "type": "array",
                   "prefixItems": [
                     {

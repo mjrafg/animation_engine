@@ -17,11 +17,28 @@ AI agent (later) ──► Scene JSON ──► validate ──► evaluate(fram
   See [docs/REPORT.md](docs/REPORT.md) for what was inspected, the problems found and fixed, and
   the remaining limitations.
 
+## Agent control over MCP (Tandem)
+
+The engine runs as an **MCP server** (`video-engine-mcp`, 35 tools), so agents can control it
+entirely through structured tool calls. They inspect capabilities, work in isolated workspaces,
+process assets, build and animate scenes, measure layout, look at previews and render MP4s as
+jobs. Tandem registers it as a standard MCP Integration.
+
+- Server, tools, configuration, Linux dependencies and Tandem registration: [`mcp/README.md`](mcp/README.md).
+- Engine additions this required, and why: [`docs/ENGINE_CHANGES_MCP.md`](docs/ENGINE_CHANGES_MCP.md).
+- End-to-end run of a Tandem agent driving the engine through MCP only, with logs, previews and MP4s: [`docs/tandem-e2e/REPORT.md`](docs/tandem-e2e/REPORT.md).
+
+```bash
+npm ci && npm run build:mcp
+node dist/video-engine-mcp.mjs --self-test --root /srv/video-workspaces
+node integrations/tandem/register.mjs      # see mcp/README.md for the env it needs
+```
+
 ## Quick start
 
 ```bash
 npm install
-npm test                       # 70 automated tests
+npm test                       # core engine tests (npm run test:mcp: MCP server over stdio)
 npm run typecheck
 
 npm run example:all            # generate + process assets, build scene, feedback loop, render

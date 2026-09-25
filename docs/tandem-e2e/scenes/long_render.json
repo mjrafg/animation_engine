@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "name": "Long render",
+  "canvas": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "background": "#101014"
+  },
+  "duration": 900,
+  "assets": {
+    "counter": {
+      "src": "assets/counter/counter.png"
+    },
+    "cup": {
+      "src": "assets/cup/cup.png"
+    },
+    "kitchen_bg": {
+      "src": "assets/kitchen_bg/kitchen_bg.png"
+    }
+  },
+  "camera": {
+    "x": 0,
+    "y": 0,
+    "scale": 1,
+    "rotation": 0
+  },
+  "layers": [
+    {
+      "id": "bg",
+      "asset": "kitchen_bg",
+      "x": 960,
+      "y": 540,
+      "width": 1920,
+      "height": 1080,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "z": 0
+    },
+    {
+      "id": "counter",
+      "asset": "counter",
+      "x": 960,
+      "y": 705,
+      "width": 2100,
+      "height": 712,
+      "anchorX": 0.5,
+      "anchorY": 0,
+      "z": 20
+    },
+    {
+      "id": "cup",
+      "asset": "cup",
+      "x": 200,
+      "y": 774,
+      "width": 144,
+      "height": 135,
+      "anchorX": 0.5,
+      "anchorY": 1,
+      "z": 25
+    }
+  ],
+  "animations": [
+    {
+      "target": "cup",
+      "property": "x",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 200,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 899,
+          "value": 1720
+        }
+      ]
+    },
+    {
+      "target": "camera",
+      "property": "scale",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 1,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 899,
+          "value": 1.25
+        }
+      ]
+    }
+  ],
+  "audio": []
+}

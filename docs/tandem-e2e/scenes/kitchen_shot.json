@@ -1,0 +1,334 @@
+{
+  "version": 1,
+  "name": "Kitchen shot",
+  "canvas": {
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "background": "#101014"
+  },
+  "duration": 120,
+  "assets": {
+    "counter": {
+      "src": "assets/counter/counter.png"
+    },
+    "cup": {
+      "src": "assets/cup/cup.png"
+    },
+    "forearm_t": {
+      "src": "assets/forearm_t/forearm_t.png"
+    },
+    "hand_t": {
+      "src": "assets/hand_t/hand_t.png"
+    },
+    "head_t": {
+      "src": "assets/head_t/head_t.png"
+    },
+    "kitchen_bg": {
+      "src": "assets/kitchen_bg/kitchen_bg.png"
+    },
+    "torso_t": {
+      "src": "assets/torso_t/torso_t.png"
+    },
+    "upper_arm_t": {
+      "src": "assets/upper_arm_t/upper_arm_t.png"
+    }
+  },
+  "camera": {
+    "x": 0,
+    "y": 0,
+    "scale": 1,
+    "rotation": 0
+  },
+  "layers": [
+    {
+      "id": "bg",
+      "asset": "kitchen_bg",
+      "x": 640,
+      "y": 360,
+      "width": 1280,
+      "height": 720,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "z": 0
+    },
+    {
+      "id": "char_root",
+      "x": 400,
+      "y": 650,
+      "z": 5
+    },
+    {
+      "id": "torso",
+      "asset": "torso_t",
+      "parent": "char_root",
+      "x": 0,
+      "y": 0,
+      "width": 220,
+      "height": 340,
+      "anchorX": 0.5,
+      "anchorY": 1,
+      "z": 10,
+      "attachmentPoints": {
+        "neck": {
+          "x": 0.5,
+          "y": 0.03
+        },
+        "shoulderR": {
+          "x": 0.93,
+          "y": 0.1
+        }
+      }
+    },
+    {
+      "id": "head",
+      "asset": "head_t",
+      "parent": "torso",
+      "parentPoint": "neck",
+      "x": 0,
+      "y": 15,
+      "width": 122,
+      "height": 155,
+      "anchorX": 0.5,
+      "anchorY": 1,
+      "z": 12
+    },
+    {
+      "id": "upper_arm",
+      "asset": "upper_arm_t",
+      "parent": "torso",
+      "parentPoint": "shoulderR",
+      "x": 0,
+      "y": 0,
+      "width": 46,
+      "height": 170,
+      "anchorX": 0.5,
+      "anchorY": 0.06,
+      "z": 11,
+      "attachmentPoints": {
+        "elbow": {
+          "x": 0.5,
+          "y": 0.94
+        }
+      }
+    },
+    {
+      "id": "forearm",
+      "asset": "forearm_t",
+      "parent": "upper_arm",
+      "parentPoint": "elbow",
+      "x": 0,
+      "y": 0,
+      "width": 42,
+      "height": 155,
+      "anchorX": 0.5,
+      "anchorY": 0.06,
+      "z": 30,
+      "attachmentPoints": {
+        "wrist": {
+          "x": 0.5,
+          "y": 0.94
+        }
+      }
+    },
+    {
+      "id": "hand",
+      "asset": "hand_t",
+      "parent": "forearm",
+      "parentPoint": "wrist",
+      "x": 0,
+      "y": 0,
+      "width": 60,
+      "height": 60,
+      "anchorX": 0.5,
+      "anchorY": 0.1,
+      "z": 31
+    },
+    {
+      "id": "counter",
+      "asset": "counter",
+      "x": 640,
+      "y": 470,
+      "width": 1400,
+      "height": 475,
+      "anchorX": 0.5,
+      "anchorY": 0,
+      "z": 20
+    },
+    {
+      "id": "cup",
+      "asset": "cup",
+      "x": 872,
+      "y": 516,
+      "width": 96,
+      "height": 90,
+      "anchorX": 0.5,
+      "anchorY": 1,
+      "z": 25
+    },
+    {
+      "id": "cup2",
+      "asset": "cup",
+      "x": 1120,
+      "y": 524,
+      "width": 82,
+      "height": 77,
+      "anchorX": 0.5,
+      "anchorY": 1,
+      "z": 24
+    }
+  ],
+  "animations": [
+    {
+      "target": "char_root",
+      "property": "x",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 60,
+          "interpolation": "ease-out"
+        },
+        {
+          "frame": 40,
+          "value": 400
+        }
+      ]
+    },
+    {
+      "target": "upper_arm",
+      "property": "rotation",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 0,
+          "interpolation": "linear"
+        },
+        {
+          "frame": 35,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 85,
+          "value": -55,
+          "interpolation": "linear"
+        },
+        {
+          "frame": 119,
+          "value": -55
+        }
+      ]
+    },
+    {
+      "target": "forearm",
+      "property": "rotation",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 0,
+          "interpolation": "linear"
+        },
+        {
+          "frame": 40,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 90,
+          "value": -25,
+          "interpolation": "linear"
+        },
+        {
+          "frame": 119,
+          "value": -25
+        }
+      ]
+    },
+    {
+      "target": "head",
+      "property": "rotation",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 45,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 80,
+          "value": 9,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 119,
+          "value": 5
+        }
+      ]
+    },
+    {
+      "target": "camera",
+      "property": "scale",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 1,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 110,
+          "value": 1.18,
+          "interpolation": "linear"
+        },
+        {
+          "frame": 119,
+          "value": 1.18
+        }
+      ]
+    },
+    {
+      "target": "camera",
+      "property": "x",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 110,
+          "value": 60,
+          "interpolation": "linear"
+        },
+        {
+          "frame": 119,
+          "value": 60
+        }
+      ]
+    },
+    {
+      "target": "camera",
+      "property": "y",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 110,
+          "value": -20,
+          "interpolation": "linear"
+        },
+        {
+          "frame": 119,
+          "value": -20
+        }
+      ]
+    }
+  ],
+  "audio": []
+}

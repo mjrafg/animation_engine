@@ -1,0 +1,387 @@
+{
+ "totalToolCalls": 72,
+ "nonMcpActions": 0,
+ "fileReads": [
+  "/home/user/tandem-e2e/video-workspaces/kitchen-e2e/assets/cup_v1/view.jpg",
+  "/home/user/tandem-e2e/video-workspaces/kitchen-e2e/assets/cup/view.jpg",
+  "/home/user/tandem-e2e/video-workspaces/kitchen-e2e/assets/counter/view.jpg",
+  "/home/user/tandem-e2e/video-workspaces/kitchen-e2e/assets/torso_t/view.jpg",
+  "/home/user/tandem-e2e/video-workspaces/kitchen-e2e/assets/upper_arm_t/view.jpg",
+  "/home/user/tandem-e2e/video-workspaces/kitchen-e2e/assets/hand_t/view.jpg",
+  "/home/user/tandem-e2e/video-workspaces/kitchen-e2e/previews/kitchen_shot_f100_preview_1.view.jpg",
+  "/home/user/tandem-e2e/video-workspaces/kitchen-e2e/previews/kitchen_shot_f0_preview_2.view.jpg",
+  "/home/user/tandem-e2e/video-workspaces/kitchen-e2e/previews/kitchen_shot_f60_debug_1.view.jpg",
+  "/home/user/tandem-e2e/video-workspaces/kitchen-e2e/previews/kitchen_shot_f100_preview_3.view.jpg",
+  "/home/user/tandem-e2e/video-workspaces/kitchen-e2e/previews/reuse_check_f30_preview_4.view.jpg",
+  "/home/user/tandem-e2e/video-workspaces/kitchen-e2e/previews/long_render_f450_preview_5.view.jpg"
+ ],
+ "calls": [
+  {
+   "tool": "engine_capabilities",
+   "status": "done",
+   "ms": 217
+  },
+  {
+   "tool": "library_list",
+   "status": "done",
+   "ms": 11
+  },
+  {
+   "tool": "workspace_create",
+   "status": "done",
+   "ms": 5
+  },
+  {
+   "tool": "asset_import",
+   "status": "done",
+   "ms": 7
+  },
+  {
+   "tool": "asset_import",
+   "status": "done",
+   "ms": 417
+  },
+  {
+   "tool": "asset_import",
+   "status": "done",
+   "ms": 6
+  },
+  {
+   "tool": "asset_import",
+   "status": "done",
+   "ms": 4
+  },
+  {
+   "tool": "asset_import",
+   "status": "done",
+   "ms": 6
+  },
+  {
+   "tool": "asset_import",
+   "status": "done",
+   "ms": 5
+  },
+  {
+   "tool": "asset_import",
+   "status": "done",
+   "ms": 4
+  },
+  {
+   "tool": "asset_import",
+   "status": "done",
+   "ms": 4
+  },
+  {
+   "tool": "asset_inspect",
+   "status": "done",
+   "ms": 513
+  },
+  {
+   "tool": "asset_inspect",
+   "status": "done",
+   "ms": 140
+  },
+  {
+   "tool": "asset_process",
+   "status": "done",
+   "ms": 1197
+  },
+  {
+   "tool": "asset_process",
+   "status": "done",
+   "ms": 287
+  },
+  {
+   "tool": "asset_process",
+   "status": "done",
+   "ms": 314
+  },
+  {
+   "tool": "asset_trim",
+   "status": "done",
+   "ms": 78
+  },
+  {
+   "tool": "asset_trim",
+   "status": "done",
+   "ms": 70
+  },
+  {
+   "tool": "asset_trim",
+   "status": "done",
+   "ms": 37
+  },
+  {
+   "tool": "asset_trim",
+   "status": "done",
+   "ms": 32
+  },
+  {
+   "tool": "asset_trim",
+   "status": "done",
+   "ms": 29
+  },
+  {
+   "tool": "scene_create",
+   "status": "done",
+   "ms": 7
+  },
+  {
+   "tool": "layer_add",
+   "status": "done",
+   "ms": 11
+  },
+  {
+   "tool": "scene_get",
+   "status": "done",
+   "ms": 4
+  },
+  {
+   "tool": "timeline_apply",
+   "status": "done",
+   "ms": 15
+  },
+  {
+   "tool": "measure_layout",
+   "status": "done",
+   "ms": 19
+  },
+  {
+   "tool": "measure_layout",
+   "status": "done",
+   "ms": 5
+  },
+  {
+   "tool": "timeline_apply",
+   "status": "done",
+   "ms": 10
+  },
+  {
+   "tool": "measure_layout",
+   "status": "done",
+   "ms": 12
+  },
+  {
+   "tool": "render_preview",
+   "status": "done",
+   "ms": 398
+  },
+  {
+   "tool": "render_preview",
+   "status": "done",
+   "ms": 402
+  },
+  {
+   "tool": "render_preview",
+   "status": "done",
+   "ms": 434
+  },
+  {
+   "tool": "layer_update",
+   "status": "done",
+   "ms": 9
+  },
+  {
+   "tool": "measure_layout",
+   "status": "done",
+   "ms": 14
+  },
+  {
+   "tool": "render_preview",
+   "status": "done",
+   "ms": 413
+  },
+  {
+   "tool": "render_video_start",
+   "status": "done",
+   "ms": 6
+  },
+  {
+   "tool": "render_video_status",
+   "status": "done",
+   "ms": 2098
+  },
+  {
+   "tool": "layer_add",
+   "status": "done",
+   "ms": 427
+  },
+  {
+   "tool": "scene_create",
+   "status": "done",
+   "ms": 5
+  },
+  {
+   "tool": "layer_add",
+   "status": "done",
+   "ms": 6
+  },
+  {
+   "tool": "asset_list",
+   "status": "done",
+   "ms": 5
+  },
+  {
+   "tool": "render_preview",
+   "status": "done",
+   "ms": 490
+  },
+  {
+   "tool": "scene_get",
+   "status": "done",
+   "ms": 6
+  },
+  {
+   "tool": "layer_update",
+   "status": "failed",
+   "ms": 6,
+   "error": "SCENE_NOT_FOUND"
+  },
+  {
+   "tool": "layer_update",
+   "status": "done",
+   "ms": 8
+  },
+  {
+   "tool": "layer_update",
+   "status": "failed",
+   "ms": 5,
+   "error": "LAYER_NOT_FOUND"
+  },
+  {
+   "tool": "layer_update",
+   "status": "done",
+   "ms": 10
+  },
+  {
+   "tool": "layer_update",
+   "status": "failed",
+   "ms": 4,
+   "error": "INVALID_PARENT"
+  },
+  {
+   "tool": "layer_update",
+   "status": "failed",
+   "ms": 5,
+   "error": "PARENT_CYCLE"
+  },
+  {
+   "tool": "layer_update",
+   "status": "done",
+   "ms": 9
+  },
+  {
+   "tool": "timeline_apply",
+   "status": "failed",
+   "ms": 8,
+   "error": "INVALID_KEYFRAME"
+  },
+  {
+   "tool": "timeline_apply",
+   "status": "done",
+   "ms": 8
+  },
+  {
+   "tool": "measure_layout",
+   "status": "failed",
+   "ms": 9,
+   "error": "INVALID_FRAME"
+  },
+  {
+   "tool": "timeline_apply",
+   "status": "done",
+   "ms": 6
+  },
+  {
+   "tool": "measure_layout",
+   "status": "done",
+   "ms": 9
+  },
+  {
+   "tool": "engine_health",
+   "status": "done",
+   "ms": 187
+  },
+  {
+   "tool": "scene_get",
+   "status": "done",
+   "ms": 3
+  },
+  {
+   "tool": "scene_create",
+   "status": "done",
+   "ms": 4
+  },
+  {
+   "tool": "layer_add",
+   "status": "done",
+   "ms": 11
+  },
+  {
+   "tool": "timeline_apply",
+   "status": "done",
+   "ms": 4
+  },
+  {
+   "tool": "render_preview",
+   "status": "done",
+   "ms": 917
+  },
+  {
+   "tool": "render_video_start",
+   "status": "done",
+   "ms": 8
+  },
+  {
+   "tool": "render_video_status",
+   "status": "done",
+   "ms": 23
+  },
+  {
+   "tool": "render_video_status",
+   "status": "done",
+   "ms": 35
+  },
+  {
+   "tool": "render_video_status",
+   "status": "done",
+   "ms": 18
+  },
+  {
+   "tool": "render_video_status",
+   "status": "done",
+   "ms": 24773
+  },
+  {
+   "tool": "render_video_start",
+   "status": "failed",
+   "ms": 7,
+   "error": "INVALID_FRAME"
+  },
+  {
+   "tool": "render_video_start",
+   "status": "done",
+   "ms": 6
+  },
+  {
+   "tool": "render_video_status",
+   "status": "done",
+   "ms": 24
+  },
+  {
+   "tool": "render_video_cancel",
+   "status": "done",
+   "ms": 16
+  },
+  {
+   "tool": "render_video_status",
+   "status": "done",
+   "ms": 3
+  },
+  {
+   "tool": "artifact_list",
+   "status": "done",
+   "ms": 11
+  }
+ ]
+}
