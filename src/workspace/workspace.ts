@@ -30,19 +30,27 @@ import type { DebugOptions } from "../engine/debugOverlay.js";
 import type { FrameLayout } from "../engine/layout.js";
 import { EngineError, errorFromIssues } from "../errors.js";
 import { validateScene, type ValidationIssue } from "../scene/validate.js";
+import { startEncoder } from "../render/video.js";
+import { inspectGltf, type ModelInfo } from "../scene3d/gltf.js";
+import * as ops3d from "../scene3d/operations.js";
+import { measure3D, modelThumbnail, renderFrames3D, type Measure3DOptions, type Scene3DContext } from "../scene3d/render.js";
+import type { Scene3D } from "../scene3d/schema.js";
+import { validateScene3D, type AssetLookup3D } from "../scene3d/validate.js";
 import { checkEntityId, checkWorkspaceId, readJson, resolveInside, toPosix, writeFileAtomic } from "./paths.js";
 
 export const IMAGE_EXT = new Set([".png", ".jpg", ".jpeg", ".webp"]);
 export const AUDIO_EXT = new Set([".wav", ".mp3", ".m4a", ".aac", ".ogg", ".flac"]);
+export const MODEL_EXT = new Set([".glb", ".gltf"]);
 const MIME: Record<string, string> = {
   ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp",
   ".wav": "audio/wav", ".mp3": "audio/mpeg", ".m4a": "audio/mp4", ".aac": "audio/aac", ".ogg": "audio/ogg", ".flac": "audio/flac",
+  ".glb": "model/gltf-binary", ".gltf": "model/gltf+json",
 };
 
 export interface AssetRecord {
   assetId: string;
   name: string;
-  kind: "image" | "audio";
+  kind: "image" | "audio" | "model";
   /** Workspace-relative path of the asset file. */
   file: string;
   mime: string;
@@ -51,6 +59,8 @@ export interface AssetRecord {
   width?: number;
   height?: number;
   hasAlpha?: boolean;
+  /** 3D model facts (kind "model"): clips, skeleton, sockets, morph targets, bounds. */
+  model?: ModelInfo;
   tags: string[];
   /** Named points in normalised asset-box coordinates (0,0 top-left .. 1,1 bottom-right). */
   attachmentPoints?: Record<string, { x: number; y: number }>;
@@ -240,7 +250,7 @@ export class WorkspaceManager {
   listLibrary(name: string, opts: { subdir?: string; limit?: number } = {}) {
     const root = this.libraryRoot(name);
     const start = opts.subdir ? resolveInside(root, opts.subdir) : fs.realpathSync(root);
-    const out: { path: string; kind: "image" | "audio"; bytes: number }[] = [];
+    const out: { path: string; kind: "image" | "audio" | "model"; bytes: number }[] = [];
     const limit = opts.limit ?? 500;
     const walk = (dir: string) => {
       for (const e of fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
@@ -249,7 +259,7 @@ export class WorkspaceManager {
         if (e.isDirectory()) walk(full);
         else {
           const ext = path.extname(e.name).toLowerCase();
-          const kind = IMAGE_EXT.has(ext) ? "image" : AUDIO_EXT.has(ext) ? "audio" : null;
+          const kind = IMAGE_EXT.has(ext) ? "image" : AUDIO_EXT.has(ext) ? "audio" : MODEL_EXT.has(ext) ? "model" : null;
           if (kind) out.push({ path: toPosix(path.relative(fs.realpathSync(root), full)), kind, bytes: fs.statSync(full).size });
         }
       }
@@ -400,7 +410,8 @@ export class VideoWorkspace {
       return { kind: "image" as const, bytes: bytes.length, sha256: sha, width: m.width, height: m.height, hasAlpha: !!m.hasAlpha };
     }
     if (AUDIO_EXT.has(ext)) return { kind: "audio" as const, bytes: bytes.length, sha256: sha };
-    throw new EngineError("INVALID_ASSET", `Unsupported file type "${ext}". Images: png jpg jpeg webp; audio: wav mp3 m4a aac ogg flac`);
+    if (MODEL_EXT.has(ext)) return { kind: "model" as const, bytes: bytes.length, sha256: sha, model: inspectGltf(bytes, path.basename(file)) };
+    throw new EngineError("INVALID_ASSET", `Unsupported file type "${ext}". Images: png jpg jpeg webp; audio: wav mp3 m4a aac ogg flac; 3D models: glb gltf`);
   }
 
   /**
@@ -410,7 +421,7 @@ export class VideoWorkspace {
   async importAsset(src: ImportSource, opts: { assetId?: string; name?: string; tags?: string[]; attachmentPoints?: AssetRecord["attachmentPoints"] } = {}) {
     const filename = src.kind === "file" ? path.basename(src.file) : src.filename;
     const ext = path.extname(filename).toLowerCase();
-    if (!IMAGE_EXT.has(ext) && !AUDIO_EXT.has(ext)) {
+    if (!IMAGE_EXT.has(ext) && !AUDIO_EXT.has(ext) && !MODEL_EXT.has(ext)) {
       throw new EngineError("INVALID_ASSET", `Unsupported file type "${ext || filename}"`, { filename });
     }
     const data = src.kind === "file" ? fs.readFileSync(src.file) : src.data;
@@ -472,9 +483,36 @@ export class VideoWorkspace {
 
   async inspectAsset(id: string) {
     const rec = this.getAsset(id);
+    if (rec.kind === "model") return { asset: rec, ...(await this.modelView(id)) };
     if (rec.kind !== "image") return { asset: rec };
     const inspection = await inspectImage(this.abs(rec.file));
     return { asset: rec, inspection, view: await this.assetView(id) };
+  }
+
+  /**
+   * Renders (once, cached) a framed thumbnail of a model with the 3D backend, which also proves
+   * the model imports in Blender. Without Blender the model facts are still available.
+   */
+  async modelView(id: string): Promise<{ view?: ArtifactRecord["view"]; blender?: Record<string, unknown>; note?: string }> {
+    const rec = this.getAsset(id);
+    const dir = this.assetDir(id);
+    const out = path.join(dir, "view.jpg");
+    const facts = path.join(dir, "blender.json");
+    if (!fs.existsSync(out) || !fs.existsSync(facts)) {
+      const png = path.join(dir, `.thumb_${process.pid}.png`);
+      try {
+        const info = await modelThumbnail(this.abs(rec.file), png);
+        await makeViewImage(fs.readFileSync(png), out);
+        writeFileAtomic(facts, JSON.stringify(info, null, 2));
+      } catch (e) {
+        if (e instanceof EngineError && e.code === "ENGINE_CAPABILITY_UNAVAILABLE") return { note: "No thumbnail: the 3D backend (Blender) is not installed" };
+        throw e;
+      } finally {
+        fs.rmSync(png, { force: true });
+      }
+    }
+    const m = await sharp(out).metadata();
+    return { view: { relativePath: this.rel(out), width: m.width!, height: m.height!, bytes: fs.statSync(out).size }, blender: readJson(facts) };
   }
 
   private async deriveImage(
@@ -638,10 +676,11 @@ export class VideoWorkspace {
         const doc = readJson<ops.SceneDoc>(path.join(dir, f));
         return {
           sceneId: id,
+          kind: ops.is3D(doc) ? ("3d" as const) : ("2d" as const),
           name: doc.name ?? id,
           canvas: doc.canvas,
           duration: doc.duration,
-          layers: (doc.layers ?? []).length,
+          ...(ops.is3D(doc) ? { objects: (doc.objects ?? []).length, lights: (doc.lights ?? []).length } : { layers: (doc.layers ?? []).length }),
           tracks: (doc.animations ?? []).length,
         };
       });
@@ -669,9 +708,10 @@ export class VideoWorkspace {
     const byFile = new Map(this.listAssets().map((a) => [a.file, a.assetId]));
     return {
       sceneId: id,
+      ...(ops.is3D(doc) ? {} : { kind: "2d" }),
       ...rest,
       audio: (audio ?? []).map((a: any) => ({ assetId: byFile.get(a.src) ?? null, startFrame: a.startFrame ?? 0, volume: a.volume ?? 1 })),
-      assetsUsed: Object.keys(assets ?? {}),
+      assetsUsed: ops.is3D(doc) ? [...new Set((doc.objects ?? []).map((o: any) => o.asset).filter(Boolean))] : Object.keys(assets ?? {}),
     };
   }
 
@@ -700,7 +740,42 @@ export class VideoWorkspace {
     return { ...doc, assets };
   }
 
+  /** Model lookup for 3D validation: every model asset of the workspace, by id. */
+  assetLookup3D: AssetLookup3D = (assetId) => {
+    if (!/^[A-Za-z_][A-Za-z0-9_\-.]*$/.test(assetId) || !this.hasAsset(assetId)) return undefined;
+    const rec = this.getAsset(assetId);
+    return { kind: rec.kind, model: rec.model };
+  };
+
+  private validateDoc3D(id: string, doc: ops.SceneDoc): ValidationIssue[] {
+    const v = validateScene3D(doc, this.assetLookup3D);
+    const errors = [...v.errors];
+    if (v.ok) {
+      v.scene!.objects.forEach((o, i) => {
+        if (o.asset && !fs.existsSync(this.assetFile(o.asset))) {
+          errors.push({ severity: "error", code: "MISSING_ASSET_FILE", path: ["objects", i, "asset"], message: `The file of asset "${o.asset}" is missing` });
+        }
+      });
+      const ov = v.scene!.overlay;
+      if (ov) {
+        const bad = (message: string) => errors.push({ severity: "error", code: "INVALID_VALUE", path: ["overlay", "scene"], message });
+        if (!/^[A-Za-z_][A-Za-z0-9_\-.]*$/.test(ov.scene) || !this.hasScene(ov.scene)) bad(`Overlay scene "${ov.scene}" does not exist`);
+        else {
+          const o2 = this.getSceneDoc(ov.scene);
+          const c = v.scene!.canvas;
+          if (ops.is3D(o2)) bad(`Overlay scene "${ov.scene}" must be a 2D scene`);
+          else if (o2.canvas.width !== c.width || o2.canvas.height !== c.height || o2.canvas.fps !== c.fps) {
+            bad(`Overlay scene "${ov.scene}" must have the same canvas size and fps (${c.width}x${c.height} @ ${c.fps})`);
+          }
+        }
+      }
+    }
+    if (errors.length) throw errorFromIssues(errors, { sceneId: id, availableAssets: this.listAssets({ kind: "model" }).map((a) => a.assetId).slice(0, 50) });
+    return v.warnings;
+  }
+
   private validateDoc(id: string, doc: ops.SceneDoc): ValidationIssue[] {
+    if (ops.is3D(doc)) return this.validateDoc3D(id, doc);
     const v = validateScene(doc, { baseDir: this.dir });
     if (!v.ok) {
       // report unknown assets with the workspace's asset list so a client can fix the id
@@ -716,9 +791,22 @@ export class VideoWorkspace {
     return next;
   }
 
-  async createScene(args: { sceneId?: string; name?: string; canvas?: Record<string, unknown>; duration?: number; camera?: Record<string, unknown> } = {}) {
+  async createScene(args: { sceneId?: string; kind?: "2d" | "3d"; name?: string; canvas?: Record<string, unknown>; duration?: number; camera?: Record<string, unknown> } = {}) {
     const id = args.sceneId ? checkEntityId("scene", args.sceneId) : this.nextFreeSceneId();
     if (this.hasScene(id)) throw new EngineError("SCENE_EXISTS", `Scene "${id}" already exists`, { sceneId: id });
+    if (args.kind === "3d") {
+      const r = ops3d.createScene3D({ name: args.name ?? id, canvas: args.canvas as any, duration: args.duration });
+      if (!r.ok) throw errorFromIssues(r.errors, { sceneId: id });
+      let doc = r.scene;
+      if (args.camera) {
+        const c = ops.withAssets3D(this.assetLookup3D, () => ops3d.setSettings3D(doc, { camera: args.camera }));
+        if (!c.ok) throw errorFromIssues(c.errors, { sceneId: id });
+        doc = c.scene;
+      }
+      const warnings = this.validateDoc(id, doc);
+      writeFileAtomic(this.sceneFile(id), JSON.stringify(doc, null, 2));
+      return { sceneId: id, kind: "3d" as const, warnings };
+    }
     const r = ops.createScene({ name: args.name ?? id, canvas: args.canvas as any, duration: args.duration });
     if (!r.ok) throw errorFromIssues(r.errors, { sceneId: id });
     let doc = r.scene;
@@ -730,7 +818,7 @@ export class VideoWorkspace {
     doc = this.syncSceneAssets(doc);
     const warnings = this.validateDoc(id, doc);
     writeFileAtomic(this.sceneFile(id), JSON.stringify(doc, null, 2));
-    return { sceneId: id, warnings };
+    return { sceneId: id, kind: "2d" as const, warnings };
   }
 
   private nextFreeSceneId() {
@@ -752,8 +840,17 @@ export class VideoWorkspace {
    */
   async mutateScene<T>(id: string, fn: (doc: ops.SceneDoc) => ops.OpResult<T>) {
     return this.withSceneLock(id, () => {
+      const cur = this.getSceneDoc(id);
+      if (ops.is3D(cur)) {
+        // 3D scenes reference model assets by id directly (no internal file map)
+        const r = ops.withAssets3D(this.assetLookup3D, () => fn(cur));
+        if (!r.ok) throw errorFromIssues(r.errors, { sceneId: id });
+        const warnings = this.validateDoc(id, r.scene);
+        writeFileAtomic(this.sceneFile(id), JSON.stringify(r.scene, null, 2));
+        return { result: r.result as T | undefined, warnings: [...r.warnings, ...warnings] };
+      }
       // expose every image asset during the operation so references resolve; sync prunes afterwards
-      const doc = this.withAllAssets(this.getSceneDoc(id));
+      const doc = this.withAllAssets(cur);
       const r = fn(doc);
       if (!r.ok) throw errorFromIssues(r.errors, { sceneId: id, availableAssets: undefined });
       const next = this.syncSceneAssets(r.scene);
@@ -774,7 +871,9 @@ export class VideoWorkspace {
 
   /** A prepared engine for the scene's current document (cached until the document changes). */
   async engine(id: string): Promise<AnimationEngine> {
-    const doc = this.syncSceneAssets(this.getSceneDoc(id));
+    const raw = this.getSceneDoc(id);
+    if (ops.is3D(raw)) throw new EngineError("INVALID_ARGUMENT", `Scene "${id}" is a 3D scene; use the 3D operations (measure_3d / 3D render)`, { sceneId: id, kind: "3d" });
+    const doc = this.syncSceneAssets(raw);
     // the cache key covers the document AND the state of every referenced file, so a changed or
     // deleted asset/audio file is noticed (and reported) instead of rendering stale bytes
     const files = [...Object.values(doc.assets ?? {}).map((a: any) => a.src), ...(doc.audio ?? []).map((a: any) => a.src)].map((rel: string) => {
@@ -801,6 +900,149 @@ export class VideoWorkspace {
 
   async measureLayout(id: string, frame: number, layers?: string[]): Promise<FrameLayout> {
     return (await this.engine(id)).measureLayout(frame, { layers });
+  }
+
+  // ---- 3D ------------------------------------------------------------------------------------
+
+  sceneKind(id: string): "2d" | "3d" {
+    return ops.is3D(this.getSceneDoc(id)) ? "3d" : "2d";
+  }
+
+  /** Validated 3D scene with model/file lookups for the 3D backend. */
+  scene3D(id: string): Scene3DContext {
+    const doc = this.getSceneDoc(id);
+    if (!ops.is3D(doc)) throw new EngineError("INVALID_ARGUMENT", `Scene "${id}" is a 2D scene`, { sceneId: id, kind: "2d" });
+    this.validateDoc3D(id, doc);
+    const scene = validateScene3D(doc, this.assetLookup3D).scene as Scene3D;
+    return { scene, model: (a) => this.assetLookup3D(a)?.model, assetFile: (a) => this.assetFile(a) };
+  }
+
+  /** Validates the scene (2D or 3D) and returns its duration in frames. */
+  async sceneDuration(id: string): Promise<number> {
+    return this.sceneKind(id) === "3d" ? this.scene3D(id).scene.duration : (await this.engine(id)).scene.duration;
+  }
+
+  async measure3D(id: string, frame: number, opts: Measure3DOptions = {}) {
+    return measure3D(this.scene3D(id), frame, opts);
+  }
+
+  /** RGBA frame of a 3D scene: backend PNG + optional 2D overlay, flattened on the background if asked. */
+  private async compose3D(ctx: Scene3DContext, frame: number, png: Buffer | string, flatten: boolean): Promise<Buffer> {
+    const { width, height } = ctx.scene.canvas;
+    let img = sharp(png).ensureAlpha();
+    const layers: { input: Buffer; raw: { width: number; height: number; channels: 4 } }[] = [];
+    if (ctx.scene.overlay) {
+      const f = await (await this.engine(ctx.scene.overlay.scene)).renderFrame(frame);
+      layers.push({ input: f.rgba(), raw: { width, height, channels: 4 } });
+    }
+    if (layers.length) img = sharp(await img.composite(layers).png().toBuffer());
+    if (flatten) img = img.flatten({ background: ctx.scene.canvas.background.slice(0, 7) }).ensureAlpha();
+    return img.raw().toBuffer();
+  }
+
+  private debugSvg(m: Awaited<ReturnType<typeof measure3D>>) {
+    const { width: W, height: H } = m.canvas;
+    const esc = (t: string) => t.replace(/[<>&"]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;" })[c]!);
+    const fs1 = Math.max(11, Math.round(H / 55));
+    const parts: string[] = [];
+    const colors = ["#ff3b30", "#34c759", "#007aff", "#ff9500", "#af52de", "#00c7be", "#ffcc00"];
+    m.objects.forEach((o: any, i: number) => {
+      const c = colors[i % colors.length];
+      const sc = o.screen;
+      if (sc?.onScreen && sc.width < W * 3) {
+        parts.push(`<rect x="${sc.x}" y="${sc.y}" width="${sc.width}" height="${sc.height}" fill="none" stroke="${c}" stroke-width="2" stroke-dasharray="6 3"/>`);
+        const label = `${o.id}${o.clips?.length ? " [" + o.clips.map((k: any) => k.name).join("→") + "]" : ""} z${o.cameraSpace?.depth?.toFixed(1)}m`;
+        parts.push(`<text x="${Math.max(2, sc.x) + 3}" y="${Math.max(fs1, sc.y) + fs1}" fill="${c}" font-size="${fs1}" font-family="sans-serif" font-weight="bold" stroke="#000" stroke-width="0.6">${esc(label)}</text>`);
+      }
+      for (const [name, b] of Object.entries<any>(o.bones ?? {})) {
+        if (!b.screen.onScreen || !/Hand$|^head$|^root$/.test(name)) continue;
+        parts.push(`<circle cx="${b.screen.x}" cy="${b.screen.y}" r="4" fill="${c}" stroke="#fff" stroke-width="1.5"/>`);
+        parts.push(`<text x="${b.screen.x + 6}" y="${b.screen.y - 4}" fill="#fff" font-size="${Math.round(fs1 * 0.8)}" font-family="sans-serif" stroke="#000" stroke-width="0.5">${esc(name)}</text>`);
+      }
+    });
+    const cam = m.camera as any;
+    parts.push(`<text x="6" y="${H - 8}" fill="#fff" font-size="${fs1}" font-family="monospace" stroke="#000" stroke-width="0.5">${esc(`frame ${m.frame}  camera (${cam.position.x}, ${cam.position.y}, ${cam.position.z}) fov ${cam.fov}`)}</text>`);
+    return Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">${parts.join("")}</svg>`);
+  }
+
+  private async renderPreview3D(sceneId: string, frame: number, opts: { debug?: boolean; quality?: "draft" | "standard" | "high" }) {
+    const ctx = this.scene3D(sceneId);
+    const tmp = path.join(this.dir, "previews", `.tmp3d_${process.pid}_${Date.now()}.png`);
+    fs.mkdirSync(path.dirname(tmp), { recursive: true });
+    try {
+      const r = await renderFrames3D(ctx, [{ frame, out: tmp }], { quality: opts.quality ?? "draft", ...(opts.debug ? { measure: {} } : {}) });
+      const { width, height } = ctx.scene.canvas;
+      let png = await sharp(await this.compose3D(ctx, frame, tmp, false), { raw: { width, height, channels: 4 } }).png().toBuffer();
+      if (opts.debug && r.measurements[0]) png = await sharp(png).composite([{ input: this.debugSvg(r.measurements[0]) }]).png().toBuffer();
+      const rec = await this.imageArtifact(opts.debug ? "debug-preview" : "preview", sceneId, frame, png, "previews");
+      return opts.debug ? { ...rec, measurement: r.measurements[0] } : rec;
+    } finally {
+      fs.rmSync(tmp, { force: true });
+    }
+  }
+
+  private async renderVideo3D(
+    sceneId: string,
+    o: { startFrame?: number; endFrame?: number; crf?: number; audio?: boolean; signal?: AbortSignal; onProgress?: (done: number, total: number) => void; renderId?: string },
+  ) {
+    const ctx = this.scene3D(sceneId);
+    const s = ctx.scene;
+    const start = o.startFrame ?? 0;
+    const end = o.endFrame ?? s.duration;
+    if (!(Number.isInteger(start) && Number.isInteger(end) && start >= 0 && end <= s.duration && end > start)) {
+      throw new EngineError("INVALID_FRAME", `invalid frame range [${start}, ${end}) for duration ${s.duration}`, { startFrame: start, endFrame: end, duration: s.duration });
+    }
+    const artifactId = this.nextId("video");
+    const file = path.join(this.dir, "renders", `${sceneId}_${artifactId}.mp4`);
+    const tmpDir = path.join(this.dir, "renders", `.frames_${artifactId}`);
+    fs.mkdirSync(tmpDir, { recursive: true });
+    const fps = s.canvas.fps;
+    const audio = o.audio === false ? [] : s.audio.map((a) => ({ file: this.abs(a.src), start: (a.startFrame - start) / fps, volume: a.volume })).filter((a) => a.start >= 0);
+    const enc = startEncoder({ out: file, width: s.canvas.width, height: s.canvas.height, fps, frameCount: end - start, audio, crf: o.crf });
+    let chain = Promise.resolve();
+    let encoded = 0;
+    let poster: Buffer | null = null;
+    try {
+      const frames = Array.from({ length: end - start }, (_, i) => ({ frame: start + i, out: path.join(tmpDir, `f${String(start + i).padStart(6, "0")}.png`) }));
+      await renderFrames3D(ctx, frames, {
+        signal: o.signal,
+        onFrame: (frame, png) => {
+          chain = chain.then(async () => {
+            const rgba = await this.compose3D(ctx, frame, png, true);
+            if (!poster) poster = await sharp(rgba, { raw: { width: s.canvas.width, height: s.canvas.height, channels: 4 } }).png().toBuffer();
+            await enc.write(rgba);
+            fs.rmSync(png, { force: true });
+            o.onProgress?.(++encoded, end - start);
+          });
+        },
+      });
+      await chain;
+      await enc.finish();
+    } catch (e) {
+      await chain.catch(() => undefined);
+      await enc.abort();
+      if (e instanceof EngineError) throw e;
+      const msg = e instanceof Error ? e.message : String(e);
+      throw new EngineError(/ffmpeg/i.test(msg) ? "FFMPEG_FAILED" : "RENDER_FAILED", msg);
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
+    const view = await makeViewImage(poster!, path.join(this.dir, "renders", `${sceneId}_${artifactId}.poster.jpg`));
+    return this.saveArtifact({
+      artifactId,
+      kind: "video",
+      sceneId,
+      startFrame: start,
+      endFrame: end,
+      width: s.canvas.width,
+      height: s.canvas.height,
+      durationSeconds: (end - start) / fps,
+      relativePath: this.rel(file),
+      bytes: fs.statSync(file).size,
+      view: { relativePath: `renders/${sceneId}_${artifactId}.poster.jpg`, ...view },
+      ...(o.renderId ? { renderId: o.renderId } : {}),
+      createdAt: now(),
+    });
   }
 
   // ---- artifacts & rendering --------------------------------------------------------------
@@ -850,7 +1092,8 @@ export class VideoWorkspace {
   }
 
   /** Normal preview (debug=false) or debug preview with bounds/ids/pivots/z/attachment overlays. */
-  async renderPreview(sceneId: string, frame: number, opts: { debug?: boolean; debugOptions?: DebugOptions } = {}) {
+  async renderPreview(sceneId: string, frame: number, opts: { debug?: boolean; debugOptions?: DebugOptions; quality?: "draft" | "standard" | "high" } = {}) {
+    if (this.sceneKind(sceneId) === "3d") return this.renderPreview3D(sceneId, frame, opts);
     const engine = await this.engine(sceneId);
     const tmp = path.join(this.dir, "previews", `.tmp_${process.pid}_${Date.now()}.png`);
     try {
@@ -864,6 +1107,20 @@ export class VideoWorkspace {
 
   /** One frame through the same deterministic path as video rendering; also returns its pixel hash. */
   async renderFrame(sceneId: string, frame: number) {
+    if (this.sceneKind(sceneId) === "3d") {
+      const ctx = this.scene3D(sceneId);
+      const tmp = path.join(this.dir, "frames", `.tmp3d_${process.pid}_${Date.now()}.png`);
+      fs.mkdirSync(path.dirname(tmp), { recursive: true });
+      try {
+        await renderFrames3D(ctx, [{ frame, out: tmp }]);
+        const { width, height } = ctx.scene.canvas;
+        const rgba = await this.compose3D(ctx, frame, tmp, false);
+        const rec = await this.imageArtifact("frame", sceneId, frame, await sharp(rgba, { raw: { width, height, channels: 4 } }).png().toBuffer(), "frames");
+        return { ...rec, pixelSha256: crypto.createHash("sha256").update(rgba).digest("hex") };
+      } finally {
+        fs.rmSync(tmp, { force: true });
+      }
+    }
     const engine = await this.engine(sceneId);
     const f = await engine.renderFrame(frame);
     const sha256 = crypto.createHash("sha256").update(f.rgba()).digest("hex");
@@ -876,6 +1133,7 @@ export class VideoWorkspace {
     sceneId: string,
     o: { startFrame?: number; endFrame?: number; crf?: number; audio?: boolean; signal?: AbortSignal; onProgress?: (done: number, total: number) => void; renderId?: string } = {},
   ) {
+    if (this.sceneKind(sceneId) === "3d") return this.renderVideo3D(sceneId, o);
     const engine = await this.engine(sceneId);
     const artifactId = this.nextId("video");
     const file = path.join(this.dir, "renders", `${sceneId}_${artifactId}.mp4`);

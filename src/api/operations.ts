@@ -15,7 +15,8 @@ import {
   KeyframeSchema,
   LayerSchema,
 } from "../scene/schema.js";
-import { validateScene, type ValidationIssue } from "../scene/validate.js";
+import { validateScene, type ValidationIssue, type ValidationResult } from "../scene/validate.js";
+import { validateScene3D, type AssetLookup3D } from "../scene3d/validate.js";
 import { z } from "zod";
 
 // Documents are plain JSON; keep types loose on purpose (the validator is the source of truth).
@@ -27,7 +28,7 @@ export type OpResult<T = void> =
 
 const clone = <T>(v: T): T => structuredClone(v);
 
-const issue = (code: string, path: (string | number)[], message: string, details?: Record<string, unknown>): ValidationIssue => ({
+export const issue = (code: string, path: (string | number)[], message: string, details?: Record<string, unknown>): ValidationIssue => ({
   severity: "error",
   code,
   path,
@@ -37,18 +38,40 @@ const issue = (code: string, path: (string | number)[], message: string, details
 
 const key = (i: ValidationIssue) => `${i.code}|${JSON.stringify(i.path)}|${i.message}`;
 
+// 3D scenes reference model assets that live outside the document (in the workspace). Operations
+// are synchronous, so the caller provides the lookup for the duration of one call.
+let assets3D: AssetLookup3D = () => undefined;
+
+/** Runs `fn` with a model-asset lookup used to validate 3D scene documents. */
+export function withAssets3D<T>(lookup: AssetLookup3D, fn: () => T): T {
+  const prev = assets3D;
+  assets3D = lookup;
+  try {
+    return fn();
+  } finally {
+    assets3D = prev;
+  }
+}
+
+export const is3D = (doc: SceneDoc) => doc?.kind === "3d";
+
+/** Validates a 2D or 3D scene document (3D uses the lookup installed by withAssets3D). */
+export function validateDoc(doc: SceneDoc): Pick<ValidationResult, "ok" | "errors" | "warnings"> {
+  return is3D(doc) ? validateScene3D(doc, assets3D) : validateScene(doc, { checkFiles: false });
+}
+
 /** Apply `mutate` to a copy and keep it only if no new validation errors appear. */
-function transact<T>(doc: SceneDoc, mutate: (d: SceneDoc) => T): OpResult<T> {
-  const before = new Set(validateScene(doc, { checkFiles: false }).errors.map(key));
+export function transact<T>(doc: SceneDoc, mutate: (d: SceneDoc) => T): OpResult<T> {
+  const before = new Set(validateDoc(doc).errors.map(key));
   const next = clone(doc);
   const result = mutate(next);
-  const after = validateScene(next, { checkFiles: false });
+  const after = validateDoc(next);
   const introduced = after.errors.filter((e) => !before.has(key(e)));
   if (introduced.length) return { ok: false, errors: introduced };
   return { ok: true, scene: next, result, warnings: after.warnings };
 }
 
-function zodIssues(err: z.ZodError, prefix: (string | number)[]): ValidationIssue[] {
+export function zodIssues(err: z.ZodError, prefix: (string | number)[]): ValidationIssue[] {
   return err.issues.map((i) =>
     issue(i.code === "unrecognized_keys" ? "UNKNOWN_PROPERTY" : "INVALID_" + i.code.toUpperCase(), [...prefix, ...i.path.map(String)], i.message),
   );
@@ -233,6 +256,13 @@ export interface KeyframeArgs {
   keyframe: Record<string, unknown>;
 }
 
+function targetExists(d: SceneDoc, target: string): boolean {
+  if (is3D(d)) {
+    return target === "camera" || target === "world" || [...(d.objects ?? []), ...(d.lights ?? [])].some((o: any) => o.id === target);
+  }
+  return target === CAMERA_TARGET || layerIdx(d, target) >= 0;
+}
+
 function findTrack(d: SceneDoc, target: string, property: string): number {
   return (d.animations ?? []).findIndex((a: any) => a.target === target && a.property === property);
 }
@@ -241,8 +271,8 @@ function findTrack(d: SceneDoc, target: string, property: string): number {
 export function addKeyframe(doc: SceneDoc, args: KeyframeArgs): OpResult {
   const p = KeyframeSchema.safeParse(args.keyframe);
   if (!p.success) return { ok: false, errors: zodIssues(p.error, ["keyframe"]) };
-  if (args.target !== CAMERA_TARGET && layerIdx(doc, args.target) < 0) {
-    return { ok: false, errors: [issue("MISSING_TARGET", ["target"], `No layer "${args.target}"`)] };
+  if (!targetExists(doc, args.target)) {
+    return { ok: false, errors: [issue("MISSING_TARGET", ["target"], is3D(doc) ? `No object or light "${args.target}"` : `No layer "${args.target}"`)] };
   }
   return transact(doc, (d) => {
     d.animations = d.animations ?? [];

@@ -6,6 +6,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
+import { requireBlender } from "../scene3d/blender.js";
 import { EngineError } from "../errors.js";
 import { checkEntityId, readJson, writeFileAtomic } from "./paths.js";
 import type { ArtifactRecord, VideoWorkspace } from "./workspace.js";
@@ -69,16 +70,17 @@ export class RenderJobs {
   }
 
   async start(sceneId: string, options: RenderJob["options"] = {}): Promise<RenderJob> {
-    const engine = await this.ws.engine(sceneId); // validates the scene and frame range up front
+    const duration = await this.ws.sceneDuration(sceneId); // validates the scene (2D or 3D) up front
     const start = options.startFrame ?? 0;
-    const end = options.endFrame ?? engine.scene.duration;
-    if (!(Number.isInteger(start) && Number.isInteger(end) && start >= 0 && end > start && end <= engine.scene.duration)) {
-      throw new EngineError("INVALID_FRAME", `Invalid frame range [${start}, ${end}) for a ${engine.scene.duration}-frame scene`, {
+    const end = options.endFrame ?? duration;
+    if (!(Number.isInteger(start) && Number.isInteger(end) && start >= 0 && end > start && end <= duration)) {
+      throw new EngineError("INVALID_FRAME", `Invalid frame range [${start}, ${end}) for a ${duration}-frame scene`, {
         startFrame: start,
         endFrame: end,
-        duration: engine.scene.duration,
+        duration,
       });
     }
+    if (this.ws.sceneKind(sceneId) === "3d") requireBlender();
     const renderId = this.ws.nextId("render");
     const job: RenderJob = {
       renderId,
