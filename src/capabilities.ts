@@ -14,6 +14,17 @@ import { trimTransparent } from "./assets/trim.js";
 import { buildDebugOverlay } from "./engine/debugOverlay.js";
 import { measureResolvedLayout } from "./engine/layout.js";
 import { SkiaRenderer } from "./render/skia.js";
+import { blenderInfo } from "./scene3d/blender.js";
+import {
+  CAMERA3D_PROPERTIES,
+  LIGHT3D_PROPERTIES,
+  Light3DSchema,
+  OBJECT3D_PROPERTIES,
+  Object3DSchema,
+  PrimitiveSchema,
+  Render3DSchema,
+  WORLD3D_PROPERTIES,
+} from "./scene3d/schema.js";
 import {
   CAMERA_PROPERTIES,
   CanvasSchema,
@@ -118,6 +129,51 @@ export function engineCapabilities() {
       audioMux: "aac",
       deterministic: true,
     },
+    threeD: capabilities3D(),
+  };
+}
+
+/** 3D section: conventions, object model, animatable properties (from the 3D tables) and backend. */
+export function capabilities3D() {
+  const b = blenderInfo();
+  return {
+    available: b.available,
+    backend: { name: "blender", version: b.version, ...(b.available ? {} : { problem: b.error, install: "see docs/3D.md" }) },
+    sceneKind: "create with scene_create kind:'3d'; 2D scenes are unchanged",
+    coordinateSystem: {
+      units: "metres",
+      axes: "right-handed, +y up, +x right, +z toward the default camera (glTF convention)",
+      modelFront: "+z (rotation.y = 90 faces +x, 180 faces away from the camera)",
+      rotation: "degrees; x applied first, then y, then z, about fixed axes",
+      camera: "looks along its -z; rotation (0,0,0) looks at -z with +y up; lookAt (point or object/bone) overrides rotation; fov = vertical degrees",
+      screen: "measurements give screen pixels with origin top-left like 2D, plus depth in metres",
+    },
+    objects: {
+      sources: ["asset (GLB/glTF model)", "primitive: " + PrimitiveSchema.shape.shape.options.join(" | "), "empty group (neither)"],
+      fields: Object.keys(Object3DSchema.shape),
+      parenting: "parent = transform inheritance",
+      attachments: "attach {object, bone|socket, follow full|position}: follows the bone through animation; offsets are in the target's own space at its rest pose",
+      sockets: ["rightHand", "leftHand", "head", "neck", "spine", "chest", "hips", "root", "rightFoot", "leftFoot", "... (detected from joint names; asset_inspect lists a model's sockets)"],
+      clips: "clip + a step 'clip' track select animation clips; clipSpeed/clipLoop/clipOffset; clipBlend frames crossfade between clips",
+      morphTargets: "morphs {name: 0..1} and 'morph.<name>' tracks (face shapes such as smile, blink, mouth_open when the model has them)",
+    },
+    lights: { types: Light3DSchema.shape.type.options, fields: Object.keys(Light3DSchema.shape) },
+    animation: {
+      objectProperties: { ...describeProps(OBJECT3D_PROPERTIES), "morph.<name>": { type: "number", interpolation: "continuous", min: 0, max: 1 } },
+      cameraProperties: describeProps(CAMERA3D_PROPERTIES),
+      lightProperties: describeProps(LIGHT3D_PROPERTIES),
+      worldProperties: describeProps(WORLD3D_PROPERTIES),
+      targets: "object or light id, 'camera', 'world'",
+      sameTimelineAs2D: true,
+    },
+    render: {
+      quality: Render3DSchema.shape.quality.unwrap().options,
+      engines: "eevee (fast raster, needs EGL/OpenGL) when available, otherwise cycles (CPU path tracer)",
+      overlay2D: "overlay {scene: <2D scene id>} composites a 2D scene (transparent background) over every 3D frame",
+      audio: true,
+      transparentBackground: true,
+    },
+    inspection: "measure_layout on a 3D scene: world transform, world bounds, screen bounds/onScreen/visibleFraction, camera-space depth, bone/socket world+screen positions, active clips, asset id",
   };
 }
 

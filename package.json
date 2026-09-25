@@ -13,11 +13,13 @@
     "example:feedback": "tsx examples/kitchen/feedback-loop.ts",
     "example:all": "npm run example:assets && tsx examples/kitchen/build-scene.ts && npm run example:feedback && npm run example:render",
     "playground": "tsx examples/playground/generate-assets.ts && tsx examples/playground/process-assets.ts && tsx examples/playground/build-scene.ts && tsx src/cli.ts video examples/playground/scene.json examples/playground/out/playground.mp4",
-    "build:mcp": "esbuild mcp/src/main.ts --bundle --platform=node --format=esm --target=node20 --outfile=dist/video-engine-mcp.mjs --external:@napi-rs/canvas --external:sharp --external:ffmpeg-static --banner:js=\"import{createRequire as __cr}from\\\"node:module\\\";const require=__cr(import.meta.url);\"",
+    "build:mcp": "esbuild mcp/src/main.ts --bundle --platform=node --format=esm --target=node20 --outfile=dist/video-engine-mcp.mjs --external:@napi-rs/canvas --external:sharp --external:ffmpeg-static --banner:js=\"import{createRequire as __cr}from\\\"node:module\\\";const require=__cr(import.meta.url);\" && node -e \"require('fs').mkdirSync('dist/blender',{recursive:true});require('fs').copyFileSync('src/scene3d/blender/engine3d.py','dist/blender/engine3d.py')\"",
     "mcp": "node dist/video-engine-mcp.mjs",
     "mcp:dev": "tsx mcp/src/main.ts",
     "test:mcp": "npm run build:mcp && vitest run tests/mcp",
-    "test:all": "npm test && npm run test:mcp"
+    "test:all": "npm test && npm run test:mcp",
+    "assets:3d": "blender -b --factory-startup -noaudio --python assets/3d/src/build_assets.py -- assets/3d",
+    "example:3d": "tsx examples/3d-proof/run.ts"
   },
   "repository": {
     "type": "git",
