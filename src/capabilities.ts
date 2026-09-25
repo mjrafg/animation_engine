@@ -15,6 +15,9 @@ import { buildDebugOverlay } from "./engine/debugOverlay.js";
 import { measureResolvedLayout } from "./engine/layout.js";
 import { SkiaRenderer } from "./render/skia.js";
 import { blenderInfo } from "./scene3d/blender.js";
+import { COMPOSITION_RULES } from "./characters/capabilities.js";
+import { KIND_CHANNEL } from "./characters/plan.js";
+import { VISEMES } from "./characters/schema.js";
 import {
   CAMERA3D_PROPERTIES,
   LIGHT3D_PROPERTIES,
@@ -130,6 +133,16 @@ export function engineCapabilities() {
       deterministic: true,
     },
     threeD: capabilities3D(),
+    characters: {
+      runtime: true,
+      summary: "Prepared characters (2D or 3D) are imported once and driven by high-level actions (what, when, how long, where); the runtime compiles them onto the normal timeline.",
+      actionKinds: Object.keys(KIND_CHANNEL),
+      channels: [...new Set(Object.values(KIND_CHANNEL))],
+      compositionRules: COMPOSITION_RULES,
+      visemes: [...VISEMES],
+      speechInput: "provider-neutral: visemes | character alignment | word alignment | none (deterministic generic talking)",
+      tools: ["character_list", "character_import", "character_inspect", "character_add", "character_update", "character_remove", "character_actions", "character_timeline", "speech_timing_save"],
+    },
   };
 }
 

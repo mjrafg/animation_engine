@@ -19,6 +19,7 @@ import {
   type SpeechTiming,
 } from "./schema.js";
 import { z } from "zod";
+import { EngineError } from "../errors.js";
 
 export interface CharacterContext {
   /** Prepared character definition (asset names already mapped to workspace asset ids). */
@@ -291,3 +292,45 @@ export function recompileCharacters(doc: SceneDoc, ctx: CharacterContext, ids?: 
 
 /** Validates the prop list shape (used by tools before updateCharacter). */
 export const PropsSchema = z.array(CharacterPropSchema);
+
+// ---- inspection ---------------------------------------------------------------------------------
+
+/**
+ * The resolved schedule of each character instance (from its stored actions): per action the
+ * channel, seconds and frames, derived values (walk path and speed, speech source), what the
+ * runtime generated for it, and whether the prepared definition changed since compilation.
+ */
+export function characterTimeline(doc: SceneDoc, ctx: CharacterContext, only?: string) {
+  const list = instances(doc).filter((c) => !only || c.id === only);
+  if (only && !list.length) {
+    throw new EngineError("CHARACTER_NOT_FOUND", `No character instance "${only}" in this scene`, { instances: instances(doc).map((c) => c.id) });
+  }
+  return list.map((inst) => {
+    const entry = ctx.definition(inst.character);
+    const generatedTracks = (doc.animations ?? []).filter((a: any) => a.owner === inst.id);
+    const generated = {
+      [is3D(doc) ? "objects" : "layers"]: (is3D(doc) ? doc.objects ?? [] : doc.layers ?? []).filter((x: any) => x.meta?.character === inst.id).map((x: any) => x.id),
+      tracks: generatedTracks.length,
+      keyframes: generatedTracks.reduce((s: number, a: any) => s + a.keyframes.length, 0),
+      audio: (doc.audio ?? []).filter((a: any) => a.owner === inst.id).length,
+    };
+    if (!entry) return { id: inst.id, character: inst.character, error: "CHARACTER_NOT_FOUND", actions: inst.actions ?? [], generated };
+    const r = planCharacter(inst, entry.def, { fps: doc.canvas.fps, frames: doc.duration, speech: ctx.speech?.bind(ctx) });
+    const resolved = r.plan?.resolved ?? {};
+    return {
+      id: inst.id,
+      character: inst.character,
+      kind: entry.def.kind,
+      stale: inst.definitionSha !== undefined && inst.definitionSha !== entry.sha,
+      placement: entry.def.kind === "2d" ? { x: inst.x ?? 0, y: inst.y ?? 0, scale: inst.scale ?? 1, facing: inst.facing ?? entry.def.defaults.facing ?? "right", z: inst.z ?? 10 } : { position: inst.position ?? { x: 0, y: 0, z: 0 }, scale: inst.scale ?? 1, facing: inst.facing ?? entry.def.defaults.facing ?? "camera" },
+      props: inst.props ?? [],
+      actions: (inst.actions ?? []).map((a) => {
+        const { speech, ...rest } = a;
+        return { ...rest, ...(speech && typeof speech === "object" ? { speech: `inline (${speech.visemes ? "visemes" : speech.characters ? "characters" : speech.words ? "words" : "no timing"})` } : speech ? { speech } : {}), resolved: resolved[a.id ?? ""] ?? null };
+      }),
+      blinks: r.plan ? r.plan.blinks.map((b) => +(b.f0 / doc.canvas.fps).toFixed(2)) : [],
+      generated,
+      issues: [...r.errors, ...r.warnings].map(({ severity, code, message }) => ({ severity, code, message })),
+    };
+  });
+}
