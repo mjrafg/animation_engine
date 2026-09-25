@@ -3,3 +3,5 @@ out/tmp/
 *.log
 examples/kitchen/out/.tmp/
 dist/
+__pycache__/
+*.pyc
