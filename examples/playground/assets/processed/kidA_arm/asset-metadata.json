@@ -1,0 +1,70 @@
+{
+  "ok": true,
+  "source": "../../originals/kidA_arm.png",
+  "sourceSha256": "ea0ad46f5e05f578b8548329958f585fc4176ac5518aa5803b53e9d8338dffe6",
+  "path": "native-alpha",
+  "files": {
+    "original": "original.png",
+    "backgroundMask": "background-mask.png",
+    "untrimmed": "untrimmed-transparent.png",
+    "processed": "processed-transparent.png",
+    "metadata": "asset-metadata.json"
+  },
+  "alpha": {
+    "hasAlphaChannel": true,
+    "borderTransparentFraction": 1,
+    "transparentFraction": 0.6579,
+    "partialFraction": 0.0189,
+    "opaqueFraction": 0.3233
+  },
+  "components": [
+    {
+      "id": 1,
+      "pixelCount": 8201,
+      "bounds": {
+        "left": 25,
+        "top": 21,
+        "right": 75,
+        "bottom": 215
+      },
+      "centroid": {
+        "x": 49.5,
+        "y": 115
+      },
+      "share": 1
+    }
+  ],
+  "removedComponents": [],
+  "issues": [],
+  "trim": {
+    "originalWidth": 100,
+    "originalHeight": 240,
+    "trimmedWidth": 54,
+    "trimmedHeight": 198,
+    "offsetX": 23,
+    "offsetY": 19,
+    "visibleBounds": {
+      "left": 25,
+      "top": 21,
+      "right": 75,
+      "bottom": 215
+    },
+    "alphaThreshold": 4,
+    "padding": 2,
+    "empty": false
+  },
+  "size": {
+    "width": 54,
+    "height": 198
+  },
+  "attachmentPoints": {
+    "hand": {
+      "x": 0.5,
+      "y": 0.8737
+    },
+    "__pivot": {
+      "x": 0.5,
+      "y": 0.1263
+    }
+  }
+}

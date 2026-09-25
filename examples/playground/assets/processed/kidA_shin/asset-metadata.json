@@ -1,0 +1,70 @@
+{
+  "ok": true,
+  "source": "../../originals/kidA_shin.png",
+  "sourceSha256": "6adf3c7930255df1e5c14c1bf3b57ae190e87698d1a925869f3e180788f42527",
+  "path": "native-alpha",
+  "files": {
+    "original": "original.png",
+    "backgroundMask": "background-mask.png",
+    "untrimmed": "untrimmed-transparent.png",
+    "processed": "processed-transparent.png",
+    "metadata": "asset-metadata.json"
+  },
+  "alpha": {
+    "hasAlphaChannel": true,
+    "borderTransparentFraction": 1,
+    "transparentFraction": 0.7038,
+    "partialFraction": 0.0153,
+    "opaqueFraction": 0.2809
+  },
+  "components": [
+    {
+      "id": 1,
+      "pixelCount": 8819,
+      "bounds": {
+        "left": 29,
+        "top": 21,
+        "right": 127,
+        "bottom": 173
+      },
+      "centroid": {
+        "x": 63.8,
+        "y": 108.3
+      },
+      "share": 1
+    }
+  ],
+  "removedComponents": [],
+  "issues": [],
+  "trim": {
+    "originalWidth": 152,
+    "originalHeight": 196,
+    "trimmedWidth": 102,
+    "trimmedHeight": 156,
+    "offsetX": 27,
+    "offsetY": 19,
+    "visibleBounds": {
+      "left": 29,
+      "top": 21,
+      "right": 127,
+      "bottom": 173
+    },
+    "alphaThreshold": 4,
+    "padding": 2,
+    "empty": false
+  },
+  "size": {
+    "width": 102,
+    "height": 156
+  },
+  "attachmentPoints": {
+    "sole": {
+      "x": 0.3627,
+      "y": 0.9679
+    },
+    "__pivot": {
+      "x": 0.3039,
+      "y": 0.109
+    }
+  }
+}

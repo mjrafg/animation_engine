@@ -25,6 +25,7 @@ npm test                       # 70 automated tests
 npm run typecheck
 
 npm run example:all            # generate + process assets, build scene, feedback loop, render
+npm run playground             # second example: two kids on a seesaw (examples/playground, 10 s MP4)
 # or step by step:
 npm run example:assets         # examples/kitchen/assets/{originals,processed}
 npx tsx examples/kitchen/build-scene.ts

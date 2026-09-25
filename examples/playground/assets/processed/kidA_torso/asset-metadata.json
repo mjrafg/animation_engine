@@ -1,0 +1,74 @@
+{
+  "ok": true,
+  "source": "../../originals/kidA_torso.png",
+  "sourceSha256": "49b3a3a8360f976406489d04dc5febf66fcde9331d7c2746d6566cb4a312200b",
+  "path": "native-alpha",
+  "files": {
+    "original": "original.png",
+    "backgroundMask": "background-mask.png",
+    "untrimmed": "untrimmed-transparent.png",
+    "processed": "processed-transparent.png",
+    "metadata": "asset-metadata.json"
+  },
+  "alpha": {
+    "hasAlphaChannel": true,
+    "borderTransparentFraction": 1,
+    "transparentFraction": 0.5135,
+    "partialFraction": 0.0128,
+    "opaqueFraction": 0.4737
+  },
+  "components": [
+    {
+      "id": 1,
+      "pixelCount": 20535,
+      "bounds": {
+        "left": 29,
+        "top": 25,
+        "right": 148,
+        "bottom": 215
+      },
+      "centroid": {
+        "x": 87.8,
+        "y": 121
+      },
+      "share": 1
+    }
+  ],
+  "removedComponents": [],
+  "issues": [],
+  "trim": {
+    "originalWidth": 176,
+    "originalHeight": 240,
+    "trimmedWidth": 123,
+    "trimmedHeight": 194,
+    "offsetX": 27,
+    "offsetY": 23,
+    "visibleBounds": {
+      "left": 29,
+      "top": 25,
+      "right": 148,
+      "bottom": 215
+    },
+    "alphaThreshold": 4,
+    "padding": 2,
+    "empty": false
+  },
+  "size": {
+    "width": 123,
+    "height": 194
+  },
+  "attachmentPoints": {
+    "neck": {
+      "x": 0.561,
+      "y": 0.0464
+    },
+    "shoulder": {
+      "x": 0.561,
+      "y": 0.1701
+    },
+    "__pivot": {
+      "x": 0.4959,
+      "y": 0.9124
+    }
+  }
+}

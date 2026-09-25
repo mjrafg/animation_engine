@@ -1,0 +1,116 @@
+{
+  "ok": true,
+  "source": "../../originals/fulcrum.png",
+  "sourceSha256": "61a71bb8181adcad247577d37f8b8c1fee85b13088633f4a850b7f85bdaa8f7e",
+  "path": "color-key",
+  "files": {
+    "original": "original.png",
+    "backgroundMask": "background-mask.png",
+    "untrimmed": "untrimmed-transparent.png",
+    "processed": "processed-transparent.png",
+    "metadata": "asset-metadata.json"
+  },
+  "alpha": {
+    "hasAlphaChannel": true,
+    "borderTransparentFraction": 0,
+    "transparentFraction": 0,
+    "partialFraction": 0,
+    "opaqueFraction": 1
+  },
+  "components": [
+    {
+      "id": 1,
+      "pixelCount": 43529,
+      "bounds": {
+        "left": 57,
+        "top": 65,
+        "right": 403,
+        "bottom": 323
+      },
+      "centroid": {
+        "x": 229.5,
+        "y": 236.2
+      },
+      "share": 1
+    }
+  ],
+  "removedComponents": [],
+  "issues": [],
+  "detection": {
+    "ok": true,
+    "backgroundDetected": true,
+    "detectedColor": {
+      "r": 224,
+      "g": 32,
+      "b": 200
+    },
+    "detectedColorHex": "#e020c8",
+    "borderUniformity": 1,
+    "sideUniformity": {
+      "top": 1,
+      "right": 1,
+      "bottom": 1,
+      "left": 1
+    },
+    "sideColorSpread": 0,
+    "noise": 1.02,
+    "confidence": 1,
+    "sampledPixels": 19584,
+    "issues": [],
+    "options": {
+      "borderSampleSize": 12,
+      "uniformityTolerance": 12,
+      "minUniformity": 0.9,
+      "minSideUniformity": 0.97
+    }
+  },
+  "removal": {
+    "holes": [],
+    "stats": {
+      "removedPixels": 131271,
+      "edgeBandPixels": 3610,
+      "partialAlphaPixels": 856,
+      "preservedEnclosedPixels": 0
+    },
+    "options": {
+      "colorTolerance": 18,
+      "edgeSoftness": 3,
+      "despill": true,
+      "minContrast": 30,
+      "residualTolerance": 0.1,
+      "removeHoles": [],
+      "minHoleSize": 25
+    }
+  },
+  "trim": {
+    "originalWidth": 460,
+    "originalHeight": 380,
+    "trimmedWidth": 350,
+    "trimmedHeight": 262,
+    "offsetX": 55,
+    "offsetY": 63,
+    "visibleBounds": {
+      "left": 57,
+      "top": 65,
+      "right": 403,
+      "bottom": 323
+    },
+    "alphaThreshold": 4,
+    "padding": 2,
+    "empty": false
+  },
+  "size": {
+    "width": 350,
+    "height": 262
+  },
+  "attachmentPoints": {
+    "axle": {
+      "x": 0.5,
+      "y": 0.0954
+    },
+    "__pivot": {
+      "x": 0.5,
+      "y": 0.9809
+    }
+  }
+}

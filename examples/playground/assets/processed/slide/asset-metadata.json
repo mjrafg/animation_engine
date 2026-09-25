@@ -1,0 +1,203 @@
+{
+  "ok": true,
+  "source": "../../originals/slide.png",
+  "sourceSha256": "8066bcd0dcf2fcd535aa2f26284a4f0500c09c563dd36fa54f59757af374296b",
+  "path": "color-key",
+  "files": {
+    "original": "original.png",
+    "backgroundMask": "background-mask.png",
+    "untrimmed": "untrimmed-transparent.png",
+    "processed": "processed-transparent.png",
+    "metadata": "asset-metadata.json"
+  },
+  "alpha": {
+    "hasAlphaChannel": true,
+    "borderTransparentFraction": 0,
+    "transparentFraction": 0,
+    "partialFraction": 0,
+    "opaqueFraction": 1
+  },
+  "components": [
+    {
+      "id": 1,
+      "pixelCount": 72019,
+      "bounds": {
+        "left": 132,
+        "top": 157,
+        "right": 935,
+        "bottom": 720
+      },
+      "centroid": {
+        "x": 480.3,
+        "y": 430.6
+      },
+      "share": 1
+    }
+  ],
+  "removedComponents": [],
+  "issues": [],
+  "detection": {
+    "ok": true,
+    "backgroundDetected": true,
+    "detectedColor": {
+      "r": 26,
+      "g": 143,
+      "b": 227
+    },
+    "detectedColorHex": "#1a8fe3",
+    "borderUniformity": 1,
+    "sideUniformity": {
+      "top": 1,
+      "right": 1,
+      "bottom": 1,
+      "left": 1
+    },
+    "sideColorSpread": 0,
+    "noise": 1.16,
+    "confidence": 1,
+    "sampledPixels": 42144,
+    "issues": [],
+    "options": {
+      "borderSampleSize": 12,
+      "uniformityTolerance": 12,
+      "minUniformity": 0.9,
+      "minSideUniformity": 0.97
+    }
+  },
+  "removal": {
+    "holes": [
+      {
+        "id": 1,
+        "pixelCount": 4196,
+        "bounds": {
+          "left": 192,
+          "top": 413,
+          "right": 268,
+          "bottom": 479
+        },
+        "centroid": {
+          "x": 229.5,
+          "y": 445.5
+        },
+        "removed": true
+      },
+      {
+        "id": 2,
+        "pixelCount": 4195,
+        "bounds": {
+          "left": 206,
+          "top": 337,
+          "right": 282,
+          "bottom": 403
+        },
+        "centroid": {
+          "x": 243.8,
+          "y": 369.5
+        },
+        "removed": true
+      },
+      {
+        "id": 3,
+        "pixelCount": 4195,
+        "bounds": {
+          "left": 178,
+          "top": 489,
+          "right": 254,
+          "bottom": 555
+        },
+        "centroid": {
+          "x": 215.2,
+          "y": 521.5
+        },
+        "removed": true
+      },
+      {
+        "id": 4,
+        "pixelCount": 4193,
+        "bounds": {
+          "left": 221,
+          "top": 261,
+          "right": 296,
+          "bottom": 327
+        },
+        "centroid": {
+          "x": 258.1,
+          "y": 293.5
+        },
+        "removed": true
+      },
+      {
+        "id": 5,
+        "pixelCount": 4193,
+        "bounds": {
+          "left": 164,
+          "top": 565,
+          "right": 239,
+          "bottom": 631
+        },
+        "centroid": {
+          "x": 200.9,
+          "y": 597.5
+        },
+        "removed": true
+      },
+      {
+        "id": 6,
+        "pixelCount": 3051,
+        "bounds": {
+          "left": 235,
+          "top": 203,
+          "right": 307,
+          "bottom": 251
+        },
+        "centroid": {
+          "x": 270.7,
+          "y": 226.5
+        },
+        "removed": true
+      }
+    ],
+    "stats": {
+      "removedPixels": 707981,
+      "edgeBandPixels": 17010,
+      "partialAlphaPixels": 2506,
+      "preservedEnclosedPixels": 0
+    },
+    "options": {
+      "colorTolerance": 18,
+      "edgeSoftness": 3,
+      "despill": true,
+      "minContrast": 30,
+      "residualTolerance": 0.1,
+      "removeHoles": "all",
+      "minHoleSize": 25
+    }
+  },
+  "trim": {
+    "originalWidth": 1000,
+    "originalHeight": 780,
+    "trimmedWidth": 807,
+    "trimmedHeight": 567,
+    "offsetX": 130,
+    "offsetY": 155,
+    "visibleBounds": {
+      "left": 132,
+      "top": 157,
+      "right": 935,
+      "bottom": 720
+    },
+    "alphaThreshold": 4,
+    "padding": 2,
+    "empty": false
+  },
+  "size": {
+    "width": 807,
+    "height": 567
+  },
+  "attachmentPoints": {
+    "__pivot": {
+      "x": 0.4585,
+      "y": 0.9965
+    }
+  }
+}

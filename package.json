@@ -11,7 +11,8 @@
     "example:render": "tsx examples/kitchen/render.ts",
     "schema": "tsx scripts/export-schema.ts",
     "example:feedback": "tsx examples/kitchen/feedback-loop.ts",
-    "example:all": "npm run example:assets && tsx examples/kitchen/build-scene.ts && npm run example:feedback && npm run example:render"
+    "example:all": "npm run example:assets && tsx examples/kitchen/build-scene.ts && npm run example:feedback && npm run example:render",
+    "playground": "tsx examples/playground/generate-assets.ts && tsx examples/playground/process-assets.ts && tsx examples/playground/build-scene.ts && tsx src/cli.ts video examples/playground/scene.json examples/playground/out/playground.mp4"
   },
   "repository": {
     "type": "git",

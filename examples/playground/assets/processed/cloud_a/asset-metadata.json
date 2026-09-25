@@ -1,0 +1,61 @@
+{
+  "ok": true,
+  "source": "../../originals/cloud_a.png",
+  "sourceSha256": "b9d5fe916dee0a65b00656cfe7266acb4ac18cd538e721a7767087722be5d32c",
+  "path": "native-alpha",
+  "files": {
+    "original": "original.png",
+    "backgroundMask": "background-mask.png",
+    "untrimmed": "untrimmed-transparent.png",
+    "processed": "processed-transparent.png",
+    "metadata": "asset-metadata.json"
+  },
+  "alpha": {
+    "hasAlphaChannel": true,
+    "borderTransparentFraction": 1,
+    "transparentFraction": 0.5487,
+    "partialFraction": 0.2905,
+    "opaqueFraction": 0.1608
+  },
+  "components": [
+    {
+      "id": 1,
+      "pixelCount": 63833,
+      "bounds": {
+        "left": 68,
+        "top": 28,
+        "right": 480,
+        "bottom": 252
+      },
+      "centroid": {
+        "x": 265.6,
+        "y": 150.8
+      },
+      "share": 1
+    }
+  ],
+  "removedComponents": [],
+  "issues": [],
+  "trim": {
+    "originalWidth": 528,
+    "originalHeight": 268,
+    "trimmedWidth": 416,
+    "trimmedHeight": 228,
+    "offsetX": 66,
+    "offsetY": 26,
+    "visibleBounds": {
+      "left": 68,
+      "top": 28,
+      "right": 480,
+      "bottom": 252
+    },
+    "alphaThreshold": 4,
+    "padding": 2,
+    "empty": false
+  },
+  "size": {
+    "width": 416,
+    "height": 228
+  },
+  "attachmentPoints": {}
+}

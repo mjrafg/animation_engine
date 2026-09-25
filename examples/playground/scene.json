@@ -1,0 +1,2492 @@
+{
+  "version": 1,
+  "name": "playground-seesaw",
+  "canvas": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "background": "#000000"
+  },
+  "duration": 300,
+  "assets": {
+    "park_bg": {
+      "src": "assets/originals/park_bg.png"
+    },
+    "plank": {
+      "src": "assets/processed/plank/processed-transparent.png",
+      "attachmentPoints": {
+        "seat_left": {
+          "x": 0.0752,
+          "y": 0.0714
+        },
+        "seat_right": {
+          "x": 0.9248,
+          "y": 0.0714
+        },
+        "handle_left": {
+          "x": 0.1797,
+          "y": 0.3571
+        },
+        "handle_right": {
+          "x": 0.8203,
+          "y": 0.3571
+        }
+      }
+    },
+    "fulcrum": {
+      "src": "assets/processed/fulcrum/processed-transparent.png",
+      "attachmentPoints": {
+        "axle": {
+          "x": 0.5,
+          "y": 0.0954
+        }
+      }
+    },
+    "handle": {
+      "src": "assets/processed/handle/processed-transparent.png",
+      "attachmentPoints": {
+        "grip": {
+          "x": 0.5,
+          "y": 0.1176
+        }
+      }
+    },
+    "swing_frame": {
+      "src": "assets/processed/swing_frame/processed-transparent.png",
+      "attachmentPoints": {
+        "swing_1": {
+          "x": 0.3438,
+          "y": 0.0484
+        },
+        "swing_2": {
+          "x": 0.6563,
+          "y": 0.0484
+        }
+      }
+    },
+    "swing": {
+      "src": "assets/processed/swing/processed-transparent.png"
+    },
+    "slide": {
+      "src": "assets/processed/slide/processed-transparent.png"
+    },
+    "ball": {
+      "src": "assets/processed/ball/processed-transparent.png"
+    },
+    "cloud_a": {
+      "src": "assets/processed/cloud_a/processed-transparent.png"
+    },
+    "cloud_b": {
+      "src": "assets/processed/cloud_b/processed-transparent.png"
+    },
+    "bird_up": {
+      "src": "assets/processed/bird_up/processed-transparent.png"
+    },
+    "bird_down": {
+      "src": "assets/processed/bird_down/processed-transparent.png"
+    },
+    "flowers": {
+      "src": "assets/processed/flowers/processed-transparent.png"
+    },
+    "kidA_torso": {
+      "src": "assets/processed/kidA_torso/processed-transparent.png",
+      "attachmentPoints": {
+        "neck": {
+          "x": 0.561,
+          "y": 0.0464
+        },
+        "shoulder": {
+          "x": 0.561,
+          "y": 0.1701
+        }
+      }
+    },
+    "kidA_head": {
+      "src": "assets/processed/kidA_head/processed-transparent.png",
+      "attachmentPoints": {
+        "mouth": {
+          "x": 0.8058,
+          "y": 0.6754
+        }
+      }
+    },
+    "kidA_arm": {
+      "src": "assets/processed/kidA_arm/processed-transparent.png",
+      "attachmentPoints": {
+        "hand": {
+          "x": 0.5,
+          "y": 0.8737
+        }
+      }
+    },
+    "kidA_thigh": {
+      "src": "assets/processed/kidA_thigh/processed-transparent.png",
+      "attachmentPoints": {
+        "knee": {
+          "x": 0.5,
+          "y": 0.8603
+        }
+      }
+    },
+    "kidA_shin": {
+      "src": "assets/processed/kidA_shin/processed-transparent.png",
+      "attachmentPoints": {
+        "sole": {
+          "x": 0.3627,
+          "y": 0.9679
+        }
+      }
+    },
+    "kidB_torso": {
+      "src": "assets/processed/kidB_torso/processed-transparent.png",
+      "attachmentPoints": {
+        "neck": {
+          "x": 0.561,
+          "y": 0.0464
+        },
+        "shoulder": {
+          "x": 0.561,
+          "y": 0.1701
+        }
+      }
+    },
+    "kidB_head": {
+      "src": "assets/processed/kidB_head/processed-transparent.png",
+      "attachmentPoints": {
+        "mouth": {
+          "x": 0.7696,
+          "y": 0.7016
+        }
+      }
+    },
+    "kidB_arm": {
+      "src": "assets/processed/kidB_arm/processed-transparent.png",
+      "attachmentPoints": {
+        "hand": {
+          "x": 0.5,
+          "y": 0.8737
+        }
+      }
+    },
+    "kidB_thigh": {
+      "src": "assets/processed/kidB_thigh/processed-transparent.png",
+      "attachmentPoints": {
+        "knee": {
+          "x": 0.5,
+          "y": 0.8603
+        }
+      }
+    },
+    "kidB_shin": {
+      "src": "assets/processed/kidB_shin/processed-transparent.png",
+      "attachmentPoints": {
+        "sole": {
+          "x": 0.3627,
+          "y": 0.9679
+        }
+      }
+    },
+    "mouth_smile": {
+      "src": "assets/processed/mouth_smile/processed-transparent.png"
+    },
+    "mouth_laugh": {
+      "src": "assets/processed/mouth_laugh/processed-transparent.png"
+    },
+    "mouth_o": {
+      "src": "assets/processed/mouth_o/processed-transparent.png"
+    }
+  },
+  "layers": [
+    {
+      "id": "park",
+      "asset": "park_bg",
+      "x": 960,
+      "y": 560,
+      "z": 0
+    },
+    {
+      "id": "cloud_a",
+      "asset": "cloud_a",
+      "width": 208,
+      "height": 114,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "x": 330,
+      "y": 150,
+      "z": 1
+    },
+    {
+      "id": "cloud_b",
+      "asset": "cloud_b",
+      "width": 143,
+      "height": 78,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "x": 1350,
+      "y": 250,
+      "z": 1
+    },
+    {
+      "id": "bird",
+      "asset": "bird_up",
+      "scaleX": 0.5,
+      "scaleY": 0.5,
+      "x": -80,
+      "y": 300,
+      "z": 2
+    },
+    {
+      "id": "swing_frame",
+      "asset": "swing_frame",
+      "width": 576,
+      "height": 382.5,
+      "anchorX": 0.5,
+      "anchorY": 0.9895,
+      "x": 360,
+      "y": 745,
+      "z": 5
+    },
+    {
+      "id": "swing_1",
+      "parent": "swing_frame",
+      "parentPoint": "swing_1",
+      "asset": "swing",
+      "width": 85,
+      "height": 249,
+      "anchorX": 0.5,
+      "anchorY": 0.01,
+      "z": 4
+    },
+    {
+      "id": "swing_2",
+      "parent": "swing_frame",
+      "parentPoint": "swing_2",
+      "asset": "swing",
+      "width": 85,
+      "height": 249,
+      "anchorX": 0.5,
+      "anchorY": 0.01,
+      "z": 4
+    },
+    {
+      "id": "slide",
+      "asset": "slide",
+      "width": 403.5,
+      "height": 283.5,
+      "anchorX": 0.4585,
+      "anchorY": 0.9965,
+      "x": 1650,
+      "y": 748,
+      "z": 5
+    },
+    {
+      "id": "ball",
+      "asset": "ball",
+      "width": 71,
+      "height": 71,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "x": 1530,
+      "y": 985,
+      "z": 40
+    },
+    {
+      "id": "flowers_l",
+      "asset": "flowers",
+      "width": 222,
+      "height": 84,
+      "anchorX": 0.5,
+      "anchorY": 0.9643,
+      "x": 150,
+      "y": 1090,
+      "scaleX": 1.3,
+      "scaleY": 1.3,
+      "z": 60
+    },
+    {
+      "id": "flowers_r",
+      "asset": "flowers",
+      "width": 222,
+      "height": 84,
+      "anchorX": 0.5,
+      "anchorY": 0.9643,
+      "x": 1800,
+      "y": 1092,
+      "scaleX": -1.2,
+      "scaleY": 1.2,
+      "z": 60
+    },
+    {
+      "id": "fulcrum",
+      "asset": "fulcrum",
+      "width": 175,
+      "height": 131,
+      "anchorX": 0.5,
+      "anchorY": 0.9809,
+      "x": 960,
+      "y": 940,
+      "scaleX": 1.35,
+      "scaleY": 1.35,
+      "z": 21
+    },
+    {
+      "id": "plank",
+      "parent": "fulcrum",
+      "parentPoint": "axle",
+      "asset": "plank",
+      "width": 765,
+      "height": 35,
+      "anchorX": 0.5,
+      "anchorY": 0.6429,
+      "z": 22
+    },
+    {
+      "id": "handle_l",
+      "parent": "plank",
+      "parentPoint": "handle_left",
+      "asset": "handle",
+      "width": 30,
+      "height": 68,
+      "anchorX": 0.5,
+      "anchorY": 0.9412,
+      "z": 23
+    },
+    {
+      "id": "handle_r",
+      "parent": "plank",
+      "parentPoint": "handle_right",
+      "asset": "handle",
+      "width": 30,
+      "height": 68,
+      "anchorX": 0.5,
+      "anchorY": 0.9412,
+      "z": 23
+    },
+    {
+      "id": "kidA",
+      "parent": "plank",
+      "parentPoint": "seat_left",
+      "x": -560,
+      "y": 38,
+      "scaleX": 1,
+      "z": 0
+    },
+    {
+      "id": "kidA_torso",
+      "parent": "kidA",
+      "asset": "kidA_torso",
+      "width": 61.5,
+      "height": 97,
+      "anchorX": 0.4959,
+      "anchorY": 0.9124,
+      "z": 24
+    },
+    {
+      "id": "kidA_head",
+      "parent": "kidA_torso",
+      "parentPoint": "neck",
+      "asset": "kidA_head",
+      "width": 121,
+      "height": 114,
+      "anchorX": 0.5083,
+      "anchorY": 0.9737,
+      "y": 6,
+      "z": 25
+    },
+    {
+      "id": "kidA_mouth",
+      "parent": "kidA_head",
+      "parentPoint": "mouth",
+      "asset": "mouth_smile",
+      "scaleX": 0.5,
+      "scaleY": 0.5,
+      "z": 26
+    },
+    {
+      "id": "kidA_far_arm",
+      "parent": "kidA_torso",
+      "parentPoint": "shoulder",
+      "asset": "kidA_arm",
+      "width": 27,
+      "height": 99,
+      "anchorX": 0.5,
+      "anchorY": 0.1263,
+      "z": 18
+    },
+    {
+      "id": "kidA_far_thigh",
+      "parent": "kidA",
+      "asset": "kidA_thigh",
+      "width": 33,
+      "height": 68,
+      "anchorX": 0.5,
+      "anchorY": 0.1544,
+      "x": -3,
+      "y": -4,
+      "z": 19
+    },
+    {
+      "id": "kidA_far_shin",
+      "parent": "kidA_far_thigh",
+      "parentPoint": "knee",
+      "asset": "kidA_shin",
+      "width": 51,
+      "height": 78,
+      "anchorX": 0.3039,
+      "anchorY": 0.109,
+      "z": 19
+    },
+    {
+      "id": "kidA_near_arm",
+      "parent": "kidA_torso",
+      "parentPoint": "shoulder",
+      "asset": "kidA_arm",
+      "width": 27,
+      "height": 99,
+      "anchorX": 0.5,
+      "anchorY": 0.1263,
+      "z": 28
+    },
+    {
+      "id": "kidA_near_thigh",
+      "parent": "kidA",
+      "asset": "kidA_thigh",
+      "width": 33,
+      "height": 68,
+      "anchorX": 0.5,
+      "anchorY": 0.1544,
+      "x": 3,
+      "y": -4,
+      "z": 27
+    },
+    {
+      "id": "kidA_near_shin",
+      "parent": "kidA_near_thigh",
+      "parentPoint": "knee",
+      "asset": "kidA_shin",
+      "width": 51,
+      "height": 78,
+      "anchorX": 0.3039,
+      "anchorY": 0.109,
+      "z": 27
+    },
+    {
+      "id": "kidB",
+      "parent": "plank",
+      "parentPoint": "seat_right",
+      "x": 620,
+      "y": 38,
+      "scaleX": -1,
+      "z": 0
+    },
+    {
+      "id": "kidB_torso",
+      "parent": "kidB",
+      "asset": "kidB_torso",
+      "width": 61.5,
+      "height": 97,
+      "anchorX": 0.4959,
+      "anchorY": 0.9124,
+      "z": 24
+    },
+    {
+      "id": "kidB_head",
+      "parent": "kidB_torso",
+      "parentPoint": "neck",
+      "asset": "kidB_head",
+      "width": 102,
+      "height": 124,
+      "anchorX": 0.4167,
+      "anchorY": 0.9758,
+      "y": 6,
+      "z": 25
+    },
+    {
+      "id": "kidB_mouth",
+      "parent": "kidB_head",
+      "parentPoint": "mouth",
+      "asset": "mouth_smile",
+      "scaleX": 0.5,
+      "scaleY": 0.5,
+      "z": 26
+    },
+    {
+      "id": "kidB_far_arm",
+      "parent": "kidB_torso",
+      "parentPoint": "shoulder",
+      "asset": "kidB_arm",
+      "width": 27,
+      "height": 99,
+      "anchorX": 0.5,
+      "anchorY": 0.1263,
+      "z": 18
+    },
+    {
+      "id": "kidB_far_thigh",
+      "parent": "kidB",
+      "asset": "kidB_thigh",
+      "width": 33,
+      "height": 68,
+      "anchorX": 0.5,
+      "anchorY": 0.1544,
+      "x": -3,
+      "y": -4,
+      "z": 19
+    },
+    {
+      "id": "kidB_far_shin",
+      "parent": "kidB_far_thigh",
+      "parentPoint": "knee",
+      "asset": "kidB_shin",
+      "width": 51,
+      "height": 78,
+      "anchorX": 0.3039,
+      "anchorY": 0.109,
+      "z": 19
+    },
+    {
+      "id": "kidB_near_arm",
+      "parent": "kidB_torso",
+      "parentPoint": "shoulder",
+      "asset": "kidB_arm",
+      "width": 27,
+      "height": 99,
+      "anchorX": 0.5,
+      "anchorY": 0.1263,
+      "z": 28
+    },
+    {
+      "id": "kidB_near_thigh",
+      "parent": "kidB",
+      "asset": "kidB_thigh",
+      "width": 33,
+      "height": 68,
+      "anchorX": 0.5,
+      "anchorY": 0.1544,
+      "x": 3,
+      "y": -4,
+      "z": 27
+    },
+    {
+      "id": "kidB_near_shin",
+      "parent": "kidB_near_thigh",
+      "parentPoint": "knee",
+      "asset": "kidB_shin",
+      "width": 51,
+      "height": 78,
+      "anchorX": 0.3039,
+      "anchorY": 0.109,
+      "z": 27
+    },
+    {
+      "id": "fade",
+      "fill": "#000000",
+      "x": 960,
+      "y": 540,
+      "width": 1920,
+      "height": 1080,
+      "opacity": 1,
+      "z": 100
+    }
+  ],
+  "animations": [
+    {
+      "target": "cloud_a",
+      "property": "x",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 330
+        },
+        {
+          "frame": 299,
+          "value": 560
+        }
+      ]
+    },
+    {
+      "target": "cloud_b",
+      "property": "x",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 1350
+        },
+        {
+          "frame": 299,
+          "value": 1190
+        }
+      ]
+    },
+    {
+      "target": "bird",
+      "property": "x",
+      "keyframes": [
+        {
+          "frame": 15,
+          "value": -80
+        },
+        {
+          "frame": 210,
+          "value": 2020
+        }
+      ]
+    },
+    {
+      "target": "bird",
+      "property": "y",
+      "keyframes": [
+        {
+          "frame": 15,
+          "value": 320,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 80,
+          "value": 270,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 150,
+          "value": 310,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 210,
+          "value": 260
+        }
+      ]
+    },
+    {
+      "target": "bird",
+      "property": "asset",
+      "keyframes": [
+        {
+          "frame": 15,
+          "value": "bird_up"
+        },
+        {
+          "frame": 20,
+          "value": "bird_down"
+        },
+        {
+          "frame": 25,
+          "value": "bird_up"
+        },
+        {
+          "frame": 30,
+          "value": "bird_down"
+        },
+        {
+          "frame": 35,
+          "value": "bird_up"
+        },
+        {
+          "frame": 40,
+          "value": "bird_down"
+        },
+        {
+          "frame": 45,
+          "value": "bird_up"
+        },
+        {
+          "frame": 50,
+          "value": "bird_down"
+        },
+        {
+          "frame": 55,
+          "value": "bird_up"
+        },
+        {
+          "frame": 60,
+          "value": "bird_down"
+        },
+        {
+          "frame": 65,
+          "value": "bird_up"
+        },
+        {
+          "frame": 70,
+          "value": "bird_down"
+        },
+        {
+          "frame": 75,
+          "value": "bird_up"
+        },
+        {
+          "frame": 80,
+          "value": "bird_down"
+        },
+        {
+          "frame": 85,
+          "value": "bird_up"
+        },
+        {
+          "frame": 90,
+          "value": "bird_down"
+        },
+        {
+          "frame": 95,
+          "value": "bird_up"
+        },
+        {
+          "frame": 100,
+          "value": "bird_down"
+        },
+        {
+          "frame": 105,
+          "value": "bird_up"
+        },
+        {
+          "frame": 110,
+          "value": "bird_down"
+        },
+        {
+          "frame": 115,
+          "value": "bird_up"
+        },
+        {
+          "frame": 120,
+          "value": "bird_down"
+        },
+        {
+          "frame": 125,
+          "value": "bird_up"
+        },
+        {
+          "frame": 130,
+          "value": "bird_down"
+        },
+        {
+          "frame": 135,
+          "value": "bird_up"
+        },
+        {
+          "frame": 140,
+          "value": "bird_down"
+        },
+        {
+          "frame": 145,
+          "value": "bird_up"
+        },
+        {
+          "frame": 150,
+          "value": "bird_down"
+        },
+        {
+          "frame": 155,
+          "value": "bird_up"
+        },
+        {
+          "frame": 160,
+          "value": "bird_down"
+        },
+        {
+          "frame": 165,
+          "value": "bird_up"
+        },
+        {
+          "frame": 170,
+          "value": "bird_down"
+        },
+        {
+          "frame": 175,
+          "value": "bird_up"
+        },
+        {
+          "frame": 180,
+          "value": "bird_down"
+        },
+        {
+          "frame": 185,
+          "value": "bird_up"
+        },
+        {
+          "frame": 190,
+          "value": "bird_down"
+        },
+        {
+          "frame": 195,
+          "value": "bird_up"
+        },
+        {
+          "frame": 200,
+          "value": "bird_down"
+        },
+        {
+          "frame": 205,
+          "value": "bird_up"
+        },
+        {
+          "frame": 210,
+          "value": "bird_down"
+        }
+      ]
+    },
+    {
+      "target": "swing_1",
+      "property": "rotation",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 7,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 35,
+          "value": -7,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 70,
+          "value": 7,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 105,
+          "value": -7,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 140,
+          "value": 7,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 175,
+          "value": -7,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 210,
+          "value": 7,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 245,
+          "value": -7,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 280,
+          "value": 7,
+          "interpolation": "ease-in-out"
+        }
+      ]
+    },
+    {
+      "target": "swing_2",
+      "property": "rotation",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 5,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 13,
+          "value": -5,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 48,
+          "value": 5,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 83,
+          "value": -5,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 118,
+          "value": 5,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 153,
+          "value": -5,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 188,
+          "value": 5,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 223,
+          "value": -5,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 258,
+          "value": 5,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 293,
+          "value": -5,
+          "interpolation": "ease-in-out"
+        }
+      ]
+    },
+    {
+      "target": "plank",
+      "property": "rotation",
+      "keyframes": [
+        {
+          "frame": 62,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 84,
+          "value": 13,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 114,
+          "value": -13,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 144,
+          "value": 13,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 174,
+          "value": -13,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 204,
+          "value": 13,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 234,
+          "value": -13,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 262,
+          "value": 13,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 288,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "target": "kidA_near_thigh",
+      "property": "rotation",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": -35,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 8,
+          "value": 28,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 16,
+          "value": -35,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 24,
+          "value": 28,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 32,
+          "value": -35,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 40,
+          "value": 28,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 50,
+          "value": 8.4,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 58,
+          "value": -86,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 84,
+          "value": -92,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 114,
+          "value": -80,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 144,
+          "value": -92,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 174,
+          "value": -80,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 204,
+          "value": -92,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 234,
+          "value": -80,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 262,
+          "value": -92,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 288,
+          "value": -86
+        }
+      ]
+    },
+    {
+      "target": "kidA_near_shin",
+      "property": "rotation",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 18,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 8,
+          "value": 70,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 16,
+          "value": 18,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 24,
+          "value": 70,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 32,
+          "value": 18,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 40,
+          "value": 70,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 50,
+          "value": 21,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 58,
+          "value": 88,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 84,
+          "value": 104,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 114,
+          "value": 72,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 144,
+          "value": 104,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 174,
+          "value": 72,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 204,
+          "value": 104,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 234,
+          "value": 72,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 262,
+          "value": 104,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 288,
+          "value": 88
+        }
+      ]
+    },
+    {
+      "target": "kidA_far_thigh",
+      "property": "rotation",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 28,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 8,
+          "value": -35,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 16,
+          "value": 28,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 24,
+          "value": -35,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 32,
+          "value": 28,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 40,
+          "value": -35,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 50,
+          "value": -10.5,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 58,
+          "value": -80,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 84,
+          "value": -86,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 114,
+          "value": -74,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 144,
+          "value": -86,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 174,
+          "value": -74,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 204,
+          "value": -86,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 234,
+          "value": -74,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 262,
+          "value": -86,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 288,
+          "value": -80
+        }
+      ]
+    },
+    {
+      "target": "kidA_far_shin",
+      "property": "rotation",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 70,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 8,
+          "value": 18,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 16,
+          "value": 70,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 24,
+          "value": 18,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 32,
+          "value": 70,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 40,
+          "value": 18,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 50,
+          "value": 5.3999999999999995,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 58,
+          "value": 82,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 84,
+          "value": 98,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 114,
+          "value": 66,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 144,
+          "value": 98,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 174,
+          "value": 66,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 204,
+          "value": 98,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 234,
+          "value": 66,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 262,
+          "value": 98,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 288,
+          "value": 82
+        }
+      ]
+    },
+    {
+      "target": "kidA_far_arm",
+      "property": "rotation",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": -42,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 8,
+          "value": 38,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 16,
+          "value": -42,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 24,
+          "value": 38,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 32,
+          "value": -42,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 40,
+          "value": 38,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 50,
+          "value": 11.4,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 58,
+          "value": -70,
+          "interpolation": "ease-in-out"
+        }
+      ]
+    },
+    {
+      "target": "kidA_near_arm",
+      "property": "rotation",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 38,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 8,
+          "value": -42,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 16,
+          "value": 38,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 24,
+          "value": -42,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 32,
+          "value": 38,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 40,
+          "value": -42,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 50,
+          "value": -12.6,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 58,
+          "value": -66,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 132,
+          "value": -66,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 142,
+          "value": -128,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 154,
+          "value": -128,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 164,
+          "value": -66,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 250,
+          "value": -66,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 260,
+          "value": -128,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 272,
+          "value": -128,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 282,
+          "value": -66,
+          "interpolation": "ease-in-out"
+        }
+      ]
+    },
+    {
+      "target": "kidA_torso",
+      "property": "rotation",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 9,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 44,
+          "value": 9,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 58,
+          "value": 2
+        }
+      ]
+    },
+    {
+      "target": "kidA",
+      "property": "x",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": -560,
+          "interpolation": "linear"
+        },
+        {
+          "frame": 44,
+          "value": -34,
+          "interpolation": "ease-out"
+        },
+        {
+          "frame": 58,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "target": "kidA",
+      "property": "y",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 38,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 4,
+          "value": 31,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 8,
+          "value": 38,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 12,
+          "value": 31,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 16,
+          "value": 38,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 20,
+          "value": 31,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 24,
+          "value": 38,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 28,
+          "value": 31,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 32,
+          "value": 38,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 36,
+          "value": 31,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 40,
+          "value": 38,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 44,
+          "value": 42,
+          "interpolation": "ease-out"
+        },
+        {
+          "frame": 51,
+          "value": -44,
+          "interpolation": "ease-in"
+        },
+        {
+          "frame": 58,
+          "value": -6
+        }
+      ]
+    },
+    {
+      "target": "kidA_mouth",
+      "property": "asset",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": "mouth_smile"
+        },
+        {
+          "frame": 46,
+          "value": "mouth_o"
+        },
+        {
+          "frame": 60,
+          "value": "mouth_smile"
+        },
+        {
+          "frame": 74,
+          "value": "mouth_laugh"
+        },
+        {
+          "frame": 93,
+          "value": "mouth_smile"
+        },
+        {
+          "frame": 134,
+          "value": "mouth_laugh"
+        },
+        {
+          "frame": 153,
+          "value": "mouth_smile"
+        },
+        {
+          "frame": 194,
+          "value": "mouth_laugh"
+        },
+        {
+          "frame": 213,
+          "value": "mouth_smile"
+        },
+        {
+          "frame": 252,
+          "value": "mouth_laugh"
+        },
+        {
+          "frame": 271,
+          "value": "mouth_smile"
+        }
+      ]
+    },
+    {
+      "target": "kidA_head",
+      "property": "rotation",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 4,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 44,
+          "value": 4,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 60,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 72,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 82,
+          "value": -7,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 96,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 132,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 142,
+          "value": -7,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 156,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 192,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 202,
+          "value": -7,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 216,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 250,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 260,
+          "value": -7,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 274,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        }
+      ]
+    },
+    {
+      "target": "kidB_near_thigh",
+      "property": "rotation",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": -35,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 8,
+          "value": 28,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 16,
+          "value": -35,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 24,
+          "value": 28,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 32,
+          "value": -35,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 40,
+          "value": 28,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 50,
+          "value": 8.4,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 58,
+          "value": -86,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 84,
+          "value": -80,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 114,
+          "value": -92,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 144,
+          "value": -80,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 174,
+          "value": -92,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 204,
+          "value": -80,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 234,
+          "value": -92,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 262,
+          "value": -80,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 288,
+          "value": -86
+        }
+      ]
+    },
+    {
+      "target": "kidB_near_shin",
+      "property": "rotation",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 18,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 8,
+          "value": 70,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 16,
+          "value": 18,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 24,
+          "value": 70,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 32,
+          "value": 18,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 40,
+          "value": 70,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 50,
+          "value": 21,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 58,
+          "value": 88,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 84,
+          "value": 72,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 114,
+          "value": 104,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 144,
+          "value": 72,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 174,
+          "value": 104,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 204,
+          "value": 72,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 234,
+          "value": 104,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 262,
+          "value": 72,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 288,
+          "value": 88
+        }
+      ]
+    },
+    {
+      "target": "kidB_far_thigh",
+      "property": "rotation",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 28,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 8,
+          "value": -35,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 16,
+          "value": 28,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 24,
+          "value": -35,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 32,
+          "value": 28,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 40,
+          "value": -35,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 50,
+          "value": -10.5,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 58,
+          "value": -80,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 84,
+          "value": -74,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 114,
+          "value": -86,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 144,
+          "value": -74,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 174,
+          "value": -86,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 204,
+          "value": -74,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 234,
+          "value": -86,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 262,
+          "value": -74,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 288,
+          "value": -80
+        }
+      ]
+    },
+    {
+      "target": "kidB_far_shin",
+      "property": "rotation",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 70,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 8,
+          "value": 18,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 16,
+          "value": 70,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 24,
+          "value": 18,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 32,
+          "value": 70,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 40,
+          "value": 18,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 50,
+          "value": 5.3999999999999995,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 58,
+          "value": 82,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 84,
+          "value": 66,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 114,
+          "value": 98,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 144,
+          "value": 66,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 174,
+          "value": 98,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 204,
+          "value": 66,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 234,
+          "value": 98,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 262,
+          "value": 66,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 288,
+          "value": 82
+        }
+      ]
+    },
+    {
+      "target": "kidB_far_arm",
+      "property": "rotation",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": -42,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 8,
+          "value": 38,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 16,
+          "value": -42,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 24,
+          "value": 38,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 32,
+          "value": -42,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 40,
+          "value": 38,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 50,
+          "value": 11.4,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 58,
+          "value": -70,
+          "interpolation": "ease-in-out"
+        }
+      ]
+    },
+    {
+      "target": "kidB_near_arm",
+      "property": "rotation",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 38,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 8,
+          "value": -42,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 16,
+          "value": 38,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 24,
+          "value": -42,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 32,
+          "value": 38,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 40,
+          "value": -42,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 50,
+          "value": -12.6,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 58,
+          "value": -66,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 162,
+          "value": -66,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 172,
+          "value": -128,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 184,
+          "value": -128,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 194,
+          "value": -66,
+          "interpolation": "ease-in-out"
+        }
+      ]
+    },
+    {
+      "target": "kidB_torso",
+      "property": "rotation",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 9,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 44,
+          "value": 9,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 58,
+          "value": 2
+        }
+      ]
+    },
+    {
+      "target": "kidB",
+      "property": "x",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 620,
+          "interpolation": "linear"
+        },
+        {
+          "frame": 44,
+          "value": 34,
+          "interpolation": "ease-out"
+        },
+        {
+          "frame": 58,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "target": "kidB",
+      "property": "y",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 38,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 4,
+          "value": 31,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 8,
+          "value": 38,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 12,
+          "value": 31,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 16,
+          "value": 38,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 20,
+          "value": 31,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 24,
+          "value": 38,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 28,
+          "value": 31,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 32,
+          "value": 38,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 36,
+          "value": 31,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 40,
+          "value": 38,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 44,
+          "value": 42,
+          "interpolation": "ease-out"
+        },
+        {
+          "frame": 51,
+          "value": -44,
+          "interpolation": "ease-in"
+        },
+        {
+          "frame": 58,
+          "value": -6
+        }
+      ]
+    },
+    {
+      "target": "kidB_mouth",
+      "property": "asset",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": "mouth_smile"
+        },
+        {
+          "frame": 46,
+          "value": "mouth_o"
+        },
+        {
+          "frame": 60,
+          "value": "mouth_smile"
+        },
+        {
+          "frame": 104,
+          "value": "mouth_laugh"
+        },
+        {
+          "frame": 123,
+          "value": "mouth_smile"
+        },
+        {
+          "frame": 164,
+          "value": "mouth_laugh"
+        },
+        {
+          "frame": 183,
+          "value": "mouth_smile"
+        },
+        {
+          "frame": 224,
+          "value": "mouth_laugh"
+        },
+        {
+          "frame": 243,
+          "value": "mouth_smile"
+        }
+      ]
+    },
+    {
+      "target": "kidB_head",
+      "property": "rotation",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 4,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 44,
+          "value": 4,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 60,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 102,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 112,
+          "value": -7,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 126,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 162,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 172,
+          "value": -7,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 186,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 222,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 232,
+          "value": -7,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 246,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        }
+      ]
+    },
+    {
+      "target": "fade",
+      "property": "opacity",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": 1,
+          "interpolation": "ease-out"
+        },
+        {
+          "frame": 14,
+          "value": 0,
+          "interpolation": "step"
+        },
+        {
+          "frame": 283,
+          "value": 0,
+          "interpolation": "ease-in"
+        },
+        {
+          "frame": 299,
+          "value": 1
+        }
+      ]
+    },
+    {
+      "target": "camera",
+      "property": "scale",
+      "keyframes": [
+        {
+          "frame": 40,
+          "value": 1,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 140,
+          "value": 1.16,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 240,
+          "value": 1.16,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 299,
+          "value": 1.06,
+          "interpolation": "ease-in-out"
+        }
+      ]
+    },
+    {
+      "target": "camera",
+      "property": "x",
+      "keyframes": [
+        {
+          "frame": 40,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 140,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 240,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 299,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        }
+      ]
+    },
+    {
+      "target": "camera",
+      "property": "y",
+      "keyframes": [
+        {
+          "frame": 40,
+          "value": 0,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 140,
+          "value": 60,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 240,
+          "value": 60,
+          "interpolation": "ease-in-out"
+        },
+        {
+          "frame": 299,
+          "value": 30,
+          "interpolation": "ease-in-out"
+        }
+      ]
+    }
+  ],
+  "audio": [
+    {
+      "src": "assets/audio/music.wav",
+      "startFrame": 0,
+      "volume": 0.55
+    },
+    {
+      "src": "assets/audio/giggles.wav",
+      "startFrame": 0,
+      "volume": 0.9
+    }
+  ]
+}

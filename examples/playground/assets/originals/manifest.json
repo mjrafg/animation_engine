@@ -1,0 +1,337 @@
+{
+  "park_bg": {
+    "file": "park_bg.png",
+    "kind": "opaque",
+    "res": 1
+  },
+  "plank": {
+    "file": "plank.png",
+    "kind": "keyed",
+    "keyColor": "#e020c8",
+    "res": 2,
+    "pivotPx": {
+      "x": 820,
+      "y": 104
+    },
+    "attachmentPointsPx": {
+      "seat_left": {
+        "x": 170,
+        "y": 64
+      },
+      "seat_right": {
+        "x": 1470,
+        "y": 64
+      },
+      "handle_left": {
+        "x": 330,
+        "y": 84
+      },
+      "handle_right": {
+        "x": 1310,
+        "y": 84
+      }
+    }
+  },
+  "fulcrum": {
+    "file": "fulcrum.png",
+    "kind": "keyed",
+    "keyColor": "#e020c8",
+    "res": 2,
+    "pivotPx": {
+      "x": 230,
+      "y": 320
+    },
+    "attachmentPointsPx": {
+      "axle": {
+        "x": 230,
+        "y": 88
+      }
+    }
+  },
+  "handle": {
+    "file": "handle.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 50,
+      "y": 148
+    },
+    "attachmentPointsPx": {
+      "grip": {
+        "x": 50,
+        "y": 36
+      }
+    }
+  },
+  "swing_frame": {
+    "file": "swing_frame.png",
+    "kind": "keyed",
+    "keyColor": "#1a8fe3",
+    "res": 2,
+    "pivotPx": {
+      "x": 620,
+      "y": 820
+    },
+    "attachmentPointsPx": {
+      "swing_1": {
+        "x": 440,
+        "y": 100
+      },
+      "swing_2": {
+        "x": 800,
+        "y": 100
+      }
+    }
+  },
+  "swing": {
+    "file": "swing.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 104,
+      "y": 28
+    }
+  },
+  "slide": {
+    "file": "slide.png",
+    "kind": "keyed",
+    "keyColor": "#1a8fe3",
+    "res": 2,
+    "pivotPx": {
+      "x": 500,
+      "y": 720
+    }
+  },
+  "ball": {
+    "file": "ball.png",
+    "kind": "keyed",
+    "keyColor": "#23c43a",
+    "res": 2,
+    "pivotPx": {
+      "x": 130,
+      "y": 130
+    }
+  },
+  "cloud_a": {
+    "file": "cloud_a.png",
+    "kind": "transparent",
+    "res": 2
+  },
+  "cloud_b": {
+    "file": "cloud_b.png",
+    "kind": "transparent",
+    "res": 2
+  },
+  "bird_up": {
+    "file": "bird_up.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 84,
+      "y": 64
+    }
+  },
+  "bird_down": {
+    "file": "bird_down.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 84,
+      "y": 64
+    }
+  },
+  "flowers": {
+    "file": "flowers.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 244,
+      "y": 264
+    }
+  },
+  "kidA_torso": {
+    "file": "kidA_torso.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 88,
+      "y": 200
+    },
+    "attachmentPointsPx": {
+      "neck": {
+        "x": 96,
+        "y": 32
+      },
+      "shoulder": {
+        "x": 96,
+        "y": 56
+      }
+    }
+  },
+  "kidA_head": {
+    "file": "kidA_head.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 132,
+      "y": 268
+    },
+    "attachmentPointsPx": {
+      "mouth": {
+        "x": 204,
+        "y": 200
+      }
+    }
+  },
+  "kidA_arm": {
+    "file": "kidA_arm.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 50,
+      "y": 44
+    },
+    "attachmentPointsPx": {
+      "hand": {
+        "x": 50,
+        "y": 192
+      }
+    }
+  },
+  "kidA_thigh": {
+    "file": "kidA_thigh.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 54,
+      "y": 40
+    },
+    "attachmentPointsPx": {
+      "knee": {
+        "x": 54,
+        "y": 136
+      }
+    }
+  },
+  "kidA_shin": {
+    "file": "kidA_shin.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 58,
+      "y": 36
+    },
+    "attachmentPointsPx": {
+      "sole": {
+        "x": 64,
+        "y": 170
+      }
+    }
+  },
+  "kidB_torso": {
+    "file": "kidB_torso.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 88,
+      "y": 200
+    },
+    "attachmentPointsPx": {
+      "neck": {
+        "x": 96,
+        "y": 32
+      },
+      "shoulder": {
+        "x": 96,
+        "y": 56
+      }
+    }
+  },
+  "kidB_head": {
+    "file": "kidB_head.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 132,
+      "y": 268
+    },
+    "attachmentPointsPx": {
+      "mouth": {
+        "x": 204,
+        "y": 200
+      }
+    }
+  },
+  "kidB_arm": {
+    "file": "kidB_arm.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 50,
+      "y": 44
+    },
+    "attachmentPointsPx": {
+      "hand": {
+        "x": 50,
+        "y": 192
+      }
+    }
+  },
+  "kidB_thigh": {
+    "file": "kidB_thigh.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 54,
+      "y": 40
+    },
+    "attachmentPointsPx": {
+      "knee": {
+        "x": 54,
+        "y": 136
+      }
+    }
+  },
+  "kidB_shin": {
+    "file": "kidB_shin.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 58,
+      "y": 36
+    },
+    "attachmentPointsPx": {
+      "sole": {
+        "x": 64,
+        "y": 170
+      }
+    }
+  },
+  "mouth_smile": {
+    "file": "mouth_smile.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 54,
+      "y": 40
+    }
+  },
+  "mouth_laugh": {
+    "file": "mouth_laugh.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 54,
+      "y": 40
+    }
+  },
+  "mouth_o": {
+    "file": "mouth_o.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 54,
+      "y": 46
+    }
+  }
+}

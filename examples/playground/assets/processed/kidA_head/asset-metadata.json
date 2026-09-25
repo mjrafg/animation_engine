@@ -1,0 +1,70 @@
+{
+  "ok": true,
+  "source": "../../originals/kidA_head.png",
+  "sourceSha256": "2b84278ddfa64a9e1a55783d52bf2a0b4ad6bbddbefa7e23de8bddae60123da4",
+  "path": "native-alpha",
+  "files": {
+    "original": "original.png",
+    "backgroundMask": "background-mask.png",
+    "untrimmed": "untrimmed-transparent.png",
+    "processed": "processed-transparent.png",
+    "metadata": "asset-metadata.json"
+  },
+  "alpha": {
+    "hasAlphaChannel": true,
+    "borderTransparentFraction": 1,
+    "transparentFraction": 0.5981,
+    "partialFraction": 0.0083,
+    "opaqueFraction": 0.3936
+  },
+  "components": [
+    {
+      "id": 1,
+      "pixelCount": 34242,
+      "bounds": {
+        "left": 11,
+        "top": 48,
+        "right": 249,
+        "bottom": 272
+      },
+      "centroid": {
+        "x": 134.5,
+        "y": 147.3
+      },
+      "share": 1
+    }
+  ],
+  "removedComponents": [],
+  "issues": [],
+  "trim": {
+    "originalWidth": 288,
+    "originalHeight": 296,
+    "trimmedWidth": 242,
+    "trimmedHeight": 228,
+    "offsetX": 9,
+    "offsetY": 46,
+    "visibleBounds": {
+      "left": 11,
+      "top": 48,
+      "right": 249,
+      "bottom": 272
+    },
+    "alphaThreshold": 4,
+    "padding": 2,
+    "empty": false
+  },
+  "size": {
+    "width": 242,
+    "height": 228
+  },
+  "attachmentPoints": {
+    "mouth": {
+      "x": 0.8058,
+      "y": 0.6754
+    },
+    "__pivot": {
+      "x": 0.5083,
+      "y": 0.9737
+    }
+  }
+}

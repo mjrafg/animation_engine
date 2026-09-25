@@ -1,0 +1,70 @@
+{
+  "ok": true,
+  "source": "../../originals/kidB_thigh.png",
+  "sourceSha256": "c0ffb7ea33f713ea82bea6eeb99f1dda85d759c0e97b5fcc3c7e7d749f9abf76",
+  "path": "native-alpha",
+  "files": {
+    "original": "original.png",
+    "backgroundMask": "background-mask.png",
+    "untrimmed": "untrimmed-transparent.png",
+    "processed": "processed-transparent.png",
+    "metadata": "asset-metadata.json"
+  },
+  "alpha": {
+    "hasAlphaChannel": true,
+    "borderTransparentFraction": 1,
+    "transparentFraction": 0.6375,
+    "partialFraction": 0.0177,
+    "opaqueFraction": 0.3448
+  },
+  "components": [
+    {
+      "id": 1,
+      "pixelCount": 7042,
+      "bounds": {
+        "left": 23,
+        "top": 21,
+        "right": 85,
+        "bottom": 153
+      },
+      "centroid": {
+        "x": 53.5,
+        "y": 83.8
+      },
+      "share": 1
+    }
+  ],
+  "removedComponents": [],
+  "issues": [],
+  "trim": {
+    "originalWidth": 108,
+    "originalHeight": 180,
+    "trimmedWidth": 66,
+    "trimmedHeight": 136,
+    "offsetX": 21,
+    "offsetY": 19,
+    "visibleBounds": {
+      "left": 23,
+      "top": 21,
+      "right": 85,
+      "bottom": 153
+    },
+    "alphaThreshold": 4,
+    "padding": 2,
+    "empty": false
+  },
+  "size": {
+    "width": 66,
+    "height": 136
+  },
+  "attachmentPoints": {
+    "knee": {
+      "x": 0.5,
+      "y": 0.8603
+    },
+    "__pivot": {
+      "x": 0.5,
+      "y": 0.1544
+    }
+  }
+}

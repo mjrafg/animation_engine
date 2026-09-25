@@ -1,0 +1,445 @@
+{
+  "park_bg": {
+    "src": "assets/originals/park_bg.png",
+    "width": 2100,
+    "height": 1180,
+    "res": 1
+  },
+  "plank": {
+    "src": "assets/processed/plank/processed-transparent.png",
+    "width": 1530,
+    "height": 70,
+    "res": 2,
+    "path": "color-key",
+    "pivot": {
+      "x": 0.5,
+      "y": 0.6429
+    },
+    "attachmentPoints": {
+      "seat_left": {
+        "x": 0.0752,
+        "y": 0.0714
+      },
+      "seat_right": {
+        "x": 0.9248,
+        "y": 0.0714
+      },
+      "handle_left": {
+        "x": 0.1797,
+        "y": 0.3571
+      },
+      "handle_right": {
+        "x": 0.8203,
+        "y": 0.3571
+      }
+    },
+    "key": "#e020c8",
+    "confidence": 1,
+    "decisions": [],
+    "issues": []
+  },
+  "fulcrum": {
+    "src": "assets/processed/fulcrum/processed-transparent.png",
+    "width": 350,
+    "height": 262,
+    "res": 2,
+    "path": "color-key",
+    "pivot": {
+      "x": 0.5,
+      "y": 0.9809
+    },
+    "attachmentPoints": {
+      "axle": {
+        "x": 0.5,
+        "y": 0.0954
+      }
+    },
+    "key": "#e020c8",
+    "confidence": 1,
+    "decisions": [],
+    "issues": []
+  },
+  "handle": {
+    "src": "assets/processed/handle/processed-transparent.png",
+    "width": 60,
+    "height": 136,
+    "res": 2,
+    "path": "native-alpha",
+    "pivot": {
+      "x": 0.5,
+      "y": 0.9412
+    },
+    "attachmentPoints": {
+      "grip": {
+        "x": 0.5,
+        "y": 0.1176
+      }
+    },
+    "decisions": [],
+    "issues": []
+  },
+  "swing_frame": {
+    "src": "assets/processed/swing_frame/processed-transparent.png",
+    "width": 1152,
+    "height": 765,
+    "res": 2,
+    "path": "color-key",
+    "pivot": {
+      "x": 0.5,
+      "y": 0.9895
+    },
+    "attachmentPoints": {
+      "swing_1": {
+        "x": 0.3438,
+        "y": 0.0484
+      },
+      "swing_2": {
+        "x": 0.6563,
+        "y": 0.0484
+      }
+    },
+    "key": "#1a8fe3",
+    "confidence": 1,
+    "decisions": [],
+    "issues": []
+  },
+  "swing": {
+    "src": "assets/processed/swing/processed-transparent.png",
+    "width": 170,
+    "height": 498,
+    "res": 2,
+    "path": "native-alpha",
+    "pivot": {
+      "x": 0.5,
+      "y": 0.01
+    },
+    "decisions": [],
+    "issues": []
+  },
+  "slide": {
+    "src": "assets/processed/slide/processed-transparent.png",
+    "width": 807,
+    "height": 567,
+    "res": 2,
+    "path": "color-key",
+    "pivot": {
+      "x": 0.4585,
+      "y": 0.9965
+    },
+    "key": "#1a8fe3",
+    "confidence": 1,
+    "decisions": [
+      "remove 6 enclosed key-colour hole(s)"
+    ],
+    "issues": []
+  },
+  "ball": {
+    "src": "assets/processed/ball/processed-transparent.png",
+    "width": 142,
+    "height": 142,
+    "res": 2,
+    "path": "color-key",
+    "pivot": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "key": "#23c43a",
+    "confidence": 1,
+    "decisions": [],
+    "issues": []
+  },
+  "cloud_a": {
+    "src": "assets/processed/cloud_a/processed-transparent.png",
+    "width": 416,
+    "height": 228,
+    "res": 2,
+    "path": "native-alpha",
+    "decisions": [],
+    "issues": []
+  },
+  "cloud_b": {
+    "src": "assets/processed/cloud_b/processed-transparent.png",
+    "width": 286,
+    "height": 156,
+    "res": 2,
+    "path": "native-alpha",
+    "decisions": [],
+    "issues": []
+  },
+  "bird_up": {
+    "src": "assets/processed/bird_up/processed-transparent.png",
+    "width": 118,
+    "height": 38,
+    "res": 2,
+    "path": "native-alpha",
+    "pivot": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "decisions": [],
+    "issues": []
+  },
+  "bird_down": {
+    "src": "assets/processed/bird_down/processed-transparent.png",
+    "width": 118,
+    "height": 37,
+    "res": 2,
+    "path": "native-alpha",
+    "pivot": {
+      "x": 0.5,
+      "y": 0.6216
+    },
+    "decisions": [],
+    "issues": []
+  },
+  "flowers": {
+    "src": "assets/processed/flowers/processed-transparent.png",
+    "width": 444,
+    "height": 168,
+    "res": 2,
+    "path": "native-alpha",
+    "pivot": {
+      "x": 0.5,
+      "y": 0.9643
+    },
+    "decisions": [],
+    "issues": []
+  },
+  "kidA_torso": {
+    "src": "assets/processed/kidA_torso/processed-transparent.png",
+    "width": 123,
+    "height": 194,
+    "res": 2,
+    "path": "native-alpha",
+    "pivot": {
+      "x": 0.4959,
+      "y": 0.9124
+    },
+    "attachmentPoints": {
+      "neck": {
+        "x": 0.561,
+        "y": 0.0464
+      },
+      "shoulder": {
+        "x": 0.561,
+        "y": 0.1701
+      }
+    },
+    "decisions": [],
+    "issues": []
+  },
+  "kidA_head": {
+    "src": "assets/processed/kidA_head/processed-transparent.png",
+    "width": 242,
+    "height": 228,
+    "res": 2,
+    "path": "native-alpha",
+    "pivot": {
+      "x": 0.5083,
+      "y": 0.9737
+    },
+    "attachmentPoints": {
+      "mouth": {
+        "x": 0.8058,
+        "y": 0.6754
+      }
+    },
+    "decisions": [],
+    "issues": []
+  },
+  "kidA_arm": {
+    "src": "assets/processed/kidA_arm/processed-transparent.png",
+    "width": 54,
+    "height": 198,
+    "res": 2,
+    "path": "native-alpha",
+    "pivot": {
+      "x": 0.5,
+      "y": 0.1263
+    },
+    "attachmentPoints": {
+      "hand": {
+        "x": 0.5,
+        "y": 0.8737
+      }
+    },
+    "decisions": [],
+    "issues": []
+  },
+  "kidA_thigh": {
+    "src": "assets/processed/kidA_thigh/processed-transparent.png",
+    "width": 66,
+    "height": 136,
+    "res": 2,
+    "path": "native-alpha",
+    "pivot": {
+      "x": 0.5,
+      "y": 0.1544
+    },
+    "attachmentPoints": {
+      "knee": {
+        "x": 0.5,
+        "y": 0.8603
+      }
+    },
+    "decisions": [],
+    "issues": []
+  },
+  "kidA_shin": {
+    "src": "assets/processed/kidA_shin/processed-transparent.png",
+    "width": 102,
+    "height": 156,
+    "res": 2,
+    "path": "native-alpha",
+    "pivot": {
+      "x": 0.3039,
+      "y": 0.109
+    },
+    "attachmentPoints": {
+      "sole": {
+        "x": 0.3627,
+        "y": 0.9679
+      }
+    },
+    "decisions": [],
+    "issues": []
+  },
+  "kidB_torso": {
+    "src": "assets/processed/kidB_torso/processed-transparent.png",
+    "width": 123,
+    "height": 194,
+    "res": 2,
+    "path": "native-alpha",
+    "pivot": {
+      "x": 0.4959,
+      "y": 0.9124
+    },
+    "attachmentPoints": {
+      "neck": {
+        "x": 0.561,
+        "y": 0.0464
+      },
+      "shoulder": {
+        "x": 0.561,
+        "y": 0.1701
+      }
+    },
+    "decisions": [],
+    "issues": []
+  },
+  "kidB_head": {
+    "src": "assets/processed/kidB_head/processed-transparent.png",
+    "width": 204,
+    "height": 248,
+    "res": 2,
+    "path": "native-alpha",
+    "pivot": {
+      "x": 0.4167,
+      "y": 0.9758
+    },
+    "attachmentPoints": {
+      "mouth": {
+        "x": 0.7696,
+        "y": 0.7016
+      }
+    },
+    "decisions": [],
+    "issues": []
+  },
+  "kidB_arm": {
+    "src": "assets/processed/kidB_arm/processed-transparent.png",
+    "width": 54,
+    "height": 198,
+    "res": 2,
+    "path": "native-alpha",
+    "pivot": {
+      "x": 0.5,
+      "y": 0.1263
+    },
+    "attachmentPoints": {
+      "hand": {
+        "x": 0.5,
+        "y": 0.8737
+      }
+    },
+    "decisions": [],
+    "issues": []
+  },
+  "kidB_thigh": {
+    "src": "assets/processed/kidB_thigh/processed-transparent.png",
+    "width": 66,
+    "height": 136,
+    "res": 2,
+    "path": "native-alpha",
+    "pivot": {
+      "x": 0.5,
+      "y": 0.1544
+    },
+    "attachmentPoints": {
+      "knee": {
+        "x": 0.5,
+        "y": 0.8603
+      }
+    },
+    "decisions": [],
+    "issues": []
+  },
+  "kidB_shin": {
+    "src": "assets/processed/kidB_shin/processed-transparent.png",
+    "width": 102,
+    "height": 156,
+    "res": 2,
+    "path": "native-alpha",
+    "pivot": {
+      "x": 0.3039,
+      "y": 0.109
+    },
+    "attachmentPoints": {
+      "sole": {
+        "x": 0.3627,
+        "y": 0.9679
+      }
+    },
+    "decisions": [],
+    "issues": []
+  },
+  "mouth_smile": {
+    "src": "assets/processed/mouth_smile/processed-transparent.png",
+    "width": 60,
+    "height": 24,
+    "res": 2,
+    "path": "native-alpha",
+    "pivot": {
+      "x": 0.5,
+      "y": 0.5833
+    },
+    "decisions": [],
+    "issues": []
+  },
+  "mouth_laugh": {
+    "src": "assets/processed/mouth_laugh/processed-transparent.png",
+    "width": 62,
+    "height": 46,
+    "res": 2,
+    "path": "native-alpha",
+    "pivot": {
+      "x": 0.5,
+      "y": 0.3261
+    },
+    "decisions": [],
+    "issues": []
+  },
+  "mouth_o": {
+    "src": "assets/processed/mouth_o/processed-transparent.png",
+    "width": 38,
+    "height": 46,
+    "res": 2,
+    "path": "native-alpha",
+    "pivot": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "decisions": [],
+    "issues": []
+  }
+}

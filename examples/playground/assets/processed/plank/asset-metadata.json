@@ -1,0 +1,128 @@
+{
+  "ok": true,
+  "source": "../../originals/plank.png",
+  "sourceSha256": "1dd57bffa7eb6cefc0b15d70f0c766d4e5bec4a4ba8dabe6645c6508abb65b4f",
+  "path": "color-key",
+  "files": {
+    "original": "original.png",
+    "backgroundMask": "background-mask.png",
+    "untrimmed": "untrimmed-transparent.png",
+    "processed": "processed-transparent.png",
+    "metadata": "asset-metadata.json"
+  },
+  "alpha": {
+    "hasAlphaChannel": true,
+    "borderTransparentFraction": 0,
+    "transparentFraction": 0,
+    "partialFraction": 0,
+    "opaqueFraction": 1
+  },
+  "components": [
+    {
+      "id": 1,
+      "pixelCount": 77084,
+      "bounds": {
+        "left": 57,
+        "top": 61,
+        "right": 1583,
+        "bottom": 127
+      },
+      "centroid": {
+        "x": 819.5,
+        "y": 100.4
+      },
+      "share": 1
+    }
+  ],
+  "removedComponents": [],
+  "issues": [],
+  "detection": {
+    "ok": true,
+    "backgroundDetected": true,
+    "detectedColor": {
+      "r": 224,
+      "g": 32,
+      "b": 200
+    },
+    "detectedColorHex": "#e020c8",
+    "borderUniformity": 1,
+    "sideUniformity": {
+      "top": 1,
+      "right": 1,
+      "bottom": 1,
+      "left": 1
+    },
+    "sideColorSpread": 0,
+    "noise": 1.02,
+    "confidence": 1,
+    "sampledPixels": 43584,
+    "issues": [],
+    "options": {
+      "borderSampleSize": 12,
+      "uniformityTolerance": 12,
+      "minUniformity": 0.9,
+      "minSideUniformity": 0.97
+    }
+  },
+  "removal": {
+    "holes": [],
+    "stats": {
+      "removedPixels": 250916,
+      "edgeBandPixels": 9636,
+      "partialAlphaPixels": 3139,
+      "preservedEnclosedPixels": 0
+    },
+    "options": {
+      "colorTolerance": 18,
+      "edgeSoftness": 3,
+      "despill": true,
+      "minContrast": 30,
+      "residualTolerance": 0.1,
+      "removeHoles": [],
+      "minHoleSize": 25
+    }
+  },
+  "trim": {
+    "originalWidth": 1640,
+    "originalHeight": 200,
+    "trimmedWidth": 1530,
+    "trimmedHeight": 70,
+    "offsetX": 55,
+    "offsetY": 59,
+    "visibleBounds": {
+      "left": 57,
+      "top": 61,
+      "right": 1583,
+      "bottom": 127
+    },
+    "alphaThreshold": 4,
+    "padding": 2,
+    "empty": false
+  },
+  "size": {
+    "width": 1530,
+    "height": 70
+  },
+  "attachmentPoints": {
+    "seat_left": {
+      "x": 0.0752,
+      "y": 0.0714
+    },
+    "seat_right": {
+      "x": 0.9248,
+      "y": 0.0714
+    },
+    "handle_left": {
+      "x": 0.1797,
+      "y": 0.3571
+    },
+    "handle_right": {
+      "x": 0.8203,
+      "y": 0.3571
+    },
+    "__pivot": {
+      "x": 0.5,
+      "y": 0.6429
+    }
+  }
+}

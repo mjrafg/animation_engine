@@ -1,0 +1,66 @@
+{
+  "ok": true,
+  "source": "../../originals/flowers.png",
+  "sourceSha256": "8acd69a4c217a370f820651dd44360ab8f0af1a027f4b978deb88e7f824071fa",
+  "path": "native-alpha",
+  "files": {
+    "original": "original.png",
+    "backgroundMask": "background-mask.png",
+    "untrimmed": "untrimmed-transparent.png",
+    "processed": "processed-transparent.png",
+    "metadata": "asset-metadata.json"
+  },
+  "alpha": {
+    "hasAlphaChannel": true,
+    "borderTransparentFraction": 1,
+    "transparentFraction": 0.7534,
+    "partialFraction": 0.019,
+    "opaqueFraction": 0.2276
+  },
+  "components": [
+    {
+      "id": 1,
+      "pixelCount": 34590,
+      "bounds": {
+        "left": 24,
+        "top": 104,
+        "right": 464,
+        "bottom": 268
+      },
+      "centroid": {
+        "x": 243.5,
+        "y": 187.3
+      },
+      "share": 1
+    }
+  ],
+  "removedComponents": [],
+  "issues": [],
+  "trim": {
+    "originalWidth": 488,
+    "originalHeight": 288,
+    "trimmedWidth": 444,
+    "trimmedHeight": 168,
+    "offsetX": 22,
+    "offsetY": 102,
+    "visibleBounds": {
+      "left": 24,
+      "top": 104,
+      "right": 464,
+      "bottom": 268
+    },
+    "alphaThreshold": 4,
+    "padding": 2,
+    "empty": false
+  },
+  "size": {
+    "width": 444,
+    "height": 168
+  },
+  "attachmentPoints": {
+    "__pivot": {
+      "x": 0.5,
+      "y": 0.9643
+    }
+  }
+}
