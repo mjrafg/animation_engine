@@ -3,7 +3,7 @@
  * attachments) once, plus the engine-evaluated state of every requested frame.
  */
 import { EngineError } from "../errors.js";
-import { runBlenderJob, type BlenderEvent } from "./blender.js";
+import { chooseEngine, runBlenderJob, type BlenderEvent } from "./blender.js";
 import { evaluateScene3D, type Frame3DState } from "./evaluate.js";
 import type { ModelInfo } from "./gltf.js";
 import type { Scene3D } from "./schema.js";
@@ -23,19 +23,22 @@ export interface Render3DOptions {
   quality?: "draft" | "standard" | "high";
 }
 
-function staticJob(ctx: Scene3DContext, mode: string, quality?: string) {
+async function staticJob(ctx: Scene3DContext, mode: string, quality?: string) {
   const s = ctx.scene;
+  const q = quality ?? s.render.quality;
+  const engine = mode === "measure" ? "workbench" : await chooseEngine(q, s.render.engine);
   return {
     mode,
     width: s.canvas.width,
     height: s.canvas.height,
     fps: s.canvas.fps,
     render: {
-      quality: quality ?? s.render.quality,
-      engine: s.render.engine ?? "cycles",
+      quality: q,
+      engine,
       ...(s.render.samples ? { samples: s.render.samples } : {}),
       transparent: s.render.transparentBackground,
       device: process.env.VIDEO_ENGINE_3D_DEVICE === "GPU" ? "GPU" : "CPU",
+      ...(process.env.VE3D_TUNE ? { tune: JSON.parse(process.env.VE3D_TUNE) } : {}),
     },
     camera: { near: s.camera.near, far: s.camera.far },
     lights: s.lights.map((l) => ({ id: l.id, type: l.type, size: l.size, spotAngle: l.spotAngle, shadows: l.shadows })),
@@ -138,7 +141,7 @@ export async function renderFrames3D(
   for (const f of frames) checkFrame(ctx, f.frame);
   if (o.measure) checkObjects(ctx, o.measure.objects);
   const job = {
-    ...staticJob(ctx, "render", o.quality),
+    ...(await staticJob(ctx, "render", o.quality)),
     frames: frames.map((f) => ({ frame: f.frame, out: f.out, state: frameState(ctx, f.frame) })),
     ...(o.measure ? { measure: true, bones: bonesRequest(ctx, o.measure.bones) } : {}),
   };
@@ -160,7 +163,7 @@ export async function renderFrames3D(
 export async function measure3D(ctx: Scene3DContext, frame: number, o: Measure3DOptions = {}): Promise<Measurement3D> {
   checkFrame(ctx, frame);
   checkObjects(ctx, o.objects);
-  const job = { ...staticJob(ctx, "measure", "draft"), frame, state: frameState(ctx, frame), bones: bonesRequest(ctx, o.bones) };
+  const job = { ...(await staticJob(ctx, "measure", "draft")), frame, state: frameState(ctx, frame), bones: bonesRequest(ctx, o.bones) };
   const events = await runBlenderJob(job);
   const m = events.find((e) => e.event === "measure");
   if (!m) throw new EngineError("RENDER_FAILED", "3D backend returned no measurement");

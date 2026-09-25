@@ -10,7 +10,8 @@ Builds the engine's reusable 3D test assets (GLB) with Blender, fully procedural
   mug.glb        prop, origin at the bottom centre, 10 cm tall.
   room.glb       environment: floor, two walls, window, rug, table (origin at floor centre).
 
-No external inputs: re-running produces the same assets.
+No external inputs: re-running produces equivalent assets (same geometry, rig, clips and morphs;
+the GLB bytes are not guaranteed identical between runs).
 """
 import math
 import os
@@ -291,14 +292,15 @@ def build_room():
     cube("back_wall", (8, 0.1, 3), (0, 4, 1.5), wall)
     cube("left_wall", (0.1, 8, 3), (-4, 0, 1.5), wall)
     cube("baseboard", (8, 0.12, 0.12), (0, 3.94, 0.06), trim)
-    cube("window_frame", (1.7, 0.08, 1.2), (1.2, 3.96, 1.7), trim)
-    cube("window_glass", (1.5, 0.1, 1.0), (1.2, 3.95, 1.7), glass)
+    # front faces kept >= 1 cm apart (wall 3.95, frame 3.90, glass 3.92) to avoid z-fighting
+    cube("window_frame", (1.7, 0.1, 1.2), (1.2, 3.95, 1.7), trim)
+    cube("window_glass", (1.5, 0.1, 1.0), (1.2, 3.97, 1.7), glass)
     cylinder("rug", 1.3, 0.01, (0, 0.2, 0.005), rug, 64)
     cube("table_top", (1.2, 0.7, 0.05), (1.6, 1.6, 0.75), table)
     for dx in (-0.53, 0.53):
         for dy in (-0.3, 0.3):
             cube("table_leg", (0.05, 0.05, 0.73), (1.6 + dx, 1.6 + dy, 0.365), table)
-    cube("frame_picture", (0.9, 0.04, 0.6), (-1.5, 3.95, 1.8), mat("picture", (0.2, 0.35, 0.5, 1), 0.6))
+    cube("frame_picture", (0.9, 0.06, 0.6), (-1.5, 3.94, 1.8), mat("picture", (0.2, 0.35, 0.5, 1), 0.6))
     export(os.path.join(OUT, "room.glb"))
 
 

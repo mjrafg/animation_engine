@@ -145,3 +145,40 @@ export async function runBlenderJob(job: Record<string, unknown>, o: RunOptions 
   }
   return events;
 }
+
+const probes = new Map<string, Promise<boolean>>();
+
+/** Whether `engine` renders headless on this machine (EEVEE needs EGL/OpenGL). Cached per process. */
+export function engineWorks(engine: "eevee" | "cycles" | "workbench"): Promise<boolean> {
+  let p = probes.get(engine);
+  if (!p) {
+    p = (async () => {
+      if (!blenderInfo().available) return false;
+      const out = path.join(os.tmpdir(), `ve3d-probe-${process.pid}-${engine}.png`);
+      try {
+        const ev = await runBlenderJob(
+          { mode: "probe", out, width: 64, height: 64, fps: 24, render: { quality: "draft", engine, transparent: false } },
+          { idleTimeoutMs: 60_000 },
+        );
+        return ev.some((e) => e.event === "probe" && e.ok);
+      } catch {
+        return false;
+      } finally {
+        fs.rmSync(out, { force: true });
+      }
+    })();
+    probes.set(engine, p);
+  }
+  return p;
+}
+
+/**
+ * Renderer unless the scene forces one: EEVEE (fast raster, needs EGL/OpenGL) when it works on
+ * this machine, otherwise Cycles (CPU path tracer, always works headless, much slower).
+ */
+export async function chooseEngine(quality: string, forced?: string): Promise<"eevee" | "cycles" | "workbench"> {
+  if (forced === "eevee" || forced === "cycles" || forced === "workbench") return forced;
+  void quality;
+  if (process.env.VIDEO_ENGINE_3D_ENGINE !== "cycles" && (await engineWorks("eevee"))) return "eevee";
+  return "cycles";
+}

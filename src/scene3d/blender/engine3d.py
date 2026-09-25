@@ -271,7 +271,7 @@ class Scene3D:
         quality = r.get("quality", "standard")
         if engine == "cycles":
             sc.render.engine = "CYCLES"
-            sc.cycles.samples = r.get("samples") or {"draft": 8, "standard": 24, "high": 96}[quality]
+            sc.cycles.samples = r.get("samples") or {"draft": 8, "standard": 24, "high": 64}[quality]
             sc.cycles.preview_samples = sc.cycles.samples
             try:
                 import _cycles
@@ -289,13 +289,25 @@ class Scene3D:
             except TypeError:
                 sc.render.engine = "BLENDER_EEVEE"
             sc.eevee.taa_render_samples = r.get("samples") or {"draft": 8, "standard": 32, "high": 64}[quality]
-            self.device = "GPU/EGL"
+            try:
+                sc.eevee.use_soft_shadows = quality != "draft"
+                sc.eevee.use_gtao = quality == "high"
+                sc.eevee.gtao_distance = 0.5
+                if quality == "high":
+                    sc.eevee.shadow_cube_size = "1024"
+                    sc.eevee.shadow_cascade_size = "2048"
+            except AttributeError:  # EEVEE Next (4.2+) has different shadow settings
+                pass
+            self.device = "OpenGL/EGL"
         else:
             sc.render.engine = "BLENDER_WORKBENCH"
             sc.display.shading.light = "STUDIO"
             sc.display.shading.color_type = "MATERIAL"
             sc.display.shading.show_shadows = True
             self.device = "CPU"
+        for k, v in (r.get("tune") or {}).items():  # experiments only
+            obj, _, attr = k.rpartition(".")
+            setattr({"cycles": sc.cycles, "render": sc.render, "eevee": sc.eevee}[obj], attr, v)
         sc.view_settings.view_transform = "Standard"
         sc.view_settings.look = "None"
         world = bpy.data.worlds.new("World")
@@ -708,12 +720,20 @@ def run_thumbnail(job):
     emit({"event": "thumbnail", "file": job["out"], **info})
 
 
+def run_probe(job):
+    """Checks that the requested engine can render headless here (EEVEE needs an EGL/OpenGL stack)."""
+    job = {**job, "objects": [], "lights": [], "camera": {"near": 0.1, "far": 100}}
+    s = Scene3D(job)
+    s.render(job["out"])
+    emit({"event": "probe", "engine": s.sc.render.engine, "device": s.device, "ok": os.path.exists(job["out"])})
+
+
 def main():
     argv = sys.argv[sys.argv.index("--") + 1:]
     with open(argv[0]) as f:
         job = json.load(f)
     try:
-        {"render": run_render, "measure": run_measure, "thumbnail": run_thumbnail}[job["mode"]](job)
+        {"render": run_render, "measure": run_measure, "thumbnail": run_thumbnail, "probe": run_probe}[job["mode"]](job)
         emit({"event": "done"})
     except JobError as e:
         emit({"event": "error", "code": e.code, "message": str(e), "details": e.details})

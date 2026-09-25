@@ -1,0 +1,459 @@
+{
+  "quality": "standard",
+  "seconds": 392.2,
+  "renderSeconds": 373.42,
+  "video": {
+    "file": "examples/3d-proof/out/mika_3d.mp4",
+    "bytes": 528487,
+    "frames": 120,
+    "fps": 24,
+    "width": 1280,
+    "height": 720
+  },
+  "checks": [
+    {
+      "name": "model thumbnail rendered by the 3D backend",
+      "ok": true,
+      "detail": {
+        "relativePath": "assets/mika/view.jpg",
+        "width": 640,
+        "height": 480,
+        "bytes": 5309
+      }
+    },
+    {
+      "name": "measurement detects the character is not fully on screen at frame 0",
+      "ok": true,
+      "detail": {
+        "visibleFraction": 0
+      }
+    },
+    {
+      "name": "frame 0: character fully on screen (clip walk)",
+      "ok": true,
+      "detail": {
+        "x": 59.2,
+        "w": 235.6
+      }
+    },
+    {
+      "name": "frame 0: mug stays in the right hand",
+      "ok": true,
+      "detail": {
+        "mug": {
+          "x": -1.7896,
+          "y": 0.9358,
+          "z": 0.6019
+        },
+        "hand": {
+          "x": -1.9117,
+          "y": 0.9953,
+          "z": 0.6104
+        }
+      }
+    },
+    {
+      "name": "frame 30: character fully on screen (clip walk)",
+      "ok": true,
+      "detail": {
+        "x": 358.2,
+        "w": 104.4
+      }
+    },
+    {
+      "name": "frame 30: mug stays in the right hand",
+      "ok": true,
+      "detail": {
+        "mug": {
+          "x": -0.8284,
+          "y": 0.8242,
+          "z": 0.63
+        },
+        "hand": {
+          "x": -0.9056,
+          "y": 0.9361,
+          "z": 0.63
+        }
+      }
+    },
+    {
+      "name": "frame 60: character fully on screen (clip idle+walk)",
+      "ok": true,
+      "detail": {
+        "x": 560.1,
+        "w": 136.3
+      }
+    },
+    {
+      "name": "frame 60: mug stays in the right hand",
+      "ok": true,
+      "detail": {
+        "mug": {
+          "x": -0.195,
+          "y": 0.7707,
+          "z": 0.5805
+        },
+        "hand": {
+          "x": -0.2123,
+          "y": 0.9025,
+          "z": 0.552
+        }
+      }
+    },
+    {
+      "name": "frame 84: character fully on screen (clip wave)",
+      "ok": true,
+      "detail": {
+        "x": 489.3,
+        "w": 206.8
+      }
+    },
+    {
+      "name": "frame 84: mug stays in the right hand",
+      "ok": true,
+      "detail": {
+        "mug": {
+          "x": -0.5989,
+          "y": 1.8998,
+          "z": 0.44
+        },
+        "hand": {
+          "x": -0.5079,
+          "y": 1.807,
+          "z": 0.4
+        }
+      }
+    },
+    {
+      "name": "frame 119: character fully on screen (clip idle)",
+      "ok": true,
+      "detail": {
+        "x": 551.8,
+        "w": 155.4
+      }
+    },
+    {
+      "name": "frame 119: mug stays in the right hand",
+      "ok": true,
+      "detail": {
+        "mug": {
+          "x": -0.2914,
+          "y": 0.7718,
+          "z": 0.4304
+        },
+        "hand": {
+          "x": -0.2787,
+          "y": 0.9025,
+          "z": 0.3949
+        }
+      }
+    },
+    {
+      "name": "video render completed",
+      "ok": true
+    }
+  ],
+  "scene": {
+    "sceneId": "living_room",
+    "version": 1,
+    "kind": "3d",
+    "name": "living_room",
+    "canvas": {
+      "width": 1280,
+      "height": 720,
+      "fps": 24,
+      "background": "#000000"
+    },
+    "duration": 120,
+    "render": {
+      "quality": "standard",
+      "transparentBackground": false
+    },
+    "world": {
+      "color": "#c9d6e3",
+      "strength": 0.6
+    },
+    "camera": {
+      "position": {
+        "x": 0.4,
+        "y": 1.5,
+        "z": 3.2
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "fov": 57,
+      "near": 0.05,
+      "far": 500,
+      "lookAt": {
+        "x": 0,
+        "y": 1.1,
+        "z": 0
+      }
+    },
+    "lights": [
+      {
+        "id": "key",
+        "type": "sun",
+        "intensity": 3.2,
+        "rotation": {
+          "x": -50,
+          "y": -35,
+          "z": 0
+        },
+        "size": 3
+      },
+      {
+        "id": "fill",
+        "type": "area",
+        "intensity": 250,
+        "position": {
+          "x": 2.5,
+          "y": 2.6,
+          "z": 3
+        },
+        "rotation": {
+          "x": -35,
+          "y": 40,
+          "z": 0
+        },
+        "size": 2.5,
+        "shadows": false
+      }
+    ],
+    "objects": [
+      {
+        "id": "room",
+        "asset": "room"
+      },
+      {
+        "id": "mika",
+        "asset": "mika",
+        "clip": "walk",
+        "position": {
+          "x": -2.2,
+          "y": 0,
+          "z": 0.4
+        },
+        "rotation": {
+          "x": 0,
+          "y": 90,
+          "z": 0
+        }
+      },
+      {
+        "id": "cup",
+        "asset": "mug",
+        "attach": {
+          "object": "mika",
+          "bone": "rightHand"
+        },
+        "position": {
+          "x": 0,
+          "y": -0.13,
+          "z": 0.04
+        }
+      }
+    ],
+    "animations": [
+      {
+        "target": "mika",
+        "property": "position.x",
+        "keyframes": [
+          {
+            "frame": 0,
+            "value": -2.2
+          },
+          {
+            "frame": 54,
+            "value": 0
+          }
+        ]
+      },
+      {
+        "target": "mika",
+        "property": "rotation.y",
+        "keyframes": [
+          {
+            "frame": 0,
+            "value": 90
+          },
+          {
+            "frame": 54,
+            "value": 90,
+            "interpolation": "ease-in-out"
+          },
+          {
+            "frame": 66,
+            "value": 0
+          }
+        ]
+      },
+      {
+        "target": "mika",
+        "property": "clip",
+        "keyframes": [
+          {
+            "frame": 0,
+            "value": "walk"
+          },
+          {
+            "frame": 54,
+            "value": "idle"
+          },
+          {
+            "frame": 66,
+            "value": "wave"
+          },
+          {
+            "frame": 102,
+            "value": "idle"
+          }
+        ]
+      },
+      {
+        "target": "mika",
+        "property": "morph.smile",
+        "keyframes": [
+          {
+            "frame": 70,
+            "value": 0,
+            "interpolation": "ease-out"
+          },
+          {
+            "frame": 82,
+            "value": 1
+          },
+          {
+            "frame": 119,
+            "value": 1
+          }
+        ]
+      },
+      {
+        "target": "mika",
+        "property": "morph.mouth_open",
+        "keyframes": [
+          {
+            "frame": 96,
+            "value": 0
+          },
+          {
+            "frame": 99,
+            "value": 0.7
+          },
+          {
+            "frame": 102,
+            "value": 0.1
+          },
+          {
+            "frame": 105,
+            "value": 0.8
+          },
+          {
+            "frame": 108,
+            "value": 0.2
+          },
+          {
+            "frame": 111,
+            "value": 0.6
+          },
+          {
+            "frame": 114,
+            "value": 0
+          }
+        ]
+      },
+      {
+        "target": "mika",
+        "property": "morph.blink",
+        "keyframes": [
+          {
+            "frame": 40,
+            "value": 0
+          },
+          {
+            "frame": 42,
+            "value": 1
+          },
+          {
+            "frame": 44,
+            "value": 0
+          },
+          {
+            "frame": 88,
+            "value": 0
+          },
+          {
+            "frame": 90,
+            "value": 1
+          },
+          {
+            "frame": 92,
+            "value": 0
+          }
+        ]
+      },
+      {
+        "target": "camera",
+        "property": "position.z",
+        "keyframes": [
+          {
+            "frame": 0,
+            "value": 3.2
+          },
+          {
+            "frame": 54,
+            "value": 3.2,
+            "interpolation": "ease-in-out"
+          },
+          {
+            "frame": 119,
+            "value": 3.15
+          }
+        ]
+      },
+      {
+        "target": "camera",
+        "property": "lookAt.y",
+        "keyframes": [
+          {
+            "frame": 0,
+            "value": 1.1
+          },
+          {
+            "frame": 54,
+            "value": 1.1,
+            "interpolation": "ease-in-out"
+          },
+          {
+            "frame": 119,
+            "value": 1.35
+          }
+        ]
+      }
+    ],
+    "overlay": {
+      "scene": "title_overlay"
+    },
+    "audio": [
+      {
+        "assetId": "music",
+        "startFrame": 0,
+        "volume": 0.8
+      },
+      {
+        "assetId": "chime",
+        "startFrame": 66,
+        "volume": 0.9
+      }
+    ],
+    "assetsUsed": [
+      "room",
+      "mika",
+      "mug"
+    ]
+  }
+}

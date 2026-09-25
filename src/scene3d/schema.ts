@@ -4,8 +4,9 @@
  * 2D scene documents (no `kind`) are unaffected.
  *
  * Coordinates follow glTF: metres, right-handed, +Y up, -Z is "into the screen" for the default
- * camera; a model's front faces +Z. Rotations are Euler angles in DEGREES applied X, then Y, then
- * Z (intrinsic XYZ). The engine owns the timeline; the 3D renderer only draws the evaluated state.
+ * camera; a model's front faces +Z. Rotations are Euler angles in DEGREES: x is applied first,
+ * then y, then z, each about the parent's fixed axes (matrix Rz·Ry·Rx). The engine owns the
+ * timeline; the 3D renderer only draws the evaluated state.
  */
 import { z } from "zod";
 import { AnimationSchema, AudioSchema, CanvasSchema, ColorSchema, IdSchema } from "../scene/schema.js";
@@ -21,8 +22,10 @@ export const RESERVED_3D_TARGETS = ["camera", "world"] as const;
 
 export const PrimitiveSchema = z
   .object({
-    shape: z.enum(["plane", "box", "sphere", "cylinder"]).describe("plane lies flat on the XZ ground plane (normal +Y)."),
-    size: Vec3Schema.optional().describe("Size in metres along x (width), y (height), z (depth). plane uses x and z; sphere uses x as diameter."),
+    shape: z
+      .enum(["plane", "box", "sphere", "cylinder"])
+      .describe("plane lies flat on the XZ ground plane (normal +Y), centred on the object position; box/sphere/cylinder stand ON the position (their origin is the bottom centre, like a model's feet)."),
+    size: Vec3Schema.optional().describe("Size in metres along x (width), y (height), z (depth). plane uses x and z (default 10 x 10); sphere uses x as diameter; box/sphere/cylinder default 1 m."),
     color: ColorSchema.default("#bbbbbb"),
     roughness: num().min(0).max(1).default(0.6),
     metallic: num().min(0).max(1).default(0),
@@ -46,7 +49,7 @@ export const Object3DSchema = z
     parent: IdSchema.nullable().optional().describe("Transform parent object id (inherits its position/rotation/scale)."),
     attach: AttachSchema.optional(),
     position: vec(0, 0, 0).describe("Metres, glTF axes: +x right, +y up, +z toward the default camera."),
-    rotation: vec(0, 0, 0).describe("Degrees about x, y, z (applied in that order). y=180 turns a model to face away from the default camera."),
+    rotation: vec(0, 0, 0).describe("Degrees about x, y, z (x first, then y, then z, about fixed axes). Models face +z (toward the default camera); y=90 faces +x (screen right), y=180 faces away."),
     scale: vec(1, 1, 1),
     visible: z.boolean().default(true),
     clip: z.string().nullable().optional().describe("Animation clip playing from frame 0 (see the asset's clips). Change it over time with a 'clip' keyframe track."),
@@ -97,8 +100,11 @@ export const World3DSchema = z
 
 export const Render3DSchema = z
   .object({
-    quality: z.enum(["draft", "standard", "high"]).default("standard").describe("draft: fast/noisy preview; standard: video; high: slower, cleaner."),
-    engine: z.enum(["cycles", "eevee", "workbench"]).optional().describe("Advanced: force a renderer. Default cycles (CPU path tracer, reliable headless)."),
+    quality: z.enum(["draft", "standard", "high"]).default("standard").describe("draft: fastest (previews); standard: soft shadows (video); high: ambient occlusion, sharper shadows, more samples (slower)."),
+    engine: z
+      .enum(["cycles", "eevee", "workbench"])
+      .optional()
+      .describe("Advanced: force a renderer. Default: eevee (fast raster) when the machine has an OpenGL/EGL stack, otherwise cycles (CPU path tracer, several times slower)."),
     samples: z.number().int().min(1).max(4096).optional().describe("Advanced: override samples per pixel."),
     transparentBackground: z.boolean().default(false).describe("Render the world as transparent (alpha) instead of its colour."),
   })

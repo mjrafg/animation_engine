@@ -5,3 +5,4 @@ examples/kitchen/out/.tmp/
 dist/
 __pycache__/
 *.pyc
+examples/3d-proof/out/ws/
