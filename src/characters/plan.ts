@@ -269,7 +269,12 @@ export function planCharacter(inst: CharacterInstance, def: CharacterDefinition,
       plan.facing.push({ f0: it.f0, frames: turnFrames, value: (Math.atan2(target.x - pos.x, target.z - pos.z) * 180) / Math.PI, actionId: it.id });
     }
     plan.locomotion.push({ actionId: it.id, name: a.action, type: "move", f0: it.f0, f1: it.f1, motion: it.def.motion, clip: it.def.clip, from: { ...pos }, to: target });
-    plan.resolved[it.id] = { from: { ...pos }, to: target, speed: +(dist / ((it.f1 - it.f0) / fps)).toFixed(3) };
+    plan.resolved[it.id] = {
+      from: { ...pos },
+      to: target,
+      speed: +(dist / ((it.f1 - it.f0) / fps)).toFixed(3),
+      speedUnit: def.kind === "2d" ? "px/s (default speed x instance scale)" : "m/s (default speed x instance scale)",
+    };
     pos = target;
   }
 
@@ -371,9 +376,12 @@ export function planCharacter(inst: CharacterInstance, def: CharacterDefinition,
     const interval = (typeof ab === "object" ? ab.interval : undefined) ?? def.defaults.autoBlinkInterval;
     const rnd = prng(autoSeed(typeof ab === "object" ? ab.seed : undefined) ^ 0x9e3779b9);
     const bf = Math.max(2, Math.round(def.defaults.blinkDuration * fps));
+    // background blinks keep a 1 s distance from scheduled blinks (never a double blink)
+    const scheduled = plan.blinks.map((b) => b.f0);
+    const gap = Math.round(1 * fps);
     let f = Math.round((0.6 + rnd() * interval) * fps);
     while (f < frames) {
-      plan.blinks.push({ f0: f, f1: f + bf });
+      if (!scheduled.some((s) => Math.abs(s - f) < gap)) plan.blinks.push({ f0: f, f1: f + bf });
       f += Math.round(interval * (0.6 + rnd() * 0.8) * fps);
     }
   }

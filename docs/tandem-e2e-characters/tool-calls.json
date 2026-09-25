@@ -1,0 +1,144 @@
+[
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_library_list",
+  "status": "done",
+  "durationMs": 5
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_workspace_create",
+  "status": "done",
+  "durationMs": 6
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_library_list",
+  "status": "done",
+  "durationMs": 16
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_character_list",
+  "status": "done",
+  "durationMs": 5
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_character_import",
+  "status": "done",
+  "durationMs": 49
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_character_inspect",
+  "status": "done",
+  "durationMs": 5
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_scene_create",
+  "status": "done",
+  "durationMs": 7
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_layer_add",
+  "status": "done",
+  "durationMs": 8
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_speech_timing_save",
+  "status": "done",
+  "durationMs": 4
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_character_add",
+  "status": "done",
+  "durationMs": 29
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_character_actions",
+  "status": "done",
+  "durationMs": 45
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_render_preview",
+  "status": "done",
+  "durationMs": 182
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_render_preview",
+  "status": "done",
+  "durationMs": 168
+ },
+ {
+  "kind": "file_read",
+  "path": "/home/user/tandem-e2e/video-workspaces/cast-e2e/previews/pip_intro_f120_preview_1.view.jpg"
+ },
+ {
+  "kind": "file_read",
+  "path": "/home/user/tandem-e2e/video-workspaces/cast-e2e/previews/pip_intro_f120_debug_1.view.jpg"
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_measure_layout",
+  "status": "done",
+  "durationMs": 6
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_character_timeline",
+  "status": "done",
+  "durationMs": 7
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_character_update",
+  "status": "done",
+  "durationMs": 30
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_character_actions",
+  "status": "done",
+  "durationMs": 21
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_render_preview",
+  "status": "done",
+  "durationMs": 172
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_render_preview",
+  "status": "done",
+  "durationMs": 126
+ },
+ {
+  "kind": "file_read",
+  "path": "/home/user/tandem-e2e/video-workspaces/cast-e2e/previews/pip_intro_f120_preview_2.view.jpg"
+ },
+ {
+  "kind": "file_read",
+  "path": "/home/user/tandem-e2e/video-workspaces/cast-e2e/previews/pip_intro_f176_preview_3.view.jpg"
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_render_video_start",
+  "status": "done",
+  "durationMs": 11
+ },
+ {
+  "kind": "tool_call",
+  "tool": "video_engine_render_video_status",
+  "status": "done",
+  "durationMs": 1292
+ }
+]

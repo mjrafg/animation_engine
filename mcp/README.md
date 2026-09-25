@@ -92,7 +92,7 @@ Configuration comes from flags or environment. Tandem passes environment variabl
 - **Asset reuse:** layers reference assets by id (`"asset": "cup"`). Any number of layers and scenes use one asset file, and re-importing identical bytes returns the existing asset (`reused: true`).
 - **Processing is non-destructive:** `asset_process`, `asset_trim` and `asset_component_remove` create a new asset whose `provenance` names its source.
 
-## Tools (40)
+## Tools (49)
 
 | Group | Tools |
 |---|---|
@@ -103,7 +103,16 @@ Configuration comes from flags or environment. Tandem passes environment variabl
 | Layers | `layer_add` (batch), `layer_update` (multi-property / multi-layer, atomic), `layer_remove`, `layer_list` |
 | Timeline | `timeline_get`, `timeline_apply` (atomic batch: `keyframe.add/update/remove`, `track.set/remove`; target = layer id or `camera`) |
 | Layout & render | `measure_layout`, `render_preview` (`debug`), `render_frame`, `render_video_start`, `render_video_status` (`waitSeconds` ≤ 45), `render_video_cancel`, `artifact_list` |
+| Characters | `character_list`, `character_import`, `character_inspect`, `character_add`, `character_update`, `character_remove`, `character_actions` (atomic high-level action batch), `character_timeline`, `speech_timing_save` |
 | 3D | `object_add`, `object_update`, `object_remove`, `object_list`, `scene_settings_3d`. `scene_create kind:"3d"`; timeline, measure and render tools work on both kinds. |
+
+**Prepared characters** (see [`docs/CHARACTERS.md`](../docs/CHARACTERS.md)):
+
+- `character_import` a package from a library once.
+- `character_add` it to a 2D or 3D scene.
+- Schedule `walk`/`run`/`idle`/`talk`/`smile`/`blink`/`wave`/`point`/`turn`/`look` with `character_actions`; one call can hold a whole performance.
+- Speech timing (visemes, characters or words) is saved with `speech_timing_save`.
+- Generated tracks carry `owner`, and low-level edits to them are refused (`OWNED_BY_CHARACTER`).
 
 **3D scenes** (see [`docs/3D.md`](../docs/3D.md)):
 
@@ -216,8 +225,8 @@ VIDEO_ENGINE_DIR=/opt/animation_engine VIDEO_ENGINE_ROOT=/srv/tandem/video-works
 VIDEO_ENGINE_LIBRARIES="kitchen=/opt/animation_engine/examples/kitchen/assets/originals" \
 node integrations/tandem/register.mjs
 # Created integration Video Engine (slug video_engine, …)
-# Connection test: OK — Connected — the server reports 40 tools.
-# Discovered 40 tools: video_engine_artifact_list, …
+# Connection test: OK — Connected — the server reports 49 tools.
+# Discovered 49 tools: video_engine_artifact_list, …
 ```
 
 Integration tools default to the `builder` role. Grant `reviewer` in Settings → Integrations if a

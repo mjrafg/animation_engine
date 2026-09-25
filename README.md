@@ -31,9 +31,23 @@ The engine owns the scene and the timeline. Headless **Blender** only draws the 
 - Design, research findings, Linux install (Blender, EGL), CPU/GPU behaviour, schema and tools: [`docs/3D.md`](docs/3D.md).
 - Proof: `npm run example:3d` → [`examples/3d-proof/out/mika_3d.mp4`](examples/3d-proof/out).
 
+## Prepared characters and high-level actions
+
+A character is **prepared once**, as a package of rig or model, motions or clips, expressions, mouth shapes, eyes and sockets. After that, agents drive it with high-level actions (what, when, how long, where):
+
+- walk or run left/right or to a position, idle, turn, look;
+- talk (from provider-neutral speech timing, or generic), smile or other expressions, blink;
+- gestures such as wave and point;
+- props held at sockets.
+
+Compatible actions combine: walk + talk, talk + smile + blink. Conflicts return structured errors. The runtime compiles the actions into ordinary layers/objects and timeline tracks, so rendering stays canonical and deterministic. It works the same for 2D (Pip) and 3D (Mika) characters.
+
+- Details: [`docs/CHARACTERS.md`](docs/CHARACTERS.md).
+- Proof: `npx tsx examples/characters-proof/run.ts` → `examples/characters-proof/out/pip_2d.mp4`, `mika_3d.mp4`.
+
 ## Agent control over MCP (Tandem)
 
-The engine runs as an **MCP server** (`video-engine-mcp`, 40 tools, 2D and 3D), so agents can control it
+The engine runs as an **MCP server** (`video-engine-mcp`, 49 tools: 2D, 3D and characters), so agents can control it
 entirely through structured tool calls. They inspect capabilities, work in isolated workspaces,
 process assets, build and animate scenes, measure layout, look at previews and render MP4s as
 jobs. Tandem registers it as a standard MCP Integration.
@@ -354,11 +368,13 @@ src/
   api/operations.ts       pure transactional scene edits
   api/tools.ts            agent tool layer (JSON in/out, JSON schemas)
   workspace/              ID-based workspaces, artifacts, render jobs
+  characters/             character runtime: packages, actions -> plan -> compiled tracks, speech
   scene3d/                3D: glTF inspection, Scene3D schema/validation/evaluation/operations,
                           Blender runner (blender.ts) + backend script (blender/engine3d.py)
   cli.ts
 mcp/                      MCP server (thin adapter over the core)
 assets/3d/                3D test assets (+ src/build_assets.py generator, third_party/fox)
+assets/characters/        prepared test characters: pip (2D, + src/build-pip.ts), mika (3D), props
 tests/                    vitest suites (tests/mcp: MCP over stdio)
 examples/kitchen/         test scene: generators, processed assets, scene.json, outputs
 examples/3d-proof/        first 3D proof (run.ts) and its outputs

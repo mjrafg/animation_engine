@@ -1,0 +1,337 @@
+{
+  "seconds": 387.8,
+  "schedule": [
+    {
+      "id": "idle1",
+      "action": "idle",
+      "start": 0,
+      "duration": 1.5
+    },
+    {
+      "id": "walk1",
+      "action": "walk",
+      "start": 1.5,
+      "duration": 3,
+      "direction": "right"
+    },
+    {
+      "id": "talk1",
+      "action": "talk",
+      "start": 4.8,
+      "speech": "hello"
+    },
+    {
+      "id": "smile1",
+      "action": "smile",
+      "start": 5.3,
+      "duration": 4.6
+    },
+    {
+      "id": "blink1",
+      "action": "blink",
+      "start": 6.6,
+      "duration": 1,
+      "count": 2
+    },
+    {
+      "id": "wave1",
+      "action": "wave",
+      "start": 8.5,
+      "duration": 1.2
+    },
+    {
+      "id": "walk2",
+      "action": "walk",
+      "start": 10,
+      "duration": 2,
+      "to": {
+        "x": 220
+      }
+    }
+  ],
+  "videos": {
+    "pip_2d": {
+      "bytes": 608183,
+      "durationSeconds": 12.5
+    },
+    "mika_3d": {
+      "bytes": 383617,
+      "durationSeconds": 12.5
+    }
+  },
+  "checks": [
+    {
+      "name": "2D: idle in place at start",
+      "ok": true
+    },
+    {
+      "name": "2D: walked right 3 s",
+      "ok": true,
+      "detail": {
+        "x": 1000
+      }
+    },
+    {
+      "name": "2D: walked back left",
+      "ok": true,
+      "detail": {
+        "x": 220
+      }
+    },
+    {
+      "name": "2D: no warnings",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "name": "2D: speech from character alignment with audio",
+      "ok": true
+    },
+    {
+      "name": "2D: video rendered",
+      "ok": true,
+      "detail": {
+        "seconds": 2.76
+      }
+    },
+    {
+      "name": "3D: mug follows the left hand (at its 11 cm grip offset)",
+      "ok": true,
+      "detail": {
+        "gap": 0.108
+      }
+    },
+    {
+      "name": "3D: faces the camera while talking",
+      "ok": true,
+      "detail": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "name": "3D: video rendered",
+      "ok": true,
+      "detail": {
+        "seconds": 362.26
+      }
+    }
+  ],
+  "timeline2d": {
+    "id": "pip",
+    "character": "pip",
+    "kind": "2d",
+    "stale": false,
+    "placement": {
+      "x": 220,
+      "y": 660,
+      "scale": 1.3,
+      "facing": "right",
+      "z": 10
+    },
+    "props": [
+      {
+        "id": "mug",
+        "asset": "mug",
+        "socket": "rightHand",
+        "y": 4
+      }
+    ],
+    "actions": [
+      {
+        "id": "idle1",
+        "action": "idle",
+        "start": 0,
+        "duration": 1.5,
+        "resolved": {
+          "action": "idle",
+          "kind": "idle",
+          "channel": "locomotion",
+          "startFrame": 0,
+          "endFrame": 36,
+          "start": 0,
+          "end": 1.5
+        }
+      },
+      {
+        "id": "walk1",
+        "action": "walk",
+        "start": 1.5,
+        "duration": 3,
+        "direction": "right",
+        "resolved": {
+          "from": {
+            "x": 220,
+            "y": 660,
+            "z": 0
+          },
+          "to": {
+            "x": 1000,
+            "y": 660,
+            "z": 0
+          },
+          "speed": 260,
+          "speedUnit": "px/s (default speed x instance scale)",
+          "action": "walk",
+          "kind": "locomotion",
+          "channel": "locomotion",
+          "startFrame": 36,
+          "endFrame": 108,
+          "start": 1.5,
+          "end": 4.5
+        }
+      },
+      {
+        "id": "talk1",
+        "action": "talk",
+        "start": 4.8,
+        "speechId": "hello",
+        "speech": "inline (characters)",
+        "resolved": {
+          "speechSource": "characters",
+          "visemes": 29,
+          "audio": "hello_voice",
+          "action": "talk",
+          "kind": "speech",
+          "channel": "mouth",
+          "startFrame": 115,
+          "endFrame": 201,
+          "start": 4.792,
+          "end": 8.375
+        }
+      },
+      {
+        "id": "smile1",
+        "action": "smile",
+        "start": 5.3,
+        "duration": 4.6,
+        "resolved": {
+          "action": "smile",
+          "kind": "expression",
+          "channel": "expression",
+          "startFrame": 127,
+          "endFrame": 238,
+          "start": 5.292,
+          "end": 9.917
+        }
+      },
+      {
+        "id": "blink1",
+        "action": "blink",
+        "start": 6.6,
+        "duration": 1,
+        "count": 2,
+        "resolved": {
+          "action": "blink",
+          "kind": "blink",
+          "channel": "eyes",
+          "startFrame": 158,
+          "endFrame": 182,
+          "start": 6.583,
+          "end": 7.583
+        }
+      },
+      {
+        "id": "wave1",
+        "action": "wave",
+        "start": 8.5,
+        "duration": 1.2,
+        "resolved": {
+          "action": "wave",
+          "kind": "gesture",
+          "channel": "gesture",
+          "startFrame": 204,
+          "endFrame": 233,
+          "start": 8.5,
+          "end": 9.708
+        }
+      },
+      {
+        "id": "walk2",
+        "action": "walk",
+        "start": 10,
+        "duration": 2,
+        "to": {
+          "x": 220
+        },
+        "resolved": {
+          "from": {
+            "x": 1000,
+            "y": 660,
+            "z": 0
+          },
+          "to": {
+            "x": 220,
+            "y": 660,
+            "z": 0
+          },
+          "speed": 390,
+          "speedUnit": "px/s (default speed x instance scale)",
+          "action": "walk",
+          "kind": "locomotion",
+          "channel": "locomotion",
+          "startFrame": 240,
+          "endFrame": 288,
+          "start": 10,
+          "end": 12
+        }
+      }
+    ],
+    "blinks": [
+      {
+        "at": 2.17,
+        "source": "autoBlink"
+      },
+      {
+        "at": 5.29,
+        "source": "autoBlink"
+      },
+      {
+        "at": 6.58,
+        "source": "action blink1"
+      },
+      {
+        "at": 7.08,
+        "source": "action blink1"
+      },
+      {
+        "at": 9.08,
+        "source": "autoBlink"
+      },
+      {
+        "at": 11.79,
+        "source": "autoBlink"
+      }
+    ],
+    "note": "actions are listed in start order; blinks: autoBlink keeps >= 1 s away from scheduled blinks",
+    "generated": {
+      "layers": [
+        "pip",
+        "pip.upper_arm_l",
+        "pip.forearm_l",
+        "pip.hand_l",
+        "pip.thigh_l",
+        "pip.shin_l",
+        "pip.foot_l",
+        "pip.thigh_r",
+        "pip.shin_r",
+        "pip.foot_r",
+        "pip.hips",
+        "pip.torso",
+        "pip.head",
+        "pip.brows",
+        "pip.eyes",
+        "pip.mouth",
+        "pip.upper_arm_r",
+        "pip.forearm_r",
+        "pip.hand_r",
+        "pip.mug"
+      ],
+      "tracks": 20,
+      "keyframes": 1476,
+      "audio": 1
+    },
+    "issues": []
+  }
+}

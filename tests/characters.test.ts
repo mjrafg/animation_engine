@@ -326,6 +326,18 @@ describe("2D character actions (pip)", () => {
     expect(JSON.stringify(ws.getSceneDoc(sceneId))).toBe(saved);
   });
 
+  it("background blinks never collide with scheduled blinks; blink sources are labelled", async () => {
+    const { ws } = await setup();
+    const sceneId = await scene2d(ws, 30);
+    await act(ws, sceneId, [add({ action: "blink", start: 2, duration: 20, interval: 2.5, seed: 3 })]);
+    const tl = ch.characterTimeline(ws.getSceneDoc(sceneId), ws.characterContext())[0];
+    const sched = (tl.blinks ?? []).filter((b: any) => b.source !== "autoBlink").map((b: any) => b.at);
+    const auto = (tl.blinks ?? []).filter((b: any) => b.source === "autoBlink").map((b: any) => b.at);
+    expect(sched.length).toBeGreaterThanOrEqual(6);
+    expect(auto.length).toBeGreaterThan(0); // before 2 s and after 22 s
+    for (const a of auto) for (const s of sched) expect(Math.abs(a - s)).toBeGreaterThanOrEqual(1 - 1e-9);
+  });
+
   it("keeps the existing low-level 2D path working in the same scene", async () => {
     const { ws } = await setup();
     const sceneId = await scene2d(ws, 3);

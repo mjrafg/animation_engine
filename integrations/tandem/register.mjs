@@ -5,11 +5,11 @@
  *
  *   TANDEM_URL=http://127.0.0.1:7810 TANDEM_EMAIL=admin@example.com TANDEM_PASSWORD=... \
  *   VIDEO_ENGINE_DIR=/opt/animation_engine VIDEO_ENGINE_ROOT=/srv/tandem/video-workspaces \
- *   [VIDEO_ENGINE_LIBRARIES="kitchen=/srv/video-libraries/kitchen;models=/opt/animation_engine/assets/3d"] \
+ *   [VIDEO_ENGINE_LIBRARIES="kitchen=/srv/video-libraries/kitchen;models=/opt/animation_engine/assets/3d;characters=/opt/animation_engine/assets/characters"] \
  *   [BLENDER_PATH=/usr/bin/blender] \
  *   node integrations/tandem/register.mjs
  *
- * Result in Tandem: Settings → Integrations → "Video Engine" (type mcp, transport stdio), its 40
+ * Result in Tandem: Settings → Integrations → "Video Engine" (type mcp, transport stdio), its 49
  * tools served to the Builder as video_engine_<tool> through the tandem_ext gateway.
  */
 import path from "node:path";

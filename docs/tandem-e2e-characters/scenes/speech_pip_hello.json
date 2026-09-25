@@ -1,0 +1,46 @@
+{
+  "text": "Hi! I am Pip. Nice to meet you!",
+  "duration": 3.1,
+  "words": [
+    {
+      "word": "Hi",
+      "start": 0,
+      "end": 0.38
+    },
+    {
+      "word": "I",
+      "start": 0.62,
+      "end": 0.8
+    },
+    {
+      "word": "am",
+      "start": 0.8,
+      "end": 1.02
+    },
+    {
+      "word": "Pip",
+      "start": 1.08,
+      "end": 1.5
+    },
+    {
+      "word": "Nice",
+      "start": 1.78,
+      "end": 2.12
+    },
+    {
+      "word": "to",
+      "start": 2.12,
+      "end": 2.26
+    },
+    {
+      "word": "meet",
+      "start": 2.26,
+      "end": 2.6
+    },
+    {
+      "word": "you",
+      "start": 2.6,
+      "end": 3
+    }
+  ]
+}

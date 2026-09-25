@@ -22,7 +22,7 @@ export const COMPOSITION_RULES = [
   "gestures (wave, point, look, ...): each controls some body parts; two gestures using the same part at the same time are rejected. A 2D gesture overrides locomotion only on its parts (walk + wave works). A 3D gesture plays a full-body clip, so it cannot overlap walk/run.",
   "expression (smile, sad, surprised, ...): one at a time; overlapping expressions are rejected. Neutral when none.",
   "talk: one at a time. Combines with any expression (expression-specific mouth shapes when the character has them), with gestures, locomotion and blinks.",
-  "blink: never conflicts; overlapping blinks merge. autoBlink adds seeded background blinks.",
+  "blink: never conflicts; overlapping blinks merge. autoBlink adds seeded background blinks that keep at least 1 s away from scheduled blinks (autoBlink:false turns them off).",
   "turn: walk/run already face their direction; a turn during walk/run is rejected.",
   "Transitions blend over the character's blend time; everything is deterministic (seeded).",
 ];
@@ -41,7 +41,7 @@ export function describeCharacter(def: CharacterDefinition, sha?: string) {
         channel: KIND_CHANNEL[a.kind],
         params: PARAMS[a.kind],
         ...(dirs ? { directions: dirs } : {}),
-        ...(a.speed ? { defaultSpeed: a.speed, speedUnit: def.kind === "2d" ? "px/s at scale 1" : "m/s" } : {}),
+        ...(a.speed ? { defaultSpeed: a.speed, speedUnit: def.kind === "2d" ? "px/s at scale 1; multiplied by the instance scale" : "m/s at scale 1; multiplied by the instance scale" } : {}),
         ...(a.expression ? { expression: a.expression } : {}),
         ...(a.motion ? { motion: a.motion } : {}),
         ...(a.clip ? { clip: a.clip } : {}),

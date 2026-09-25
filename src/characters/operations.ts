@@ -328,7 +328,10 @@ export function characterTimeline(doc: SceneDoc, ctx: CharacterContext, only?: s
         const { speech, ...rest } = a;
         return { ...rest, ...(speech && typeof speech === "object" ? { speech: `inline (${speech.visemes ? "visemes" : speech.characters ? "characters" : speech.words ? "words" : "no timing"})` } : speech ? { speech } : {}), resolved: resolved[a.id ?? ""] ?? null };
       }),
-      blinks: r.plan ? r.plan.blinks.map((b) => +(b.f0 / doc.canvas.fps).toFixed(2)) : [],
+      blinks: r.plan
+        ? r.plan.blinks.map((b) => ({ at: +(b.f0 / doc.canvas.fps).toFixed(2), source: b.actionId ? `action ${b.actionId}` : "autoBlink" })).sort((x, y) => x.at - y.at)
+        : [],
+      note: "actions are listed in start order; blinks: autoBlink keeps >= 1 s away from scheduled blinks",
       generated,
       issues: [...r.errors, ...r.warnings].map(({ severity, code, message }) => ({ severity, code, message })),
     };

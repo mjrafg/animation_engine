@@ -6,3 +6,4 @@ dist/
 __pycache__/
 *.pyc
 examples/3d-proof/out/ws/
+examples/characters-proof/out/ws/
