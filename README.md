@@ -1,4 +1,4 @@
-# Deterministic Layered 2D Animation Engine
+# Deterministic Layered 2D (+ 3D) Animation Engine
 
 A deliberately simple, **non-intelligent** 2D renderer. It executes an explicit scene
 description exactly: positions, pivots, z values, keyframes, camera. All decisions about *what*
@@ -17,9 +17,23 @@ AI agent (later) ──► Scene JSON ──► validate ──► evaluate(fram
   See [docs/REPORT.md](docs/REPORT.md) for what was inspected, the problems found and fixed, and
   the remaining limitations.
 
+## 3D scenes (hybrid 2D + 3D)
+
+Besides 2D scenes, the engine makes **3D scenes**:
+
+- GLB characters, props and environments, including rigged characters with clips, crossfades, bone sockets and props attached to hands;
+- face morph targets, a 3D camera and lights, all on the same timeline;
+- numeric 3D inspection, previews and MP4 with audio;
+- optional 2D overlay scenes on top.
+
+The engine owns the scene and the timeline. Headless **Blender** only draws the per-frame state it is given. 2D is unchanged.
+
+- Design, research findings, Linux install (Blender, EGL), CPU/GPU behaviour, schema and tools: [`docs/3D.md`](docs/3D.md).
+- Proof: `npm run example:3d` → [`examples/3d-proof/out/mika_3d.mp4`](examples/3d-proof/out).
+
 ## Agent control over MCP (Tandem)
 
-The engine runs as an **MCP server** (`video-engine-mcp`, 35 tools), so agents can control it
+The engine runs as an **MCP server** (`video-engine-mcp`, 40 tools, 2D and 3D), so agents can control it
 entirely through structured tool calls. They inspect capabilities, work in isolated workspaces,
 process assets, build and animate scenes, measure layout, look at previews and render MP4s as
 jobs. Tandem registers it as a standard MCP Integration.
@@ -339,8 +353,14 @@ src/
   api/engine.ts           AnimationEngine facade
   api/operations.ts       pure transactional scene edits
   api/tools.ts            agent tool layer (JSON in/out, JSON schemas)
+  workspace/              ID-based workspaces, artifacts, render jobs
+  scene3d/                3D: glTF inspection, Scene3D schema/validation/evaluation/operations,
+                          Blender runner (blender.ts) + backend script (blender/engine3d.py)
   cli.ts
-tests/                    vitest suites
+mcp/                      MCP server (thin adapter over the core)
+assets/3d/                3D test assets (+ src/build_assets.py generator, third_party/fox)
+tests/                    vitest suites (tests/mcp: MCP over stdio)
 examples/kitchen/         test scene: generators, processed assets, scene.json, outputs
+examples/3d-proof/        first 3D proof (run.ts) and its outputs
 docs/REPORT.md            inspection report and limitations
 ```

@@ -42,6 +42,9 @@ Runtime requirements:
 - **Skia:** `@napi-rs/canvas` ships prebuilt Linux binaries (glibc and musl, x64 and arm64). It needs no system libraries, no X server and no GPU.
 - **Image I/O:** `sharp` ships prebuilt libvips.
 - **Fonts:** only the debug-preview labels use text; any installed sans/mono font works (DejaVu or Liberation recommended).
+- **3D (optional):**
+  - Blender ≥ 3.6 headless (tested: 4.0.2 from apt) with `python3-numpy`, plus `libegl1 libegl-mesa0 libgl1-mesa-dri` for the fast EEVEE renderer. Without them 3D falls back to Cycles on the CPU; without Blender at all, 3D tools return `ENGINE_CAPABILITY_UNAVAILABLE` and 2D is unaffected.
+  - Details: [`docs/3D.md`](../docs/3D.md).
 
 ```bash
 git clone <repo> /opt/animation_engine && cd /opt/animation_engine
@@ -63,6 +66,9 @@ Configuration comes from flags or environment. Tandem passes environment variabl
 | `VIDEO_ENGINE_LOG` | `--log` | JSONL operation log (default `<root>/.logs/mcp.jsonl`) |
 | `VIDEO_ENGINE_MAX_RENDERS` | | Concurrent video renders per workspace (default 1) |
 | `FFMPEG_PATH` | | FFmpeg binary (default: bundled) |
+| `BLENDER_PATH` | | Blender binary for 3D (default: `blender` on PATH) |
+| `VIDEO_ENGINE_3D_ENGINE` | | `cycles` forces the CPU path tracer (default: EEVEE when it works) |
+| `VIDEO_ENGINE_3D_DEVICE` | | `GPU` lets Cycles use CUDA/OptiX/HIP/oneAPI when present |
 
 - **stdout** carries only MCP JSON-RPC.
 - **stderr** is silent except for startup failures. Tandem does not drain the child's stderr, so the server never writes to it during normal operation.
@@ -86,7 +92,7 @@ Configuration comes from flags or environment. Tandem passes environment variabl
 - **Asset reuse:** layers reference assets by id (`"asset": "cup"`). Any number of layers and scenes use one asset file, and re-importing identical bytes returns the existing asset (`reused: true`).
 - **Processing is non-destructive:** `asset_process`, `asset_trim` and `asset_component_remove` create a new asset whose `provenance` names its source.
 
-## Tools (35)
+## Tools (40)
 
 | Group | Tools |
 |---|---|
@@ -97,6 +103,16 @@ Configuration comes from flags or environment. Tandem passes environment variabl
 | Layers | `layer_add` (batch), `layer_update` (multi-property / multi-layer, atomic), `layer_remove`, `layer_list` |
 | Timeline | `timeline_get`, `timeline_apply` (atomic batch: `keyframe.add/update/remove`, `track.set/remove`; target = layer id or `camera`) |
 | Layout & render | `measure_layout`, `render_preview` (`debug`), `render_frame`, `render_video_start`, `render_video_status` (`waitSeconds` ≤ 45), `render_video_cancel`, `artifact_list` |
+| 3D | `object_add`, `object_update`, `object_remove`, `object_list`, `scene_settings_3d`. `scene_create kind:"3d"`; timeline, measure and render tools work on both kinds. |
+
+**3D scenes** (see [`docs/3D.md`](../docs/3D.md)):
+
+- Import `.glb` models like any asset; `asset_inspect` lists clips, sockets and morph targets and shows a thumbnail.
+- Add models, primitives and lights with `object_add`.
+- Attach props to bones: `attach:{object:"hero", bone:"rightHand"}`.
+- Switch clips and animate transforms, morphs and the camera with `timeline_apply`.
+- Check framing and hand positions with `measure_layout`, then render as usual.
+- A 2D scene can be overlaid on a 3D one (`scene_settings_3d overlay`).
 
 - Tools are deliberately coarse: one `layer_update` changes any number of properties at once.
 - `engine_capabilities` is derived from the engine's own tables (animatable properties, interpolations, mask types, batch operation types), so it stays accurate as the engine evolves.
@@ -200,8 +216,8 @@ VIDEO_ENGINE_DIR=/opt/animation_engine VIDEO_ENGINE_ROOT=/srv/tandem/video-works
 VIDEO_ENGINE_LIBRARIES="kitchen=/opt/animation_engine/examples/kitchen/assets/originals" \
 node integrations/tandem/register.mjs
 # Created integration Video Engine (slug video_engine, …)
-# Connection test: OK — Connected — the server reports 35 tools.
-# Discovered 35 tools: video_engine_artifact_list, …
+# Connection test: OK — Connected — the server reports 40 tools.
+# Discovered 40 tools: video_engine_artifact_list, …
 ```
 
 Integration tools default to the `builder` role. Grant `reviewer` in Settings → Integrations if a

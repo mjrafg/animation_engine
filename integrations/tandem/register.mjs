@@ -5,10 +5,11 @@
  *
  *   TANDEM_URL=http://127.0.0.1:7810 TANDEM_EMAIL=admin@example.com TANDEM_PASSWORD=... \
  *   VIDEO_ENGINE_DIR=/opt/animation_engine VIDEO_ENGINE_ROOT=/srv/tandem/video-workspaces \
- *   [VIDEO_ENGINE_LIBRARIES="kitchen=/srv/video-libraries/kitchen"] \
+ *   [VIDEO_ENGINE_LIBRARIES="kitchen=/srv/video-libraries/kitchen;models=/opt/animation_engine/assets/3d"] \
+ *   [BLENDER_PATH=/usr/bin/blender] \
  *   node integrations/tandem/register.mjs
  *
- * Result in Tandem: Settings → Integrations → "Video Engine" (type mcp, transport stdio), its 35
+ * Result in Tandem: Settings → Integrations → "Video Engine" (type mcp, transport stdio), its 40
  * tools served to the Builder as video_engine_<tool> through the tandem_ext gateway.
  */
 import path from "node:path";
@@ -29,6 +30,8 @@ const env = { VIDEO_ENGINE_ROOT: path.resolve(root) };
 if (process.env.VIDEO_ENGINE_LIBRARIES) env.VIDEO_ENGINE_LIBRARIES = process.env.VIDEO_ENGINE_LIBRARIES;
 if (process.env.VIDEO_ENGINE_WORKSPACE) env.VIDEO_ENGINE_WORKSPACE = process.env.VIDEO_ENGINE_WORKSPACE;
 if (process.env.FFMPEG_PATH) env.FFMPEG_PATH = process.env.FFMPEG_PATH;
+// optional 3D backend: Blender on PATH, or an explicit binary
+if (process.env.BLENDER_PATH) env.BLENDER_PATH = process.env.BLENDER_PATH;
 
 const integration = {
   name: "Video Engine",
