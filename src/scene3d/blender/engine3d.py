@@ -35,7 +35,7 @@ CI = C.inverted()
 
 
 def emit(obj):
-    sys.stdout.write("VE3D " + json.dumps(obj) + "\n")
+    sys.stdout.write("\nVE3D " + json.dumps(obj) + "\n")
     sys.stdout.flush()
 
 

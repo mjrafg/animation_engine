@@ -83,14 +83,16 @@ export function updateEntity3D(doc: SceneDoc, id: string, patch: Record<string, 
   if ("id" in patch && patch.id !== id) {
     return { ok: false, errors: [issue("IMMUTABLE_ID", ["patch", "id"], "Ids cannot be changed; remove and re-add instead")] };
   }
+  const schema = at.list === "objects" ? Object3DSchema : Light3DSchema;
   const merged: Record<string, any> = clone(doc[at.list][at.index]);
+  const defaults = schema.safeParse(merged);
   for (const [k, v] of Object.entries(patch)) {
+    if (v && typeof v === "object" && merged[k] === undefined && defaults.success) merged[k] = clone((defaults.data as any)[k]);
     if (v === null) delete merged[k];
     else if (["position", "rotation", "scale", "size"].includes(k) && v && typeof v === "object" && merged[k]) merged[k] = { ...merged[k], ...v };
     else if (k === "morphs" && v && typeof v === "object") merged[k] = { ...merged[k], ...v };
     else merged[k] = v;
   }
-  const schema = at.list === "objects" ? Object3DSchema : Light3DSchema;
   const p = schema.safeParse(merged);
   if (!p.success) return { ok: false, errors: zodIssues(p.error, ["patch"]) };
   return transact(doc, (d) => {
@@ -163,7 +165,8 @@ export function setSettings3D(doc: SceneDoc, patch: Settings3DPatch): OpResult {
   const schemas = { camera: Camera3DSchema, world: World3DSchema, render: Render3DSchema } as const;
   for (const k of ["camera", "world", "render"] as const) {
     if (!patch[k]) continue;
-    next[k] = merge(doc[k], patch[k]!);
+    const cur = schemas[k].safeParse(doc[k] ?? {});
+    next[k] = merge(cur.success ? cur.data : doc[k], patch[k]!);
     const p = schemas[k].safeParse(next[k]);
     if (!p.success) return { ok: false, errors: zodIssues(p.error, [k]) };
   }

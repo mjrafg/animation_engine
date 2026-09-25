@@ -114,9 +114,10 @@ export async function runBlenderJob(job: Record<string, unknown>, o: RunOptions 
     while ((i = buf.indexOf("\n")) >= 0) {
       const line = buf.slice(0, i);
       buf = buf.slice(i + 1);
-      if (line.startsWith("VE3D ")) {
+      const at = line.indexOf("VE3D {");
+      if (at >= 0) {
         try {
-          const ev = JSON.parse(line.slice(5)) as BlenderEvent;
+          const ev = JSON.parse(line.slice(at + 5)) as BlenderEvent;
           events.push(ev);
           arm();
           o.onEvent?.(ev);
