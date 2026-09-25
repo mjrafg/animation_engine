@@ -1,0 +1,112 @@
+{
+  "ok": true,
+  "source": "../../originals/plant_keyed.png",
+  "sourceSha256": "2df499add4b3461e11026ad73b116dfa77b43ad60dd56b33daff056d914ed753",
+  "path": "color-key",
+  "files": {
+    "original": "original.png",
+    "backgroundMask": "background-mask.png",
+    "untrimmed": "untrimmed-transparent.png",
+    "processed": "processed-transparent.png",
+    "metadata": "asset-metadata.json"
+  },
+  "alpha": {
+    "hasAlphaChannel": true,
+    "borderTransparentFraction": 0,
+    "transparentFraction": 0,
+    "partialFraction": 0,
+    "opaqueFraction": 1
+  },
+  "components": [
+    {
+      "id": 1,
+      "pixelCount": 117343,
+      "bounds": {
+        "left": 126,
+        "top": 149,
+        "right": 601,
+        "bottom": 650
+      },
+      "centroid": {
+        "x": 358.6,
+        "y": 403.9
+      },
+      "share": 1
+    }
+  ],
+  "removedComponents": [],
+  "issues": [],
+  "detection": {
+    "ok": true,
+    "backgroundDetected": true,
+    "detectedColor": {
+      "r": 224,
+      "g": 32,
+      "b": 200
+    },
+    "detectedColorHex": "#e020c8",
+    "borderUniformity": 1,
+    "sideUniformity": {
+      "top": 1,
+      "right": 1,
+      "bottom": 1,
+      "left": 1
+    },
+    "sideColorSpread": 0,
+    "noise": 1.37,
+    "confidence": 1,
+    "sampledPixels": 33024,
+    "issues": [],
+    "options": {
+      "borderSampleSize": 12,
+      "uniformityTolerance": 12,
+      "minUniformity": 0.9,
+      "minSideUniformity": 0.97
+    }
+  },
+  "removal": {
+    "holes": [],
+    "stats": {
+      "removedPixels": 372657,
+      "edgeBandPixels": 8241,
+      "partialAlphaPixels": 2164,
+      "preservedEnclosedPixels": 2
+    },
+    "options": {
+      "colorTolerance": 18,
+      "edgeSoftness": 3,
+      "despill": true,
+      "minContrast": 30,
+      "residualTolerance": 0.1,
+      "removeHoles": [],
+      "minHoleSize": 25
+    }
+  },
+  "trim": {
+    "originalWidth": 700,
+    "originalHeight": 700,
+    "trimmedWidth": 479,
+    "trimmedHeight": 505,
+    "offsetX": 124,
+    "offsetY": 147,
+    "visibleBounds": {
+      "left": 126,
+      "top": 149,
+      "right": 601,
+      "bottom": 650
+    },
+    "alphaThreshold": 4,
+    "padding": 2,
+    "empty": false
+  },
+  "size": {
+    "width": 479,
+    "height": 505
+  },
+  "attachmentPoints": {
+    "__pivot": {
+      "x": 0.4718,
+      "y": 0.996
+    }
+  }
+}

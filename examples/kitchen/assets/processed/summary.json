@@ -1,0 +1,920 @@
+{
+  "kitchen_bg": {
+    "name": "kitchen_bg",
+    "path": "opaque",
+    "src": "assets/originals/kitchen_bg.png",
+    "width": 2100,
+    "height": 1180,
+    "res": 1
+  },
+  "sky_view": {
+    "name": "sky_view",
+    "path": "opaque",
+    "src": "assets/originals/sky_view.png",
+    "width": 600,
+    "height": 400,
+    "res": 1
+  },
+  "cloud": {
+    "name": "cloud",
+    "path": "native-alpha",
+    "src": "assets/processed/cloud/processed-transparent.png",
+    "width": 199,
+    "height": 139,
+    "res": 1,
+    "diagnostics": {
+      "components": [
+        {
+          "id": 1,
+          "pixelCount": 19399
+        }
+      ],
+      "trim": {
+        "offsetX": 43,
+        "offsetY": 28,
+        "trimmedWidth": 199,
+        "trimmedHeight": 139,
+        "originalWidth": 300,
+        "originalHeight": 200
+      },
+      "issues": []
+    },
+    "decisions": []
+  },
+  "window_frame": {
+    "name": "window_frame",
+    "path": "native-alpha",
+    "src": "assets/processed/window_frame/processed-transparent.png",
+    "width": 604,
+    "height": 390,
+    "res": 1,
+    "attachmentPoints": {
+      "opening_top_left": {
+        "x": 0.0695,
+        "y": 0.0564
+      },
+      "opening_bottom_right": {
+        "x": 0.9305,
+        "y": 0.9026
+      }
+    },
+    "diagnostics": {
+      "components": [
+        {
+          "id": 1,
+          "pixelCount": 54000
+        }
+      ],
+      "trim": {
+        "offsetX": 18,
+        "offsetY": 38,
+        "trimmedWidth": 604,
+        "trimmedHeight": 390,
+        "originalWidth": 640,
+        "originalHeight": 460
+      },
+      "issues": [
+        "HARD_ALPHA_EDGES"
+      ]
+    },
+    "decisions": []
+  },
+  "counter_keyed": {
+    "name": "counter_keyed",
+    "path": "color-key",
+    "src": "assets/processed/counter_keyed/processed-transparent.png",
+    "width": 1248,
+    "height": 426,
+    "res": 1,
+    "attachmentPoints": {
+      "top_left": {
+        "x": 0.0032,
+        "y": 0.0094
+      },
+      "top_right": {
+        "x": 0.9968,
+        "y": 0.0094
+      }
+    },
+    "diagnostics": {
+      "detection": {
+        "detectedColorHex": "#23c43a",
+        "borderUniformity": 1,
+        "confidence": 1
+      },
+      "holes": [],
+      "components": [
+        {
+          "id": 1,
+          "pixelCount": 515976
+        }
+      ],
+      "trim": {
+        "offsetX": 41,
+        "offsetY": 46,
+        "trimmedWidth": 1248,
+        "trimmedHeight": 426,
+        "originalWidth": 1330,
+        "originalHeight": 520
+      },
+      "issues": []
+    },
+    "decisions": []
+  },
+  "cup_keyed": {
+    "name": "cup_keyed",
+    "path": "color-key",
+    "src": "assets/processed/cup_keyed/processed-transparent.png",
+    "width": 269,
+    "height": 253,
+    "res": 2,
+    "pivot": {
+      "x": 0.3903,
+      "y": 0.9802
+    },
+    "attachmentPoints": {
+      "handle": {
+        "x": 0.8736,
+        "y": 0.4071
+      },
+      "rim_center": {
+        "x": 0.3903,
+        "y": 0.0395
+      },
+      "base_center": {
+        "x": 0.3903,
+        "y": 0.9802
+      }
+    },
+    "diagnostics": {
+      "detection": {
+        "detectedColorHex": "#14a9e7",
+        "borderUniformity": 1,
+        "confidence": 1
+      },
+      "holes": [
+        {
+          "id": 1,
+          "pixelCount": 6864,
+          "removed": false
+        },
+        {
+          "id": 2,
+          "pixelCount": 1799,
+          "removed": true
+        }
+      ],
+      "components": [
+        {
+          "id": 1,
+          "pixelCount": 56031
+        },
+        {
+          "id": 2,
+          "pixelCount": 162
+        }
+      ],
+      "trim": {
+        "offsetX": 95,
+        "offsetY": 102,
+        "trimmedWidth": 269,
+        "trimmedHeight": 253,
+        "originalWidth": 420,
+        "originalHeight": 420
+      },
+      "issues": [
+        "ENCLOSED_BACKGROUND_COLOR"
+      ]
+    },
+    "decisions": [
+      "remove holes [2] (inside handle); keep [1] (stripe on the mug)",
+      "remove components [2] (each < 1% of visible pixels, disconnected)"
+    ]
+  },
+  "plant_keyed": {
+    "name": "plant_keyed",
+    "path": "color-key",
+    "src": "assets/processed/plant_keyed/processed-transparent.png",
+    "width": 479,
+    "height": 505,
+    "res": 1,
+    "pivot": {
+      "x": 0.4718,
+      "y": 0.996
+    },
+    "diagnostics": {
+      "detection": {
+        "detectedColorHex": "#e020c8",
+        "borderUniformity": 1,
+        "confidence": 1
+      },
+      "holes": [],
+      "components": [
+        {
+          "id": 1,
+          "pixelCount": 117343
+        }
+      ],
+      "trim": {
+        "offsetX": 124,
+        "offsetY": 147,
+        "trimmedWidth": 479,
+        "trimmedHeight": 505,
+        "originalWidth": 700,
+        "originalHeight": 700
+      },
+      "issues": []
+    },
+    "decisions": []
+  },
+  "steam": {
+    "name": "steam",
+    "path": "native-alpha",
+    "src": "assets/processed/steam/processed-transparent.png",
+    "width": 94,
+    "height": 186,
+    "res": 2,
+    "pivot": {
+      "x": 0.5,
+      "y": 0.9839
+    },
+    "diagnostics": {
+      "components": [
+        {
+          "id": 1,
+          "pixelCount": 2374
+        },
+        {
+          "id": 2,
+          "pixelCount": 2374
+        },
+        {
+          "id": 3,
+          "pixelCount": 2374
+        }
+      ],
+      "trim": {
+        "offsetX": 33,
+        "offsetY": 22,
+        "trimmedWidth": 94,
+        "trimmedHeight": 186,
+        "originalWidth": 160,
+        "originalHeight": 220
+      },
+      "issues": [
+        "MULTIPLE_COMPONENTS"
+      ]
+    },
+    "decisions": []
+  },
+  "torso": {
+    "name": "torso",
+    "path": "native-alpha",
+    "src": "assets/processed/torso/processed-transparent.png",
+    "width": 420,
+    "height": 647,
+    "res": 2,
+    "pivot": {
+      "x": 0.5,
+      "y": 0.9428
+    },
+    "attachmentPoints": {
+      "neck": {
+        "x": 0.5,
+        "y": 0.0232
+      },
+      "right_shoulder": {
+        "x": 0.119,
+        "y": 0.1159
+      },
+      "left_shoulder": {
+        "x": 0.881,
+        "y": 0.1159
+      },
+      "hips": {
+        "x": 0.5,
+        "y": 0.9428
+      }
+    },
+    "diagnostics": {
+      "components": [
+        {
+          "id": 1,
+          "pixelCount": 233342
+        }
+      ],
+      "trim": {
+        "offsetX": 47,
+        "offsetY": 38,
+        "trimmedWidth": 420,
+        "trimmedHeight": 647,
+        "originalWidth": 538,
+        "originalHeight": 728
+      },
+      "issues": []
+    },
+    "decisions": []
+  },
+  "head": {
+    "name": "head",
+    "path": "native-alpha",
+    "src": "assets/processed/head/processed-transparent.png",
+    "width": 334,
+    "height": 424,
+    "res": 2,
+    "pivot": {
+      "x": 0.5,
+      "y": 0.9481
+    },
+    "attachmentPoints": {
+      "head_center": {
+        "x": 0.5,
+        "y": 0.5118
+      },
+      "eyes_center": {
+        "x": 0.5,
+        "y": 0.4646
+      },
+      "mouth_center": {
+        "x": 0.5,
+        "y": 0.7241
+      }
+    },
+    "diagnostics": {
+      "components": [
+        {
+          "id": 1,
+          "pixelCount": 103807
+        }
+      ],
+      "trim": {
+        "offsetX": 54,
+        "offsetY": 17,
+        "trimmedWidth": 334,
+        "trimmedHeight": 424,
+        "originalWidth": 420,
+        "originalHeight": 506
+      },
+      "issues": []
+    },
+    "decisions": []
+  },
+  "right_upper_arm": {
+    "name": "right_upper_arm",
+    "path": "native-alpha",
+    "src": "assets/processed/right_upper_arm/processed-transparent.png",
+    "width": 110,
+    "height": 400,
+    "res": 2,
+    "pivot": {
+      "x": 0.5,
+      "y": 0.125
+    },
+    "attachmentPoints": {
+      "shoulder": {
+        "x": 0.5,
+        "y": 0.125
+      },
+      "elbow": {
+        "x": 0.5,
+        "y": 0.8625
+      }
+    },
+    "diagnostics": {
+      "components": [
+        {
+          "id": 1,
+          "pixelCount": 39881
+        }
+      ],
+      "trim": {
+        "offsetX": 37,
+        "offsetY": 23,
+        "trimmedWidth": 110,
+        "trimmedHeight": 400,
+        "originalWidth": 208,
+        "originalHeight": 468
+      },
+      "issues": []
+    },
+    "decisions": []
+  },
+  "left_upper_arm": {
+    "name": "left_upper_arm",
+    "path": "native-alpha",
+    "src": "assets/processed/left_upper_arm/processed-transparent.png",
+    "width": 110,
+    "height": 400,
+    "res": 2,
+    "pivot": {
+      "x": 0.5,
+      "y": 0.125
+    },
+    "attachmentPoints": {
+      "shoulder": {
+        "x": 0.5,
+        "y": 0.125
+      },
+      "elbow": {
+        "x": 0.5,
+        "y": 0.8625
+      }
+    },
+    "diagnostics": {
+      "components": [
+        {
+          "id": 1,
+          "pixelCount": 39881
+        }
+      ],
+      "trim": {
+        "offsetX": 37,
+        "offsetY": 23,
+        "trimmedWidth": 110,
+        "trimmedHeight": 400,
+        "originalWidth": 208,
+        "originalHeight": 468
+      },
+      "issues": []
+    },
+    "decisions": []
+  },
+  "right_forearm": {
+    "name": "right_forearm",
+    "path": "native-alpha",
+    "src": "assets/processed/right_forearm/processed-transparent.png",
+    "width": 102,
+    "height": 363,
+    "res": 2,
+    "pivot": {
+      "x": 0.5,
+      "y": 0.1185
+    },
+    "attachmentPoints": {
+      "elbow": {
+        "x": 0.5,
+        "y": 0.1185
+      },
+      "wrist": {
+        "x": 0.5,
+        "y": 0.9036
+      }
+    },
+    "diagnostics": {
+      "components": [
+        {
+          "id": 1,
+          "pixelCount": 32123
+        }
+      ],
+      "trim": {
+        "offsetX": 34,
+        "offsetY": 20,
+        "trimmedWidth": 102,
+        "trimmedHeight": 363,
+        "originalWidth": 194,
+        "originalHeight": 428
+      },
+      "issues": []
+    },
+    "decisions": []
+  },
+  "left_forearm": {
+    "name": "left_forearm",
+    "path": "native-alpha",
+    "src": "assets/processed/left_forearm/processed-transparent.png",
+    "width": 102,
+    "height": 363,
+    "res": 2,
+    "pivot": {
+      "x": 0.5,
+      "y": 0.1185
+    },
+    "attachmentPoints": {
+      "elbow": {
+        "x": 0.5,
+        "y": 0.1185
+      },
+      "wrist": {
+        "x": 0.5,
+        "y": 0.9036
+      }
+    },
+    "diagnostics": {
+      "components": [
+        {
+          "id": 1,
+          "pixelCount": 32123
+        }
+      ],
+      "trim": {
+        "offsetX": 34,
+        "offsetY": 20,
+        "trimmedWidth": 102,
+        "trimmedHeight": 363,
+        "originalWidth": 194,
+        "originalHeight": 428
+      },
+      "issues": []
+    },
+    "decisions": []
+  },
+  "right_hand": {
+    "name": "right_hand",
+    "path": "native-alpha",
+    "src": "assets/processed/right_hand/processed-transparent.png",
+    "width": 129,
+    "height": 130,
+    "res": 2,
+    "pivot": {
+      "x": 0.4264,
+      "y": 0.0385
+    },
+    "attachmentPoints": {
+      "wrist": {
+        "x": 0.4264,
+        "y": 0.0385
+      },
+      "grip": {
+        "x": 0.4264,
+        "y": 0.6154
+      }
+    },
+    "diagnostics": {
+      "components": [
+        {
+          "id": 1,
+          "pixelCount": 11601
+        }
+      ],
+      "trim": {
+        "offsetX": 47,
+        "offsetY": 38,
+        "trimmedWidth": 129,
+        "trimmedHeight": 130,
+        "originalWidth": 228,
+        "originalHeight": 218
+      },
+      "issues": []
+    },
+    "decisions": []
+  },
+  "left_hand": {
+    "name": "left_hand",
+    "path": "native-alpha",
+    "src": "assets/processed/left_hand/processed-transparent.png",
+    "width": 129,
+    "height": 130,
+    "res": 2,
+    "pivot": {
+      "x": 0.5736,
+      "y": 0.0385
+    },
+    "attachmentPoints": {
+      "wrist": {
+        "x": 0.5736,
+        "y": 0.0385
+      },
+      "grip": {
+        "x": 0.5736,
+        "y": 0.6154
+      }
+    },
+    "diagnostics": {
+      "components": [
+        {
+          "id": 1,
+          "pixelCount": 11598
+        }
+      ],
+      "trim": {
+        "offsetX": 28,
+        "offsetY": 38,
+        "trimmedWidth": 129,
+        "trimmedHeight": 130,
+        "originalWidth": 228,
+        "originalHeight": 218
+      },
+      "issues": []
+    },
+    "decisions": []
+  },
+  "right_leg": {
+    "name": "right_leg",
+    "path": "native-alpha",
+    "src": "assets/processed/right_leg/processed-transparent.png",
+    "width": 134,
+    "height": 817,
+    "res": 2,
+    "pivot": {
+      "x": 0.5,
+      "y": 0.049
+    },
+    "attachmentPoints": {
+      "hip": {
+        "x": 0.5,
+        "y": 0.049
+      },
+      "foot": {
+        "x": 0.5,
+        "y": 0.9792
+      }
+    },
+    "diagnostics": {
+      "components": [
+        {
+          "id": 1,
+          "pixelCount": 93986
+        }
+      ],
+      "trim": {
+        "offsetX": 35,
+        "offsetY": 23,
+        "trimmedWidth": 134,
+        "trimmedHeight": 817,
+        "originalWidth": 228,
+        "originalHeight": 888
+      },
+      "issues": []
+    },
+    "decisions": []
+  },
+  "left_leg": {
+    "name": "left_leg",
+    "path": "native-alpha",
+    "src": "assets/processed/left_leg/processed-transparent.png",
+    "width": 134,
+    "height": 817,
+    "res": 2,
+    "pivot": {
+      "x": 0.5,
+      "y": 0.049
+    },
+    "attachmentPoints": {
+      "hip": {
+        "x": 0.5,
+        "y": 0.049
+      },
+      "foot": {
+        "x": 0.5,
+        "y": 0.9792
+      }
+    },
+    "diagnostics": {
+      "components": [
+        {
+          "id": 1,
+          "pixelCount": 93986
+        }
+      ],
+      "trim": {
+        "offsetX": 35,
+        "offsetY": 23,
+        "trimmedWidth": 134,
+        "trimmedHeight": 817,
+        "originalWidth": 228,
+        "originalHeight": 888
+      },
+      "issues": []
+    },
+    "decisions": []
+  },
+  "eyes_open": {
+    "name": "eyes_open",
+    "path": "native-alpha",
+    "src": "assets/processed/eyes_open/processed-transparent.png",
+    "width": 208,
+    "height": 88,
+    "res": 2,
+    "pivot": {
+      "x": 0.5,
+      "y": 0.6023
+    },
+    "diagnostics": {
+      "components": [
+        {
+          "id": 1,
+          "pixelCount": 3828
+        },
+        {
+          "id": 2,
+          "pixelCount": 3828
+        },
+        {
+          "id": 3,
+          "pixelCount": 564
+        },
+        {
+          "id": 4,
+          "pixelCount": 564
+        }
+      ],
+      "trim": {
+        "offsetX": 36,
+        "offsetY": 12,
+        "trimmedWidth": 208,
+        "trimmedHeight": 88,
+        "originalWidth": 280,
+        "originalHeight": 120
+      },
+      "issues": [
+        "MULTIPLE_COMPONENTS"
+      ]
+    },
+    "decisions": []
+  },
+  "eyes_closed": {
+    "name": "eyes_closed",
+    "path": "native-alpha",
+    "src": "assets/processed/eyes_closed/processed-transparent.png",
+    "width": 198,
+    "height": 82,
+    "res": 2,
+    "pivot": {
+      "x": 0.5,
+      "y": 0.6463
+    },
+    "diagnostics": {
+      "components": [
+        {
+          "id": 1,
+          "pixelCount": 564
+        },
+        {
+          "id": 2,
+          "pixelCount": 564
+        },
+        {
+          "id": 3,
+          "pixelCount": 537
+        },
+        {
+          "id": 4,
+          "pixelCount": 537
+        }
+      ],
+      "trim": {
+        "offsetX": 41,
+        "offsetY": 12,
+        "trimmedWidth": 198,
+        "trimmedHeight": 82,
+        "originalWidth": 280,
+        "originalHeight": 120
+      },
+      "issues": [
+        "MULTIPLE_COMPONENTS"
+      ]
+    },
+    "decisions": []
+  },
+  "mouth_rest": {
+    "name": "mouth_rest",
+    "path": "native-alpha",
+    "src": "assets/processed/mouth_rest/processed-transparent.png",
+    "width": 82,
+    "height": 23,
+    "res": 2,
+    "pivot": {
+      "x": 0.5,
+      "y": 0.4783
+    },
+    "diagnostics": {
+      "components": [
+        {
+          "id": 1,
+          "pixelCount": 658
+        }
+      ],
+      "trim": {
+        "offsetX": 39,
+        "offsetY": 49,
+        "trimmedWidth": 82,
+        "trimmedHeight": 23,
+        "originalWidth": 160,
+        "originalHeight": 120
+      },
+      "issues": []
+    },
+    "decisions": []
+  },
+  "mouth_MBP": {
+    "name": "mouth_MBP",
+    "path": "native-alpha",
+    "src": "assets/processed/mouth_MBP/processed-transparent.png",
+    "width": 80,
+    "height": 20,
+    "res": 2,
+    "pivot": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "diagnostics": {
+      "components": [
+        {
+          "id": 1,
+          "pixelCount": 1178
+        }
+      ],
+      "trim": {
+        "offsetX": 40,
+        "offsetY": 50,
+        "trimmedWidth": 80,
+        "trimmedHeight": 20,
+        "originalWidth": 160,
+        "originalHeight": 120
+      },
+      "issues": []
+    },
+    "decisions": []
+  },
+  "mouth_A": {
+    "name": "mouth_A",
+    "path": "native-alpha",
+    "src": "assets/processed/mouth_A/processed-transparent.png",
+    "width": 70,
+    "height": 70,
+    "res": 2,
+    "pivot": {
+      "x": 0.5,
+      "y": 0.4714
+    },
+    "diagnostics": {
+      "components": [
+        {
+          "id": 1,
+          "pixelCount": 3502
+        }
+      ],
+      "trim": {
+        "offsetX": 45,
+        "offsetY": 27,
+        "trimmedWidth": 70,
+        "trimmedHeight": 70,
+        "originalWidth": 160,
+        "originalHeight": 120
+      },
+      "issues": []
+    },
+    "decisions": []
+  },
+  "mouth_O": {
+    "name": "mouth_O",
+    "path": "native-alpha",
+    "src": "assets/processed/mouth_O/processed-transparent.png",
+    "width": 50,
+    "height": 58,
+    "res": 2,
+    "pivot": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "diagnostics": {
+      "components": [
+        {
+          "id": 1,
+          "pixelCount": 2020
+        }
+      ],
+      "trim": {
+        "offsetX": 55,
+        "offsetY": 31,
+        "trimmedWidth": 50,
+        "trimmedHeight": 58,
+        "originalWidth": 160,
+        "originalHeight": 120
+      },
+      "issues": []
+    },
+    "decisions": []
+  },
+  "mouth_E": {
+    "name": "mouth_E",
+    "path": "native-alpha",
+    "src": "assets/processed/mouth_E/processed-transparent.png",
+    "width": 90,
+    "height": 42,
+    "res": 2,
+    "pivot": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "diagnostics": {
+      "components": [
+        {
+          "id": 1,
+          "pixelCount": 2660
+        }
+      ],
+      "trim": {
+        "offsetX": 35,
+        "offsetY": 39,
+        "trimmedWidth": 90,
+        "trimmedHeight": 42,
+        "originalWidth": 160,
+        "originalHeight": 120
+      },
+      "issues": []
+    },
+    "decisions": []
+  }
+}

@@ -1,0 +1,360 @@
+{
+  "kitchen_bg": {
+    "file": "kitchen_bg.png",
+    "kind": "opaque",
+    "res": 1,
+    "notes": "2100x1180 plate, larger than the 1920x1080 canvas to allow camera moves"
+  },
+  "sky_view": {
+    "file": "sky_view.png",
+    "kind": "opaque",
+    "res": 1
+  },
+  "cloud": {
+    "file": "cloud.png",
+    "kind": "transparent",
+    "res": 1
+  },
+  "window_frame": {
+    "file": "window_frame.png",
+    "kind": "transparent",
+    "res": 1,
+    "notes": "frame outer 560x370 at (40,40); opening 520x330 at (60,60)",
+    "attachmentPointsPx": {
+      "opening_top_left": {
+        "x": 60,
+        "y": 60
+      },
+      "opening_bottom_right": {
+        "x": 580,
+        "y": 390
+      }
+    }
+  },
+  "counter_keyed": {
+    "file": "counter_keyed.png",
+    "kind": "keyed",
+    "keyColor": "#23c43a",
+    "res": 1,
+    "notes": "counter on solid green; top surface at original y=50",
+    "attachmentPointsPx": {
+      "top_left": {
+        "x": 45,
+        "y": 50
+      },
+      "top_right": {
+        "x": 1285,
+        "y": 50
+      }
+    }
+  },
+  "cup_keyed": {
+    "file": "cup_keyed.png",
+    "kind": "keyed",
+    "keyColor": "#14a9e7",
+    "res": 2,
+    "notes": "enclosed key-coloured stripe at (122..278, 205..249) must survive; handle hole is enclosed background; speck at (60,370)",
+    "pivotPx": {
+      "x": 200,
+      "y": 350
+    },
+    "attachmentPointsPx": {
+      "handle": {
+        "x": 330,
+        "y": 205
+      },
+      "rim_center": {
+        "x": 200,
+        "y": 112
+      },
+      "base_center": {
+        "x": 200,
+        "y": 350
+      }
+    }
+  },
+  "plant_keyed": {
+    "file": "plant_keyed.png",
+    "kind": "keyed",
+    "keyColor": "#e020c8",
+    "res": 1,
+    "pivotPx": {
+      "x": 350,
+      "y": 650
+    }
+  },
+  "steam": {
+    "file": "steam.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 80,
+      "y": 205
+    }
+  },
+  "torso": {
+    "file": "torso.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 257,
+      "y": 648
+    },
+    "attachmentPointsPx": {
+      "neck": {
+        "x": 257,
+        "y": 53
+      },
+      "right_shoulder": {
+        "x": 97,
+        "y": 113
+      },
+      "left_shoulder": {
+        "x": 417,
+        "y": 113
+      },
+      "hips": {
+        "x": 257,
+        "y": 648
+      }
+    }
+  },
+  "head": {
+    "file": "head.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 221,
+      "y": 419
+    },
+    "attachmentPointsPx": {
+      "head_center": {
+        "x": 221,
+        "y": 234
+      },
+      "eyes_center": {
+        "x": 221,
+        "y": 214
+      },
+      "mouth_center": {
+        "x": 221,
+        "y": 324
+      }
+    }
+  },
+  "right_upper_arm": {
+    "file": "right_upper_arm.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 92,
+      "y": 73
+    },
+    "attachmentPointsPx": {
+      "shoulder": {
+        "x": 92,
+        "y": 73
+      },
+      "elbow": {
+        "x": 92,
+        "y": 368
+      }
+    }
+  },
+  "left_upper_arm": {
+    "file": "left_upper_arm.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 92,
+      "y": 73
+    },
+    "attachmentPointsPx": {
+      "shoulder": {
+        "x": 92,
+        "y": 73
+      },
+      "elbow": {
+        "x": 92,
+        "y": 368
+      }
+    }
+  },
+  "right_forearm": {
+    "file": "right_forearm.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 85,
+      "y": 63
+    },
+    "attachmentPointsPx": {
+      "elbow": {
+        "x": 85,
+        "y": 63
+      },
+      "wrist": {
+        "x": 85,
+        "y": 348
+      }
+    }
+  },
+  "left_forearm": {
+    "file": "left_forearm.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 85,
+      "y": 63
+    },
+    "attachmentPointsPx": {
+      "elbow": {
+        "x": 85,
+        "y": 63
+      },
+      "wrist": {
+        "x": 85,
+        "y": 348
+      }
+    }
+  },
+  "right_hand": {
+    "file": "right_hand.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 102,
+      "y": 43
+    },
+    "attachmentPointsPx": {
+      "wrist": {
+        "x": 102,
+        "y": 43
+      },
+      "grip": {
+        "x": 102,
+        "y": 118
+      }
+    }
+  },
+  "left_hand": {
+    "file": "left_hand.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 102,
+      "y": 43
+    },
+    "attachmentPointsPx": {
+      "wrist": {
+        "x": 102,
+        "y": 43
+      },
+      "grip": {
+        "x": 102,
+        "y": 118
+      }
+    }
+  },
+  "right_leg": {
+    "file": "right_leg.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 102,
+      "y": 63
+    },
+    "attachmentPointsPx": {
+      "hip": {
+        "x": 102,
+        "y": 63
+      },
+      "foot": {
+        "x": 102,
+        "y": 823
+      }
+    }
+  },
+  "left_leg": {
+    "file": "left_leg.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 102,
+      "y": 63
+    },
+    "attachmentPointsPx": {
+      "hip": {
+        "x": 102,
+        "y": 63
+      },
+      "foot": {
+        "x": 102,
+        "y": 823
+      }
+    }
+  },
+  "eyes_open": {
+    "file": "eyes_open.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 140,
+      "y": 65
+    }
+  },
+  "eyes_closed": {
+    "file": "eyes_closed.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 140,
+      "y": 65
+    }
+  },
+  "mouth_rest": {
+    "file": "mouth_rest.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 80,
+      "y": 60
+    }
+  },
+  "mouth_MBP": {
+    "file": "mouth_MBP.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 80,
+      "y": 60
+    }
+  },
+  "mouth_A": {
+    "file": "mouth_A.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 80,
+      "y": 60
+    }
+  },
+  "mouth_O": {
+    "file": "mouth_O.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 80,
+      "y": 60
+    }
+  },
+  "mouth_E": {
+    "file": "mouth_E.png",
+    "kind": "transparent",
+    "res": 2,
+    "pivotPx": {
+      "x": 80,
+      "y": 60
+    }
+  }
+}

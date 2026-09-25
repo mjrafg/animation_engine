@@ -1,0 +1,76 @@
+{
+  "ok": true,
+  "source": "../../originals/window_frame.png",
+  "sourceSha256": "cebaac644c568615617e44fcbd587d4a4575f96aa9e0ebb5797991c43d50d232",
+  "path": "native-alpha",
+  "files": {
+    "original": "original.png",
+    "backgroundMask": "background-mask.png",
+    "untrimmed": "untrimmed-transparent.png",
+    "processed": "processed-transparent.png",
+    "metadata": "asset-metadata.json"
+  },
+  "alpha": {
+    "hasAlphaChannel": true,
+    "borderTransparentFraction": 1,
+    "transparentFraction": 0.8166,
+    "partialFraction": 0,
+    "opaqueFraction": 0.1834
+  },
+  "components": [
+    {
+      "id": 1,
+      "pixelCount": 54000,
+      "bounds": {
+        "left": 20,
+        "top": 40,
+        "right": 620,
+        "bottom": 426
+      },
+      "centroid": {
+        "x": 319.5,
+        "y": 260.1
+      },
+      "share": 1
+    }
+  ],
+  "removedComponents": [],
+  "issues": [
+    {
+      "severity": "warning",
+      "code": "HARD_ALPHA_EDGES",
+      "message": "Alpha has no partial values; edges may look jagged"
+    }
+  ],
+  "trim": {
+    "originalWidth": 640,
+    "originalHeight": 460,
+    "trimmedWidth": 604,
+    "trimmedHeight": 390,
+    "offsetX": 18,
+    "offsetY": 38,
+    "visibleBounds": {
+      "left": 20,
+      "top": 40,
+      "right": 620,
+      "bottom": 426
+    },
+    "alphaThreshold": 4,
+    "padding": 2,
+    "empty": false
+  },
+  "size": {
+    "width": 604,
+    "height": 390
+  },
+  "attachmentPoints": {
+    "opening_top_left": {
+      "x": 0.0695,
+      "y": 0.0564
+    },
+    "opening_bottom_right": {
+      "x": 0.9305,
+      "y": 0.9026
+    }
+  }
+}

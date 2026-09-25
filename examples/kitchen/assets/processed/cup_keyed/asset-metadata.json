@@ -1,0 +1,180 @@
+{
+  "ok": true,
+  "source": "../../originals/cup_keyed.png",
+  "sourceSha256": "90ef161d9df45a5c1ec8ebee17198199f554109aa19bb0aca09809c82f854380",
+  "path": "color-key",
+  "files": {
+    "original": "original.png",
+    "backgroundMask": "background-mask.png",
+    "untrimmed": "untrimmed-transparent.png",
+    "processed": "processed-transparent.png",
+    "metadata": "asset-metadata.json"
+  },
+  "alpha": {
+    "hasAlphaChannel": true,
+    "borderTransparentFraction": 0,
+    "transparentFraction": 0,
+    "partialFraction": 0,
+    "opaqueFraction": 1
+  },
+  "components": [
+    {
+      "id": 1,
+      "pixelCount": 56031,
+      "bounds": {
+        "left": 97,
+        "top": 104,
+        "right": 362,
+        "bottom": 353
+      },
+      "centroid": {
+        "x": 213.3,
+        "y": 226.2
+      },
+      "share": 0.997117
+    },
+    {
+      "id": 2,
+      "pixelCount": 162,
+      "bounds": {
+        "left": 53,
+        "top": 363,
+        "right": 67,
+        "bottom": 377
+      },
+      "centroid": {
+        "x": 59.6,
+        "y": 369.6
+      },
+      "share": 0.002883
+    }
+  ],
+  "removedComponents": [
+    2
+  ],
+  "issues": [
+    {
+      "severity": "warning",
+      "code": "ENCLOSED_BACKGROUND_COLOR",
+      "message": "1 enclosed background-coloured region(s) were kept (not connected to the border). Pass removal.removeHoles with their ids if they are real holes."
+    }
+  ],
+  "detection": {
+    "ok": true,
+    "backgroundDetected": true,
+    "detectedColor": {
+      "r": 20,
+      "g": 169,
+      "b": 231
+    },
+    "detectedColorHex": "#14a9e7",
+    "borderUniformity": 1,
+    "sideUniformity": {
+      "top": 1,
+      "right": 1,
+      "bottom": 1,
+      "left": 1
+    },
+    "sideColorSpread": 0,
+    "noise": 2.07,
+    "confidence": 1,
+    "sampledPixels": 19584,
+    "issues": [],
+    "options": {
+      "borderSampleSize": 12,
+      "uniformityTolerance": 12,
+      "minUniformity": 0.9,
+      "minSideUniformity": 0.97
+    }
+  },
+  "removal": {
+    "holes": [
+      {
+        "id": 1,
+        "pixelCount": 6864,
+        "bounds": {
+          "left": 122,
+          "top": 205,
+          "right": 278,
+          "bottom": 249
+        },
+        "centroid": {
+          "x": 199.5,
+          "y": 226.5
+        },
+        "removed": false
+      },
+      {
+        "id": 2,
+        "pixelCount": 1799,
+        "bounds": {
+          "left": 303,
+          "top": 155,
+          "right": 328,
+          "bottom": 255
+        },
+        "centroid": {
+          "x": 312.8,
+          "y": 204.5
+        },
+        "removed": true
+      }
+    ],
+    "stats": {
+      "removedPixels": 120207,
+      "edgeBandPixels": 3966,
+      "partialAlphaPixels": 1510,
+      "preservedEnclosedPixels": 6864
+    },
+    "options": {
+      "colorTolerance": 18,
+      "edgeSoftness": 3,
+      "despill": true,
+      "minContrast": 30,
+      "residualTolerance": 0.1,
+      "removeHoles": [
+        2
+      ],
+      "minHoleSize": 25
+    }
+  },
+  "trim": {
+    "originalWidth": 420,
+    "originalHeight": 420,
+    "trimmedWidth": 269,
+    "trimmedHeight": 253,
+    "offsetX": 95,
+    "offsetY": 102,
+    "visibleBounds": {
+      "left": 97,
+      "top": 104,
+      "right": 362,
+      "bottom": 353
+    },
+    "alphaThreshold": 4,
+    "padding": 2,
+    "empty": false
+  },
+  "size": {
+    "width": 269,
+    "height": 253
+  },
+  "attachmentPoints": {
+    "handle": {
+      "x": 0.8736,
+      "y": 0.4071
+    },
+    "rim_center": {
+      "x": 0.3903,
+      "y": 0.0395
+    },
+    "base_center": {
+      "x": 0.3903,
+      "y": 0.9802
+    },
+    "__pivot": {
+      "x": 0.3903,
+      "y": 0.9802
+    }
+  }
+}

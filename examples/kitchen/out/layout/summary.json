@@ -1,0 +1,1834 @@
+{
+  "0": {
+    "camera": {
+      "x": 0,
+      "y": 0,
+      "scale": 1
+    },
+    "drawOrder": [
+      "background",
+      "sky",
+      "cloud",
+      "window_frame",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head",
+      "eyes",
+      "mouth",
+      "left_upper_arm",
+      "right_upper_arm",
+      "left_forearm",
+      "right_forearm",
+      "left_hand",
+      "right_hand",
+      "counter",
+      "cup_on_counter",
+      "plant"
+    ],
+    "layers": {
+      "counter": {
+        "visible": true,
+        "z": 20,
+        "worldPivot": {
+          "x": 1250,
+          "y": 1000
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": 719.6,
+          "top": 637.9,
+          "right": 1780.4,
+          "bottom": 1000
+        },
+        "screenBounds": {
+          "left": 719.6,
+          "top": 637.9,
+          "right": 1780.4,
+          "bottom": 1000
+        },
+        "attachmentPoints": {
+          "top_left": {
+            "x": 722.99456,
+            "y": 641.30374
+          },
+          "top_right": {
+            "x": 1777.00544,
+            "y": 641.30374
+          }
+        }
+      },
+      "character": {
+        "visible": true,
+        "z": 0,
+        "worldPivot": {
+          "x": -150,
+          "y": 990
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": -150,
+          "top": 990,
+          "right": -150,
+          "bottom": 990
+        },
+        "screenBounds": {
+          "left": -150,
+          "top": 990,
+          "right": -150,
+          "bottom": 990
+        }
+      },
+      "torso": {
+        "visible": true,
+        "z": 10,
+        "worldPivot": {
+          "x": -150,
+          "y": 610
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": -255,
+          "top": 305.0042,
+          "right": -45,
+          "bottom": 628.5042
+        },
+        "screenBounds": {
+          "left": -255,
+          "top": 305.0042,
+          "right": -45,
+          "bottom": 628.5042
+        },
+        "attachmentPoints": {
+          "neck": {
+            "x": -150,
+            "y": 312.5094
+          },
+          "right_shoulder": {
+            "x": -230.01,
+            "y": 342.49785
+          },
+          "left_shoulder": {
+            "x": -69.99,
+            "y": 342.49785
+          },
+          "hips": {
+            "x": -150,
+            "y": 610
+          }
+        }
+      },
+      "head": {
+        "visible": true,
+        "z": 11,
+        "worldPivot": {
+          "x": -150,
+          "y": 324.5094
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": -233.5,
+          "top": 123.5122,
+          "right": -66.5,
+          "bottom": 335.5122
+        },
+        "screenBounds": {
+          "left": -233.5,
+          "top": 123.5122,
+          "right": -66.5,
+          "bottom": 335.5122
+        },
+        "attachmentPoints": {
+          "head_center": {
+            "x": -150,
+            "y": 232.0138
+          },
+          "eyes_center": {
+            "x": -150,
+            "y": 222.0074
+          },
+          "mouth_center": {
+            "x": -150,
+            "y": 277.0214
+          }
+        }
+      },
+      "right_upper_arm": {
+        "visible": true,
+        "z": 13,
+        "worldPivot": {
+          "x": -224.01,
+          "y": 342.49785
+        },
+        "worldRotation": 12.2,
+        "worldBounds": {
+          "left": -287.870776,
+          "top": 312.251021,
+          "right": -191.847943,
+          "bottom": 519.357063
+        },
+        "screenBounds": {
+          "left": -287.870776,
+          "top": 312.251021,
+          "right": -191.847943,
+          "bottom": 519.357063
+        },
+        "attachmentPoints": {
+          "shoulder": {
+            "x": -224.01,
+            "y": 342.49785
+          },
+          "elbow": {
+            "x": -255.180407,
+            "y": 486.666694
+          }
+        }
+      },
+      "right_forearm": {
+        "visible": true,
+        "z": 14,
+        "worldPivot": {
+          "x": -255.180407,
+          "y": 486.666694
+        },
+        "worldRotation": 8.2,
+        "worldBounds": {
+          "left": -303.239225,
+          "top": 461.741797,
+          "right": -226.873486,
+          "bottom": 648.660258
+        },
+        "screenBounds": {
+          "left": -303.239225,
+          "top": 461.741797,
+          "right": -226.873486,
+          "bottom": 648.660258
+        },
+        "attachmentPoints": {
+          "elbow": {
+            "x": -255.180407,
+            "y": 486.666694
+          },
+          "wrist": {
+            "x": -275.50441,
+            "y": 627.705502
+          }
+        }
+      },
+      "right_hand": {
+        "visible": true,
+        "z": 15,
+        "worldPivot": {
+          "x": -275.50441,
+          "y": 627.705502
+        },
+        "worldRotation": 8.2,
+        "worldBounds": {
+          "left": -311.63998,
+          "top": 621.305892,
+          "right": -238.528532,
+          "bottom": 694.840913
+        },
+        "screenBounds": {
+          "left": -311.63998,
+          "top": 621.305892,
+          "right": -238.528532,
+          "bottom": 694.840913
+        },
+        "attachmentPoints": {
+          "wrist": {
+            "x": -275.50441,
+            "y": 627.705502
+          },
+          "grip": {
+            "x": -280.852781,
+            "y": 664.820626
+          }
+        }
+      },
+      "cup_in_hand": {
+        "visible": false,
+        "z": 30.5,
+        "worldPivot": {
+          "x": -280.852781,
+          "y": 664.820626
+        },
+        "worldRotation": 34,
+        "worldBounds": {
+          "left": -420.204535,
+          "top": 556.422006,
+          "right": -237.961079,
+          "bottom": 736.506704
+        },
+        "screenBounds": {
+          "left": -420.204535,
+          "top": 556.422006,
+          "right": -237.961079,
+          "bottom": 736.506704
+        },
+        "attachmentPoints": {
+          "handle": {
+            "x": -280.852781,
+            "y": 664.820626
+          },
+          "rim_center": {
+            "x": -308.740162,
+            "y": 589.919526
+          },
+          "base_center": {
+            "x": -375.283307,
+            "y": 688.573795
+          }
+        }
+      },
+      "steam": {
+        "visible": false,
+        "z": 33,
+        "worldPivot": {
+          "x": -306.503391,
+          "y": 586.603376
+        },
+        "worldRotation": 34,
+        "worldBounds": {
+          "left": -326.488141,
+          "top": 527.946837,
+          "right": -256.320411,
+          "bottom": 600.4892
+        },
+        "screenBounds": {
+          "left": -326.488141,
+          "top": 527.946837,
+          "right": -256.320411,
+          "bottom": 600.4892
+        }
+      }
+    }
+  },
+  "50": {
+    "camera": {
+      "x": 0,
+      "y": 0,
+      "scale": 1
+    },
+    "drawOrder": [
+      "background",
+      "sky",
+      "cloud",
+      "window_frame",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head",
+      "eyes",
+      "mouth",
+      "left_upper_arm",
+      "right_upper_arm",
+      "left_forearm",
+      "right_forearm",
+      "left_hand",
+      "right_hand",
+      "counter",
+      "cup_on_counter",
+      "plant"
+    ],
+    "layers": {
+      "counter": {
+        "visible": true,
+        "z": 20,
+        "worldPivot": {
+          "x": 1250,
+          "y": 1000
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": 719.6,
+          "top": 637.9,
+          "right": 1780.4,
+          "bottom": 1000
+        },
+        "screenBounds": {
+          "left": 719.6,
+          "top": 637.9,
+          "right": 1780.4,
+          "bottom": 1000
+        },
+        "attachmentPoints": {
+          "top_left": {
+            "x": 722.99456,
+            "y": 641.30374
+          },
+          "top_right": {
+            "x": 1777.00544,
+            "y": 641.30374
+          }
+        }
+      },
+      "character": {
+        "visible": true,
+        "z": 0,
+        "worldPivot": {
+          "x": 570.238095,
+          "y": 990
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": 570.238095,
+          "top": 990,
+          "right": 570.238095,
+          "bottom": 990
+        },
+        "screenBounds": {
+          "left": 570.238095,
+          "top": 990,
+          "right": 570.238095,
+          "bottom": 990
+        }
+      },
+      "torso": {
+        "visible": true,
+        "z": 10,
+        "worldPivot": {
+          "x": 570.238095,
+          "y": 610
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": 465.238095,
+          "top": 305.0042,
+          "right": 675.238095,
+          "bottom": 628.5042
+        },
+        "screenBounds": {
+          "left": 465.238095,
+          "top": 305.0042,
+          "right": 675.238095,
+          "bottom": 628.5042
+        },
+        "attachmentPoints": {
+          "neck": {
+            "x": 570.238095,
+            "y": 312.5094
+          },
+          "right_shoulder": {
+            "x": 490.228095,
+            "y": 342.49785
+          },
+          "left_shoulder": {
+            "x": 650.248095,
+            "y": 342.49785
+          },
+          "hips": {
+            "x": 570.238095,
+            "y": 610
+          }
+        }
+      },
+      "head": {
+        "visible": true,
+        "z": 11,
+        "worldPivot": {
+          "x": 570.238095,
+          "y": 324.5094
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": 486.738095,
+          "top": 123.5122,
+          "right": 653.738095,
+          "bottom": 335.5122
+        },
+        "screenBounds": {
+          "left": 486.738095,
+          "top": 123.5122,
+          "right": 653.738095,
+          "bottom": 335.5122
+        },
+        "attachmentPoints": {
+          "head_center": {
+            "x": 570.238095,
+            "y": 232.0138
+          },
+          "eyes_center": {
+            "x": 570.238095,
+            "y": 222.0074
+          },
+          "mouth_center": {
+            "x": 570.238095,
+            "y": 277.0214
+          }
+        }
+      },
+      "right_upper_arm": {
+        "visible": true,
+        "z": 13,
+        "worldPivot": {
+          "x": 496.228095,
+          "y": 342.49785
+        },
+        "worldRotation": 3.8,
+        "worldBounds": {
+          "left": 457.190622,
+          "top": 315.730281,
+          "right": 525.324483,
+          "bottom": 518.935639
+        },
+        "screenBounds": {
+          "left": 457.190622,
+          "top": 315.730281,
+          "right": 525.324483,
+          "bottom": 518.935639
+        },
+        "attachmentPoints": {
+          "shoulder": {
+            "x": 496.228095,
+            "y": 342.49785
+          },
+          "elbow": {
+            "x": 486.452695,
+            "y": 489.673567
+          }
+        }
+      },
+      "right_forearm": {
+        "visible": true,
+        "z": 14,
+        "worldPivot": {
+          "x": 486.452695,
+          "y": 489.673567
+        },
+        "worldRotation": -0.2,
+        "worldBounds": {
+          "left": 460.877774,
+          "top": 468.076936,
+          "right": 512.511017,
+          "bottom": 649.753853
+        },
+        "screenBounds": {
+          "left": 460.877774,
+          "top": 468.076936,
+          "right": 512.511017,
+          "bottom": 649.753853
+        },
+        "attachmentPoints": {
+          "elbow": {
+            "x": 486.452695,
+            "y": 489.673567
+          },
+          "wrist": {
+            "x": 486.950098,
+            "y": 632.168348
+          }
+        }
+      },
+      "right_hand": {
+        "visible": true,
+        "z": 15,
+        "worldPivot": {
+          "x": 486.950098,
+          "y": 632.168348
+        },
+        "worldRotation": -0.2,
+        "worldBounds": {
+          "left": 459.43873,
+          "top": 629.536719,
+          "right": 524.165229,
+          "bottom": 694.76147
+        },
+        "screenBounds": {
+          "left": 459.43873,
+          "top": 629.536719,
+          "right": 524.165229,
+          "bottom": 694.76147
+        },
+        "attachmentPoints": {
+          "wrist": {
+            "x": 486.950098,
+            "y": 632.168348
+          },
+          "grip": {
+            "x": 487.080992,
+            "y": 669.66662
+          }
+        }
+      },
+      "cup_in_hand": {
+        "visible": false,
+        "z": 30.5,
+        "worldPivot": {
+          "x": 487.080992,
+          "y": 669.66662
+        },
+        "worldRotation": 25.6,
+        "worldBounds": {
+          "left": 348.709161,
+          "top": 572.454183,
+          "right": 524.664483,
+          "bottom": 744.651531
+        },
+        "screenBounds": {
+          "left": 348.709161,
+          "top": 572.454183,
+          "right": 524.664483,
+          "bottom": 744.651531
+        },
+        "attachmentPoints": {
+          "handle": {
+            "x": 487.080992,
+            "y": 669.66662
+          },
+          "rim_center": {
+            "x": 448.550998,
+            "y": 599.642908
+          },
+          "base_center": {
+            "x": 397.13342,
+            "y": 706.959671
+          }
+        }
+      },
+      "steam": {
+        "visible": false,
+        "z": 33,
+        "worldPivot": {
+          "x": 450.279341,
+          "y": 596.035578
+        },
+        "worldRotation": 25.6,
+        "worldBounds": {
+          "left": 428.698099,
+          "top": 536.369496,
+          "right": 495.194613,
+          "bottom": 606.999781
+        },
+        "screenBounds": {
+          "left": 428.698099,
+          "top": 536.369496,
+          "right": 495.194613,
+          "bottom": 606.999781
+        }
+      }
+    }
+  },
+  "100": {
+    "camera": {
+      "x": 0,
+      "y": 0,
+      "scale": 1
+    },
+    "drawOrder": [
+      "background",
+      "sky",
+      "cloud",
+      "window_frame",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head",
+      "eyes",
+      "mouth",
+      "left_upper_arm",
+      "right_upper_arm",
+      "left_forearm",
+      "right_forearm",
+      "left_hand",
+      "right_hand",
+      "counter",
+      "cup_on_counter",
+      "plant"
+    ],
+    "layers": {
+      "counter": {
+        "visible": true,
+        "z": 20,
+        "worldPivot": {
+          "x": 1250,
+          "y": 1000
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": 719.6,
+          "top": 637.9,
+          "right": 1780.4,
+          "bottom": 1000
+        },
+        "screenBounds": {
+          "left": 719.6,
+          "top": 637.9,
+          "right": 1780.4,
+          "bottom": 1000
+        },
+        "attachmentPoints": {
+          "top_left": {
+            "x": 722.99456,
+            "y": 641.30374
+          },
+          "top_right": {
+            "x": 1777.00544,
+            "y": 641.30374
+          }
+        }
+      },
+      "character": {
+        "visible": true,
+        "z": 0,
+        "worldPivot": {
+          "x": 1150,
+          "y": 990
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": 1150,
+          "top": 990,
+          "right": 1150,
+          "bottom": 990
+        },
+        "screenBounds": {
+          "left": 1150,
+          "top": 990,
+          "right": 1150,
+          "bottom": 990
+        }
+      },
+      "torso": {
+        "visible": true,
+        "z": 10,
+        "worldPivot": {
+          "x": 1150,
+          "y": 610
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": 1045,
+          "top": 305.0042,
+          "right": 1255,
+          "bottom": 628.5042
+        },
+        "screenBounds": {
+          "left": 1045,
+          "top": 305.0042,
+          "right": 1255,
+          "bottom": 628.5042
+        },
+        "attachmentPoints": {
+          "neck": {
+            "x": 1150,
+            "y": 312.5094
+          },
+          "right_shoulder": {
+            "x": 1069.99,
+            "y": 342.49785
+          },
+          "left_shoulder": {
+            "x": 1230.01,
+            "y": 342.49785
+          },
+          "hips": {
+            "x": 1150,
+            "y": 610
+          }
+        }
+      },
+      "head": {
+        "visible": true,
+        "z": 11,
+        "worldPivot": {
+          "x": 1150,
+          "y": 324.5094
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": 1066.5,
+          "top": 123.5122,
+          "right": 1233.5,
+          "bottom": 335.5122
+        },
+        "screenBounds": {
+          "left": 1066.5,
+          "top": 123.5122,
+          "right": 1233.5,
+          "bottom": 335.5122
+        },
+        "attachmentPoints": {
+          "head_center": {
+            "x": 1150,
+            "y": 232.0138
+          },
+          "eyes_center": {
+            "x": 1150,
+            "y": 222.0074
+          },
+          "mouth_center": {
+            "x": 1150,
+            "y": 277.0214
+          }
+        }
+      },
+      "right_upper_arm": {
+        "visible": true,
+        "z": 13,
+        "worldPivot": {
+          "x": 1075.99,
+          "y": 342.49785
+        },
+        "worldRotation": 8,
+        "worldBounds": {
+          "left": 1024.402335,
+          "top": 313.913888,
+          "right": 1106.701699,
+          "bottom": 519.622022
+        },
+        "screenBounds": {
+          "left": 1024.402335,
+          "top": 313.913888,
+          "right": 1106.701699,
+          "bottom": 519.622022
+        },
+        "attachmentPoints": {
+          "shoulder": {
+            "x": 1075.99,
+            "y": 342.49785
+          },
+          "elbow": {
+            "x": 1055.461968,
+            "y": 488.56239
+          }
+        }
+      },
+      "right_forearm": {
+        "visible": true,
+        "z": 14,
+        "worldPivot": {
+          "x": 1055.461968,
+          "y": 488.56239
+        },
+        "worldRotation": 4,
+        "worldBounds": {
+          "left": 1018.863589,
+          "top": 465.328242,
+          "right": 1082.400156,
+          "bottom": 649.943697
+        },
+        "screenBounds": {
+          "left": 1018.863589,
+          "top": 465.328242,
+          "right": 1082.400156,
+          "bottom": 649.943697
+        },
+        "attachmentPoints": {
+          "elbow": {
+            "x": 1055.461968,
+            "y": 488.56239
+          },
+          "wrist": {
+            "x": 1045.521974,
+            "y": 630.710928
+          }
+        }
+      },
+      "right_hand": {
+        "visible": true,
+        "z": 15,
+        "worldPivot": {
+          "x": 1045.521974,
+          "y": 630.710928
+        },
+        "worldRotation": 4,
+        "worldBounds": {
+          "left": 1013.726564,
+          "top": 626.296026,
+          "right": 1082.603616,
+          "bottom": 695.636981
+        },
+        "screenBounds": {
+          "left": 1013.726564,
+          "top": 626.296026,
+          "right": 1082.603616,
+          "bottom": 695.636981
+        },
+        "attachmentPoints": {
+          "wrist": {
+            "x": 1045.521974,
+            "y": 630.710928
+          },
+          "grip": {
+            "x": 1042.90621,
+            "y": 668.118083
+          }
+        }
+      },
+      "cup_in_hand": {
+        "visible": false,
+        "z": 30.5,
+        "worldPivot": {
+          "x": 1042.90621,
+          "y": 668.118083
+        },
+        "worldRotation": 29.8,
+        "worldBounds": {
+          "left": 903.670497,
+          "top": 565.035725,
+          "right": 1083.252157,
+          "bottom": 741.651053
+        },
+        "screenBounds": {
+          "left": 903.670497,
+          "top": 565.035725,
+          "right": 1083.252157,
+          "bottom": 741.651053
+        },
+        "attachmentPoints": {
+          "handle": {
+            "x": 1042.90621,
+            "y": 668.118083
+          },
+          "rim_center": {
+            "x": 1009.6081,
+            "y": 595.460554
+          },
+          "base_center": {
+            "x": 950.468919,
+            "y": 698.723385
+          }
+        }
+      },
+      "steam": {
+        "visible": false,
+        "z": 33,
+        "worldPivot": {
+          "x": 1011.595996,
+          "y": 591.989492
+        },
+        "worldRotation": 29.8,
+        "worldBounds": {
+          "left": 990.757036,
+          "top": 532.668875,
+          "right": 1059.27316,
+          "bottom": 604.447964
+        },
+        "screenBounds": {
+          "left": 990.757036,
+          "top": 532.668875,
+          "right": 1059.27316,
+          "bottom": 604.447964
+        }
+      }
+    }
+  },
+  "155": {
+    "camera": {
+      "x": 39.89039606043153,
+      "y": -37.231036323069425,
+      "scale": 1.0930775908076735
+    },
+    "drawOrder": [
+      "background",
+      "sky",
+      "cloud",
+      "window_frame",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head",
+      "eyes",
+      "mouth",
+      "left_upper_arm",
+      "right_upper_arm",
+      "left_forearm",
+      "left_hand",
+      "counter",
+      "right_forearm",
+      "cup_in_hand",
+      "right_hand",
+      "plant"
+    ],
+    "layers": {
+      "counter": {
+        "visible": true,
+        "z": 20,
+        "worldPivot": {
+          "x": 1250,
+          "y": 1000
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": 719.6,
+          "top": 637.9,
+          "right": 1780.4,
+          "bottom": 1000
+        },
+        "screenBounds": {
+          "left": 653.620849,
+          "top": 687.708708,
+          "right": 1813.157557,
+          "bottom": 1083.512103
+        },
+        "attachmentPoints": {
+          "top_left": {
+            "x": 722.99456,
+            "y": 641.30374
+          },
+          "top_right": {
+            "x": 1777.00544,
+            "y": 641.30374
+          }
+        }
+      },
+      "character": {
+        "visible": true,
+        "z": 0,
+        "worldPivot": {
+          "x": 1150,
+          "y": 990
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": 1150,
+          "top": 990,
+          "right": 1150,
+          "bottom": 990
+        },
+        "screenBounds": {
+          "left": 1124.081444,
+          "top": 1072.581327,
+          "right": 1124.081444,
+          "bottom": 1072.581327
+        }
+      },
+      "torso": {
+        "visible": true,
+        "z": 10,
+        "worldPivot": {
+          "x": 1150,
+          "y": 610
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": 1045,
+          "top": 305.0042,
+          "right": 1255,
+          "bottom": 628.5042
+        },
+        "screenBounds": {
+          "left": 1009.308297,
+          "top": 323.827769,
+          "right": 1238.854591,
+          "bottom": 677.438369
+        },
+        "attachmentPoints": {
+          "neck": {
+            "x": 1150,
+            "y": 312.5094
+          },
+          "right_shoulder": {
+            "x": 1069.99,
+            "y": 342.49785
+          },
+          "left_shoulder": {
+            "x": 1230.01,
+            "y": 342.49785
+          },
+          "hips": {
+            "x": 1150,
+            "y": 610
+          }
+        }
+      },
+      "head": {
+        "visible": true,
+        "z": 11,
+        "worldPivot": {
+          "x": 1150,
+          "y": 324.5094
+        },
+        "worldRotation": 12,
+        "worldBounds": {
+          "left": 1066.037065,
+          "top": 110.543845,
+          "right": 1273.464992,
+          "bottom": 352.632389
+        },
+        "screenBounds": {
+          "left": 1032.303441,
+          "top": 111.267512,
+          "right": 1259.038261,
+          "bottom": 375.889074
+        },
+        "attachmentPoints": {
+          "head_center": {
+            "x": 1169.230917,
+            "y": 234.035051
+          },
+          "eyes_center": {
+            "x": 1171.311364,
+            "y": 224.247315
+          },
+          "mouth_center": {
+            "x": 1159.87331,
+            "y": 278.059127
+          }
+        }
+      },
+      "right_upper_arm": {
+        "visible": true,
+        "z": 13,
+        "worldPivot": {
+          "x": 1075.99,
+          "y": 342.49785
+        },
+        "worldRotation": 61.25,
+        "worldBounds": {
+          "left": 909.335627,
+          "top": 306.363145,
+          "right": 1111.13536,
+          "bottom": 450.78087
+        },
+        "screenBounds": {
+          "left": 861.016611,
+          "top": 325.313201,
+          "right": 1081.599377,
+          "bottom": 483.17298
+        },
+        "attachmentPoints": {
+          "shoulder": {
+            "x": 1075.99,
+            "y": 342.49785
+          },
+          "elbow": {
+            "x": 946.672804,
+            "y": 413.443693
+          }
+        }
+      },
+      "right_forearm": {
+        "visible": true,
+        "z": 30,
+        "worldPivot": {
+          "x": 946.672804,
+          "y": 413.443693
+        },
+        "worldRotation": -25.8,
+        "worldBounds": {
+          "left": 914.353833,
+          "top": 382.981469,
+          "right": 1039.264535,
+          "bottom": 568.586112
+        },
+        "screenBounds": {
+          "left": 866.5019,
+          "top": 409.062974,
+          "right": 1003.038989,
+          "bottom": 611.94325
+        },
+        "attachmentPoints": {
+          "elbow": {
+            "x": 946.672804,
+            "y": 413.443693
+          },
+          "wrist": {
+            "x": 1008.691342,
+            "y": 541.735202
+          }
+        }
+      },
+      "right_hand": {
+        "visible": true,
+        "z": 31,
+        "worldPivot": {
+          "x": 1008.691342,
+          "y": 541.735202
+        },
+        "worldRotation": -25.8,
+        "worldBounds": {
+          "left": 982.840889,
+          "top": 523.379822,
+          "right": 1069.201471,
+          "bottom": 609.972948
+        },
+        "screenBounds": {
+          "left": 941.363566,
+          "top": 562.529268,
+          "right": 1035.762383,
+          "bottom": 657.182273
+        },
+        "attachmentPoints": {
+          "wrist": {
+            "x": 1008.691342,
+            "y": 541.735202
+          },
+          "grip": {
+            "x": 1025.011855,
+            "y": 575.495805
+          }
+        }
+      },
+      "cup_in_hand": {
+        "visible": true,
+        "z": 30.5,
+        "worldPivot": {
+          "x": 1025.011855,
+          "y": 575.495805
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": 907.512655,
+          "top": 523.997655,
+          "right": 1042.012655,
+          "bottom": 650.497655
+        },
+        "screenBounds": {
+          "left": 859.023962,
+          "top": 563.204607,
+          "right": 1006.042898,
+          "bottom": 701.478922
+        },
+        "attachmentPoints": {
+          "handle": {
+            "x": 1025.011855,
+            "y": 575.495805
+          },
+          "rim_center": {
+            "x": 960.008005,
+            "y": 528.994405
+          },
+          "base_center": {
+            "x": 960.008005,
+            "y": 647.992955
+          }
+        }
+      },
+      "steam": {
+        "visible": true,
+        "z": 33,
+        "worldPivot": {
+          "x": 960.008005,
+          "y": 524.994405
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": 936.508005,
+          "top": 470.092785,
+          "right": 983.508005,
+          "bottom": 525.892785
+        },
+        "screenBounds": {
+          "left": 890.718129,
+          "top": 504.282402,
+          "right": 942.092776,
+          "bottom": 565.276131
+        }
+      }
+    }
+  },
+  "200": {
+    "camera": {
+      "x": 150,
+      "y": -140,
+      "scale": 1.35
+    },
+    "drawOrder": [
+      "background",
+      "sky",
+      "cloud",
+      "window_frame",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head",
+      "eyes",
+      "mouth",
+      "left_upper_arm",
+      "right_upper_arm",
+      "left_forearm",
+      "left_hand",
+      "counter",
+      "right_forearm",
+      "cup_in_hand",
+      "right_hand",
+      "steam",
+      "plant"
+    ],
+    "layers": {
+      "counter": {
+        "visible": true,
+        "z": 20,
+        "worldPivot": {
+          "x": 1250,
+          "y": 1000
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": 719.6,
+          "top": 637.9,
+          "right": 1780.4,
+          "bottom": 1000
+        },
+        "screenBounds": {
+          "left": 432.96,
+          "top": 861.165,
+          "right": 1865.04,
+          "bottom": 1350
+        },
+        "attachmentPoints": {
+          "top_left": {
+            "x": 722.99456,
+            "y": 641.30374
+          },
+          "top_right": {
+            "x": 1777.00544,
+            "y": 641.30374
+          }
+        }
+      },
+      "character": {
+        "visible": true,
+        "z": 0,
+        "worldPivot": {
+          "x": 1150,
+          "y": 990
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": 1150,
+          "top": 990,
+          "right": 1150,
+          "bottom": 990
+        },
+        "screenBounds": {
+          "left": 1014,
+          "top": 1336.5,
+          "right": 1014,
+          "bottom": 1336.5
+        }
+      },
+      "torso": {
+        "visible": true,
+        "z": 10,
+        "worldPivot": {
+          "x": 1150,
+          "y": 610
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": 1045,
+          "top": 305.0042,
+          "right": 1255,
+          "bottom": 628.5042
+        },
+        "screenBounds": {
+          "left": 872.25,
+          "top": 411.75567,
+          "right": 1155.75,
+          "bottom": 848.48067
+        },
+        "attachmentPoints": {
+          "neck": {
+            "x": 1150,
+            "y": 312.5094
+          },
+          "right_shoulder": {
+            "x": 1069.99,
+            "y": 342.49785
+          },
+          "left_shoulder": {
+            "x": 1230.01,
+            "y": 342.49785
+          },
+          "hips": {
+            "x": 1150,
+            "y": 610
+          }
+        }
+      },
+      "head": {
+        "visible": true,
+        "z": 11,
+        "worldPivot": {
+          "x": 1150,
+          "y": 324.5094
+        },
+        "worldRotation": -2,
+        "worldBounds": {
+          "left": 1059.536165,
+          "top": 120.720534,
+          "right": 1233.833126,
+          "bottom": 338.419605
+        },
+        "screenBounds": {
+          "left": 891.873823,
+          "top": 162.972721,
+          "right": 1127.17472,
+          "bottom": 456.866467
+        },
+        "attachmentPoints": {
+          "head_center": {
+            "x": 1146.77195,
+            "y": 232.070146
+          },
+          "eyes_center": {
+            "x": 1146.422732,
+            "y": 222.069841
+          },
+          "mouth_center": {
+            "x": 1148.342693,
+            "y": 277.050328
+          }
+        }
+      },
+      "right_upper_arm": {
+        "visible": true,
+        "z": 13,
+        "worldPivot": {
+          "x": 1075.99,
+          "y": 342.49785
+        },
+        "worldRotation": 34,
+        "worldBounds": {
+          "left": 955.332709,
+          "top": 306.394106,
+          "right": 1112.768356,
+          "bottom": 502.95723
+        },
+        "screenBounds": {
+          "left": 751.199157,
+          "top": 413.632043,
+          "right": 963.73728,
+          "bottom": 678.992261
+        },
+        "attachmentPoints": {
+          "shoulder": {
+            "x": 1075.99,
+            "y": 342.49785
+          },
+          "elbow": {
+            "x": 993.509047,
+            "y": 464.780892
+          }
+        }
+      },
+      "right_forearm": {
+        "visible": true,
+        "z": 30,
+        "worldPivot": {
+          "x": 993.509047,
+          "y": 464.780892
+        },
+        "worldRotation": -78,
+        "worldBounds": {
+          "left": 967.169545,
+          "top": 435.366415,
+          "right": 1155.30683,
+          "bottom": 522.987915
+        },
+        "screenBounds": {
+          "left": 767.178885,
+          "top": 587.744661,
+          "right": 1021.164221,
+          "bottom": 706.033685
+        },
+        "attachmentPoints": {
+          "elbow": {
+            "x": 993.509047,
+            "y": 464.780892
+          },
+          "wrist": {
+            "x": 1132.890825,
+            "y": 494.407403
+          }
+        }
+      },
+      "right_hand": {
+        "visible": true,
+        "z": 31,
+        "worldPivot": {
+          "x": 1132.890825,
+          "y": 494.407403
+        },
+        "worldRotation": -78,
+        "worldBounds": {
+          "left": 1124.724857,
+          "top": 457.698382,
+          "right": 1201.714755,
+          "bottom": 534.303162
+        },
+        "screenBounds": {
+          "left": 979.878557,
+          "top": 617.892816,
+          "right": 1083.814919,
+          "bottom": 721.309269
+        },
+        "attachmentPoints": {
+          "wrist": {
+            "x": 1132.890825,
+            "y": 494.407403
+          },
+          "grip": {
+            "x": 1169.569893,
+            "y": 502.20378
+          }
+        }
+      },
+      "cup_in_hand": {
+        "visible": true,
+        "z": 30.5,
+        "worldPivot": {
+          "x": 1169.569893,
+          "y": 502.20378
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": 1052.070693,
+          "top": 450.70563,
+          "right": 1186.570693,
+          "bottom": 577.20563
+        },
+        "screenBounds": {
+          "left": 881.795435,
+          "top": 608.452601,
+          "right": 1063.370435,
+          "bottom": 779.227601
+        },
+        "attachmentPoints": {
+          "handle": {
+            "x": 1169.569893,
+            "y": 502.20378
+          },
+          "rim_center": {
+            "x": 1104.566043,
+            "y": 455.70238
+          },
+          "base_center": {
+            "x": 1104.566043,
+            "y": 574.70093
+          }
+        }
+      },
+      "steam": {
+        "visible": true,
+        "z": 33,
+        "worldPivot": {
+          "x": 1104.566043,
+          "y": 451.70238
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": 1081.066043,
+          "top": 395.377251,
+          "right": 1128.066043,
+          "bottom": 452.624054
+        },
+        "screenBounds": {
+          "left": 920.939158,
+          "top": 533.759289,
+          "right": 984.389158,
+          "bottom": 611.042472
+        }
+      }
+    }
+  },
+  "230": {
+    "camera": {
+      "x": 150,
+      "y": -140,
+      "scale": 1.35
+    },
+    "drawOrder": [
+      "background",
+      "sky",
+      "cloud",
+      "window_frame",
+      "left_leg",
+      "right_leg",
+      "torso",
+      "head",
+      "eyes",
+      "mouth",
+      "left_upper_arm",
+      "right_upper_arm",
+      "left_forearm",
+      "left_hand",
+      "counter",
+      "right_forearm",
+      "cup_in_hand",
+      "right_hand",
+      "steam",
+      "plant"
+    ],
+    "layers": {
+      "counter": {
+        "visible": true,
+        "z": 20,
+        "worldPivot": {
+          "x": 1250,
+          "y": 1000
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": 719.6,
+          "top": 637.9,
+          "right": 1780.4,
+          "bottom": 1000
+        },
+        "screenBounds": {
+          "left": 432.96,
+          "top": 861.165,
+          "right": 1865.04,
+          "bottom": 1350
+        },
+        "attachmentPoints": {
+          "top_left": {
+            "x": 722.99456,
+            "y": 641.30374
+          },
+          "top_right": {
+            "x": 1777.00544,
+            "y": 641.30374
+          }
+        }
+      },
+      "character": {
+        "visible": true,
+        "z": 0,
+        "worldPivot": {
+          "x": 1150,
+          "y": 990
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": 1150,
+          "top": 990,
+          "right": 1150,
+          "bottom": 990
+        },
+        "screenBounds": {
+          "left": 1014,
+          "top": 1336.5,
+          "right": 1014,
+          "bottom": 1336.5
+        }
+      },
+      "torso": {
+        "visible": true,
+        "z": 10,
+        "worldPivot": {
+          "x": 1150,
+          "y": 610
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": 1045,
+          "top": 305.0042,
+          "right": 1255,
+          "bottom": 628.5042
+        },
+        "screenBounds": {
+          "left": 872.25,
+          "top": 411.75567,
+          "right": 1155.75,
+          "bottom": 848.48067
+        },
+        "attachmentPoints": {
+          "neck": {
+            "x": 1150,
+            "y": 312.5094
+          },
+          "right_shoulder": {
+            "x": 1069.99,
+            "y": 342.49785
+          },
+          "left_shoulder": {
+            "x": 1230.01,
+            "y": 342.49785
+          },
+          "hips": {
+            "x": 1150,
+            "y": 610
+          }
+        }
+      },
+      "head": {
+        "visible": true,
+        "z": 11,
+        "worldPivot": {
+          "x": 1150,
+          "y": 324.5094
+        },
+        "worldRotation": -4.35419,
+        "worldBounds": {
+          "left": 1051.480924,
+          "top": 117.752851,
+          "right": 1234.094353,
+          "bottom": 341.819917
+        },
+        "screenBounds": {
+          "left": 880.999247,
+          "top": 158.966348,
+          "right": 1127.527376,
+          "bottom": 461.456887
+        },
+        "attachmentPoints": {
+          "head_center": {
+            "x": 1142.977564,
+            "y": 232.280763
+          },
+          "eyes_center": {
+            "x": 1142.21786,
+            "y": 222.303244
+          },
+          "mouth_center": {
+            "x": 1146.394624,
+            "y": 277.158461
+          }
+        }
+      },
+      "right_upper_arm": {
+        "visible": true,
+        "z": 13,
+        "worldPivot": {
+          "x": 1075.99,
+          "y": 342.49785
+        },
+        "worldRotation": 34,
+        "worldBounds": {
+          "left": 955.332709,
+          "top": 306.394106,
+          "right": 1112.768356,
+          "bottom": 502.95723
+        },
+        "screenBounds": {
+          "left": 751.199157,
+          "top": 413.632043,
+          "right": 963.73728,
+          "bottom": 678.992261
+        },
+        "attachmentPoints": {
+          "shoulder": {
+            "x": 1075.99,
+            "y": 342.49785
+          },
+          "elbow": {
+            "x": 993.509047,
+            "y": 464.780892
+          }
+        }
+      },
+      "right_forearm": {
+        "visible": true,
+        "z": 30,
+        "worldPivot": {
+          "x": 993.509047,
+          "y": 464.780892
+        },
+        "worldRotation": -78,
+        "worldBounds": {
+          "left": 967.169545,
+          "top": 435.366415,
+          "right": 1155.30683,
+          "bottom": 522.987915
+        },
+        "screenBounds": {
+          "left": 767.178885,
+          "top": 587.744661,
+          "right": 1021.164221,
+          "bottom": 706.033685
+        },
+        "attachmentPoints": {
+          "elbow": {
+            "x": 993.509047,
+            "y": 464.780892
+          },
+          "wrist": {
+            "x": 1132.890825,
+            "y": 494.407403
+          }
+        }
+      },
+      "right_hand": {
+        "visible": true,
+        "z": 31,
+        "worldPivot": {
+          "x": 1132.890825,
+          "y": 494.407403
+        },
+        "worldRotation": -78,
+        "worldBounds": {
+          "left": 1124.724857,
+          "top": 457.698382,
+          "right": 1201.714755,
+          "bottom": 534.303162
+        },
+        "screenBounds": {
+          "left": 979.878557,
+          "top": 617.892816,
+          "right": 1083.814919,
+          "bottom": 721.309269
+        },
+        "attachmentPoints": {
+          "wrist": {
+            "x": 1132.890825,
+            "y": 494.407403
+          },
+          "grip": {
+            "x": 1169.569893,
+            "y": 502.20378
+          }
+        }
+      },
+      "cup_in_hand": {
+        "visible": true,
+        "z": 30.5,
+        "worldPivot": {
+          "x": 1169.569893,
+          "y": 502.20378
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": 1052.070693,
+          "top": 450.70563,
+          "right": 1186.570693,
+          "bottom": 577.20563
+        },
+        "screenBounds": {
+          "left": 881.795435,
+          "top": 608.452601,
+          "right": 1063.370435,
+          "bottom": 779.227601
+        },
+        "attachmentPoints": {
+          "handle": {
+            "x": 1169.569893,
+            "y": 502.20378
+          },
+          "rim_center": {
+            "x": 1104.566043,
+            "y": 455.70238
+          },
+          "base_center": {
+            "x": 1104.566043,
+            "y": 574.70093
+          }
+        }
+      },
+      "steam": {
+        "visible": true,
+        "z": 33,
+        "worldPivot": {
+          "x": 1104.566043,
+          "y": 451.70238
+        },
+        "worldRotation": 0,
+        "worldBounds": {
+          "left": 1081.066043,
+          "top": 352.472919,
+          "right": 1128.066043,
+          "bottom": 453.326116
+        },
+        "screenBounds": {
+          "left": 920.939158,
+          "top": 475.838441,
+          "right": 984.389158,
+          "bottom": 611.990257
+        }
+      }
+    }
+  }
+}

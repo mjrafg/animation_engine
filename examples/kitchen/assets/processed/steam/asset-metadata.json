@@ -1,0 +1,102 @@
+{
+  "ok": true,
+  "source": "../../originals/steam.png",
+  "sourceSha256": "f7493b616fa912b05b0b556a9a109f4fedc0cde8fea1f7d81b964ea1346457ea",
+  "path": "native-alpha",
+  "files": {
+    "original": "original.png",
+    "backgroundMask": "background-mask.png",
+    "untrimmed": "untrimmed-transparent.png",
+    "processed": "processed-transparent.png",
+    "metadata": "asset-metadata.json"
+  },
+  "alpha": {
+    "hasAlphaChannel": true,
+    "borderTransparentFraction": 1,
+    "transparentFraction": 0.7966,
+    "partialFraction": 0.2034,
+    "opaqueFraction": 0
+  },
+  "components": [
+    {
+      "id": 1,
+      "pixelCount": 2374,
+      "bounds": {
+        "left": 35,
+        "top": 24,
+        "right": 65,
+        "bottom": 206
+      },
+      "centroid": {
+        "x": 50,
+        "y": 114.7
+      },
+      "share": 0.333333
+    },
+    {
+      "id": 2,
+      "pixelCount": 2374,
+      "bounds": {
+        "left": 65,
+        "top": 24,
+        "right": 95,
+        "bottom": 206
+      },
+      "centroid": {
+        "x": 80,
+        "y": 114.7
+      },
+      "share": 0.333333
+    },
+    {
+      "id": 3,
+      "pixelCount": 2374,
+      "bounds": {
+        "left": 95,
+        "top": 24,
+        "right": 125,
+        "bottom": 206
+      },
+      "centroid": {
+        "x": 110,
+        "y": 114.7
+      },
+      "share": 0.333333
+    }
+  ],
+  "removedComponents": [],
+  "issues": [
+    {
+      "severity": "warning",
+      "code": "MULTIPLE_COMPONENTS",
+      "message": "3 disconnected visible components remain. Inspect them and pass removeComponents with the ids of artifacts, if any."
+    }
+  ],
+  "trim": {
+    "originalWidth": 160,
+    "originalHeight": 220,
+    "trimmedWidth": 94,
+    "trimmedHeight": 186,
+    "offsetX": 33,
+    "offsetY": 22,
+    "visibleBounds": {
+      "left": 35,
+      "top": 24,
+      "right": 125,
+      "bottom": 206
+    },
+    "alphaThreshold": 4,
+    "padding": 2,
+    "empty": false
+  },
+  "size": {
+    "width": 94,
+    "height": 186
+  },
+  "attachmentPoints": {
+    "__pivot": {
+      "x": 0.5,
+      "y": 0.9839
+    }
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "ok": true,
+  "source": "../../originals/torso.png",
+  "sourceSha256": "afdf9512ff628f077898e4eff7a4e60bb7aaad60fc8dc51b5ccfddc70e7d0645",
+  "path": "native-alpha",
+  "files": {
+    "original": "original.png",
+    "backgroundMask": "background-mask.png",
+    "untrimmed": "untrimmed-transparent.png",
+    "processed": "processed-transparent.png",
+    "metadata": "asset-metadata.json"
+  },
+  "alpha": {
+    "hasAlphaChannel": true,
+    "borderTransparentFraction": 1,
+    "transparentFraction": 0.4042,
+    "partialFraction": 0.0037,
+    "opaqueFraction": 0.5921
+  },
+  "components": [
+    {
+      "id": 1,
+      "pixelCount": 233342,
+      "bounds": {
+        "left": 49,
+        "top": 40,
+        "right": 465,
+        "bottom": 683
+      },
+      "centroid": {
+        "x": 256.5,
+        "y": 353.3
+      },
+      "share": 1
+    }
+  ],
+  "removedComponents": [],
+  "issues": [],
+  "trim": {
+    "originalWidth": 538,
+    "originalHeight": 728,
+    "trimmedWidth": 420,
+    "trimmedHeight": 647,
+    "offsetX": 47,
+    "offsetY": 38,
+    "visibleBounds": {
+      "left": 49,
+      "top": 40,
+      "right": 465,
+      "bottom": 683
+    },
+    "alphaThreshold": 4,
+    "padding": 2,
+    "empty": false
+  },
+  "size": {
+    "width": 420,
+    "height": 647
+  },
+  "attachmentPoints": {
+    "neck": {
+      "x": 0.5,
+      "y": 0.0232
+    },
+    "right_shoulder": {
+      "x": 0.119,
+      "y": 0.1159
+    },
+    "left_shoulder": {
+      "x": 0.881,
+      "y": 0.1159
+    },
+    "hips": {
+      "x": 0.5,
+      "y": 0.9428
+    },
+    "__pivot": {
+      "x": 0.5,
+      "y": 0.9428
+    }
+  }
+}

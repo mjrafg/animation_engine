@@ -1,0 +1,74 @@
+{
+  "ok": true,
+  "source": "../../originals/left_forearm.png",
+  "sourceSha256": "ded0c210d9ae2cd12906beacb38648fcc9613ae8691140cd57a5335164d9f4bb",
+  "path": "native-alpha",
+  "files": {
+    "original": "original.png",
+    "backgroundMask": "background-mask.png",
+    "untrimmed": "untrimmed-transparent.png",
+    "processed": "processed-transparent.png",
+    "metadata": "asset-metadata.json"
+  },
+  "alpha": {
+    "hasAlphaChannel": true,
+    "borderTransparentFraction": 1,
+    "transparentFraction": 0.613,
+    "partialFraction": 0.0035,
+    "opaqueFraction": 0.3835
+  },
+  "components": [
+    {
+      "id": 1,
+      "pixelCount": 32123,
+      "bounds": {
+        "left": 36,
+        "top": 22,
+        "right": 134,
+        "bottom": 381
+      },
+      "centroid": {
+        "x": 84.5,
+        "y": 197.5
+      },
+      "share": 1
+    }
+  ],
+  "removedComponents": [],
+  "issues": [],
+  "trim": {
+    "originalWidth": 194,
+    "originalHeight": 428,
+    "trimmedWidth": 102,
+    "trimmedHeight": 363,
+    "offsetX": 34,
+    "offsetY": 20,
+    "visibleBounds": {
+      "left": 36,
+      "top": 22,
+      "right": 134,
+      "bottom": 381
+    },
+    "alphaThreshold": 4,
+    "padding": 2,
+    "empty": false
+  },
+  "size": {
+    "width": 102,
+    "height": 363
+  },
+  "attachmentPoints": {
+    "elbow": {
+      "x": 0.5,
+      "y": 0.1185
+    },
+    "wrist": {
+      "x": 0.5,
+      "y": 0.9036
+    },
+    "__pivot": {
+      "x": 0.5,
+      "y": 0.1185
+    }
+  }
+}

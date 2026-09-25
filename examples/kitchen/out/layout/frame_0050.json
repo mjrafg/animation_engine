@@ -1,0 +1,3138 @@
+{
+  "frame": 50,
+  "canvas": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "background": "#101014"
+  },
+  "camera": {
+    "x": 0,
+    "y": 0,
+    "scale": 1,
+    "rotation": 0,
+    "matrix": {
+      "a": 1,
+      "b": 0,
+      "c": 0,
+      "d": 1,
+      "e": 0,
+      "f": 0
+    }
+  },
+  "drawOrder": [
+    "background",
+    "sky",
+    "cloud",
+    "window_frame",
+    "left_leg",
+    "right_leg",
+    "torso",
+    "head",
+    "eyes",
+    "mouth",
+    "left_upper_arm",
+    "right_upper_arm",
+    "left_forearm",
+    "right_forearm",
+    "left_hand",
+    "right_hand",
+    "counter",
+    "cup_on_counter",
+    "plant"
+  ],
+  "layers": [
+    {
+      "id": "background",
+      "parent": null,
+      "asset": "kitchen_bg",
+      "z": 0,
+      "drawIndex": 0,
+      "visible": true,
+      "opacity": 1,
+      "size": {
+        "width": 2100,
+        "height": 1180
+      },
+      "local": {
+        "x": 960,
+        "y": 560,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "anchorX": 0.5,
+        "anchorY": 0.5
+      },
+      "worldRotation": 0,
+      "worldScale": {
+        "x": 1,
+        "y": 1
+      },
+      "worldPivot": {
+        "x": 960,
+        "y": 560
+      },
+      "worldCenter": {
+        "x": 960,
+        "y": 560
+      },
+      "worldBounds": {
+        "left": -90,
+        "top": -30,
+        "right": 2010,
+        "bottom": 1150
+      },
+      "worldCorners": [
+        {
+          "x": -90,
+          "y": -30
+        },
+        {
+          "x": 2010,
+          "y": -30
+        },
+        {
+          "x": 2010,
+          "y": 1150
+        },
+        {
+          "x": -90,
+          "y": 1150
+        }
+      ],
+      "screenPivot": {
+        "x": 960,
+        "y": 560
+      },
+      "screenCenter": {
+        "x": 960,
+        "y": 560
+      },
+      "screenBounds": {
+        "left": -90,
+        "top": -30,
+        "right": 2010,
+        "bottom": 1150
+      },
+      "screenCorners": [
+        {
+          "x": -90,
+          "y": -30
+        },
+        {
+          "x": 2010,
+          "y": -30
+        },
+        {
+          "x": 2010,
+          "y": 1150
+        },
+        {
+          "x": -90,
+          "y": 1150
+        }
+      ],
+      "onScreen": true,
+      "attachmentPoints": {},
+      "localMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 960,
+        "f": 560
+      },
+      "worldMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 960,
+        "f": 560
+      }
+    },
+    {
+      "id": "window_mask",
+      "parent": null,
+      "asset": null,
+      "z": 0,
+      "drawIndex": null,
+      "visible": false,
+      "opacity": 1,
+      "size": {
+        "width": 520,
+        "height": 330
+      },
+      "local": {
+        "x": 470,
+        "y": 120,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "anchorX": 0,
+        "anchorY": 0
+      },
+      "worldRotation": 0,
+      "worldScale": {
+        "x": 1,
+        "y": 1
+      },
+      "worldPivot": {
+        "x": 470,
+        "y": 120
+      },
+      "worldCenter": {
+        "x": 730,
+        "y": 285
+      },
+      "worldBounds": {
+        "left": 470,
+        "top": 120,
+        "right": 990,
+        "bottom": 450
+      },
+      "worldCorners": [
+        {
+          "x": 470,
+          "y": 120
+        },
+        {
+          "x": 990,
+          "y": 120
+        },
+        {
+          "x": 990,
+          "y": 450
+        },
+        {
+          "x": 470,
+          "y": 450
+        }
+      ],
+      "screenPivot": {
+        "x": 470,
+        "y": 120
+      },
+      "screenCenter": {
+        "x": 730,
+        "y": 285
+      },
+      "screenBounds": {
+        "left": 470,
+        "top": 120,
+        "right": 990,
+        "bottom": 450
+      },
+      "screenCorners": [
+        {
+          "x": 470,
+          "y": 120
+        },
+        {
+          "x": 990,
+          "y": 120
+        },
+        {
+          "x": 990,
+          "y": 450
+        },
+        {
+          "x": 470,
+          "y": 450
+        }
+      ],
+      "onScreen": true,
+      "attachmentPoints": {},
+      "localMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 470,
+        "f": 120
+      },
+      "worldMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 470,
+        "f": 120
+      }
+    },
+    {
+      "id": "sky",
+      "parent": null,
+      "asset": "sky_view",
+      "z": 1,
+      "drawIndex": 1,
+      "visible": true,
+      "opacity": 1,
+      "size": {
+        "width": 600,
+        "height": 400
+      },
+      "local": {
+        "x": 730,
+        "y": 285,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "anchorX": 0.5,
+        "anchorY": 0.5
+      },
+      "worldRotation": 0,
+      "worldScale": {
+        "x": 1,
+        "y": 1
+      },
+      "worldPivot": {
+        "x": 730,
+        "y": 285
+      },
+      "worldCenter": {
+        "x": 730,
+        "y": 285
+      },
+      "worldBounds": {
+        "left": 430,
+        "top": 85,
+        "right": 1030,
+        "bottom": 485
+      },
+      "worldCorners": [
+        {
+          "x": 430,
+          "y": 85
+        },
+        {
+          "x": 1030,
+          "y": 85
+        },
+        {
+          "x": 1030,
+          "y": 485
+        },
+        {
+          "x": 430,
+          "y": 485
+        }
+      ],
+      "screenPivot": {
+        "x": 730,
+        "y": 285
+      },
+      "screenCenter": {
+        "x": 730,
+        "y": 285
+      },
+      "screenBounds": {
+        "left": 430,
+        "top": 85,
+        "right": 1030,
+        "bottom": 485
+      },
+      "screenCorners": [
+        {
+          "x": 430,
+          "y": 85
+        },
+        {
+          "x": 1030,
+          "y": 85
+        },
+        {
+          "x": 1030,
+          "y": 485
+        },
+        {
+          "x": 430,
+          "y": 485
+        }
+      ],
+      "onScreen": true,
+      "attachmentPoints": {},
+      "localMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 730,
+        "f": 285
+      },
+      "worldMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 730,
+        "f": 285
+      }
+    },
+    {
+      "id": "cloud",
+      "parent": null,
+      "asset": "cloud",
+      "z": 2,
+      "drawIndex": 2,
+      "visible": true,
+      "opacity": 1,
+      "size": {
+        "width": 199,
+        "height": 139
+      },
+      "local": {
+        "x": 517.2644376899696,
+        "y": 190,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "anchorX": 0.5,
+        "anchorY": 0.5
+      },
+      "worldRotation": 0,
+      "worldScale": {
+        "x": 1,
+        "y": 1
+      },
+      "worldPivot": {
+        "x": 517.264438,
+        "y": 190
+      },
+      "worldCenter": {
+        "x": 517.264438,
+        "y": 190
+      },
+      "worldBounds": {
+        "left": 417.764438,
+        "top": 120.5,
+        "right": 616.764438,
+        "bottom": 259.5
+      },
+      "worldCorners": [
+        {
+          "x": 417.764438,
+          "y": 120.5
+        },
+        {
+          "x": 616.764438,
+          "y": 120.5
+        },
+        {
+          "x": 616.764438,
+          "y": 259.5
+        },
+        {
+          "x": 417.764438,
+          "y": 259.5
+        }
+      ],
+      "screenPivot": {
+        "x": 517.264438,
+        "y": 190
+      },
+      "screenCenter": {
+        "x": 517.264438,
+        "y": 190
+      },
+      "screenBounds": {
+        "left": 417.764438,
+        "top": 120.5,
+        "right": 616.764438,
+        "bottom": 259.5
+      },
+      "screenCorners": [
+        {
+          "x": 417.764438,
+          "y": 120.5
+        },
+        {
+          "x": 616.764438,
+          "y": 120.5
+        },
+        {
+          "x": 616.764438,
+          "y": 259.5
+        },
+        {
+          "x": 417.764438,
+          "y": 259.5
+        }
+      ],
+      "onScreen": true,
+      "attachmentPoints": {},
+      "localMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 517.264438,
+        "f": 190
+      },
+      "worldMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 517.264438,
+        "f": 190
+      }
+    },
+    {
+      "id": "window_frame",
+      "parent": null,
+      "asset": "window_frame",
+      "z": 3,
+      "drawIndex": 3,
+      "visible": true,
+      "opacity": 1,
+      "size": {
+        "width": 604,
+        "height": 390
+      },
+      "local": {
+        "x": 470,
+        "y": 120,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "anchorX": 0.0695,
+        "anchorY": 0.0564
+      },
+      "worldRotation": 0,
+      "worldScale": {
+        "x": 1,
+        "y": 1
+      },
+      "worldPivot": {
+        "x": 470,
+        "y": 120
+      },
+      "worldCenter": {
+        "x": 730.022,
+        "y": 293.004
+      },
+      "worldBounds": {
+        "left": 428.022,
+        "top": 98.004,
+        "right": 1032.022,
+        "bottom": 488.004
+      },
+      "worldCorners": [
+        {
+          "x": 428.022,
+          "y": 98.004
+        },
+        {
+          "x": 1032.022,
+          "y": 98.004
+        },
+        {
+          "x": 1032.022,
+          "y": 488.004
+        },
+        {
+          "x": 428.022,
+          "y": 488.004
+        }
+      ],
+      "screenPivot": {
+        "x": 470,
+        "y": 120
+      },
+      "screenCenter": {
+        "x": 730.022,
+        "y": 293.004
+      },
+      "screenBounds": {
+        "left": 428.022,
+        "top": 98.004,
+        "right": 1032.022,
+        "bottom": 488.004
+      },
+      "screenCorners": [
+        {
+          "x": 428.022,
+          "y": 98.004
+        },
+        {
+          "x": 1032.022,
+          "y": 98.004
+        },
+        {
+          "x": 1032.022,
+          "y": 488.004
+        },
+        {
+          "x": 428.022,
+          "y": 488.004
+        }
+      ],
+      "onScreen": true,
+      "attachmentPoints": {
+        "opening_top_left": {
+          "world": {
+            "x": 470,
+            "y": 120
+          },
+          "screen": {
+            "x": 470,
+            "y": 120
+          },
+          "normalized": {
+            "x": 0.0695,
+            "y": 0.0564
+          }
+        },
+        "opening_bottom_right": {
+          "world": {
+            "x": 990.044,
+            "y": 450.018
+          },
+          "screen": {
+            "x": 990.044,
+            "y": 450.018
+          },
+          "normalized": {
+            "x": 0.9305,
+            "y": 0.9026
+          }
+        }
+      },
+      "localMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 470,
+        "f": 120
+      },
+      "worldMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 470,
+        "f": 120
+      }
+    },
+    {
+      "id": "counter",
+      "parent": null,
+      "asset": "counter_keyed",
+      "z": 20,
+      "drawIndex": 16,
+      "visible": true,
+      "opacity": 1,
+      "size": {
+        "width": 1248,
+        "height": 426
+      },
+      "local": {
+        "x": 1250,
+        "y": 1000,
+        "rotation": 0,
+        "scaleX": 0.85,
+        "scaleY": 0.85,
+        "anchorX": 0.5,
+        "anchorY": 1
+      },
+      "worldRotation": 0,
+      "worldScale": {
+        "x": 0.85,
+        "y": 0.85
+      },
+      "worldPivot": {
+        "x": 1250,
+        "y": 1000
+      },
+      "worldCenter": {
+        "x": 1250,
+        "y": 818.95
+      },
+      "worldBounds": {
+        "left": 719.6,
+        "top": 637.9,
+        "right": 1780.4,
+        "bottom": 1000
+      },
+      "worldCorners": [
+        {
+          "x": 719.6,
+          "y": 637.9
+        },
+        {
+          "x": 1780.4,
+          "y": 637.9
+        },
+        {
+          "x": 1780.4,
+          "y": 1000
+        },
+        {
+          "x": 719.6,
+          "y": 1000
+        }
+      ],
+      "screenPivot": {
+        "x": 1250,
+        "y": 1000
+      },
+      "screenCenter": {
+        "x": 1250,
+        "y": 818.95
+      },
+      "screenBounds": {
+        "left": 719.6,
+        "top": 637.9,
+        "right": 1780.4,
+        "bottom": 1000
+      },
+      "screenCorners": [
+        {
+          "x": 719.6,
+          "y": 637.9
+        },
+        {
+          "x": 1780.4,
+          "y": 637.9
+        },
+        {
+          "x": 1780.4,
+          "y": 1000
+        },
+        {
+          "x": 719.6,
+          "y": 1000
+        }
+      ],
+      "onScreen": true,
+      "attachmentPoints": {
+        "top_left": {
+          "world": {
+            "x": 722.99456,
+            "y": 641.30374
+          },
+          "screen": {
+            "x": 722.99456,
+            "y": 641.30374
+          },
+          "normalized": {
+            "x": 0.0032,
+            "y": 0.0094
+          }
+        },
+        "top_right": {
+          "world": {
+            "x": 1777.00544,
+            "y": 641.30374
+          },
+          "screen": {
+            "x": 1777.00544,
+            "y": 641.30374
+          },
+          "normalized": {
+            "x": 0.9968,
+            "y": 0.0094
+          }
+        }
+      },
+      "localMatrix": {
+        "a": 0.85,
+        "b": 0,
+        "c": 0,
+        "d": 0.85,
+        "e": 1250,
+        "f": 1000
+      },
+      "worldMatrix": {
+        "a": 0.85,
+        "b": 0,
+        "c": 0,
+        "d": 0.85,
+        "e": 1250,
+        "f": 1000
+      }
+    },
+    {
+      "id": "cup_on_counter",
+      "parent": null,
+      "asset": "cup_keyed",
+      "z": 30.5,
+      "drawIndex": 17,
+      "visible": true,
+      "opacity": 1,
+      "size": {
+        "width": 134.5,
+        "height": 126.5
+      },
+      "local": {
+        "x": 960.01,
+        "y": 647.99,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "anchorX": 0.3903,
+        "anchorY": 0.9802
+      },
+      "worldRotation": 0,
+      "worldScale": {
+        "x": 1,
+        "y": 1
+      },
+      "worldPivot": {
+        "x": 960.01,
+        "y": 647.99
+      },
+      "worldCenter": {
+        "x": 974.76465,
+        "y": 587.2447
+      },
+      "worldBounds": {
+        "left": 907.51465,
+        "top": 523.9947,
+        "right": 1042.01465,
+        "bottom": 650.4947
+      },
+      "worldCorners": [
+        {
+          "x": 907.51465,
+          "y": 523.9947
+        },
+        {
+          "x": 1042.01465,
+          "y": 523.9947
+        },
+        {
+          "x": 1042.01465,
+          "y": 650.4947
+        },
+        {
+          "x": 907.51465,
+          "y": 650.4947
+        }
+      ],
+      "screenPivot": {
+        "x": 960.01,
+        "y": 647.99
+      },
+      "screenCenter": {
+        "x": 974.76465,
+        "y": 587.2447
+      },
+      "screenBounds": {
+        "left": 907.51465,
+        "top": 523.9947,
+        "right": 1042.01465,
+        "bottom": 650.4947
+      },
+      "screenCorners": [
+        {
+          "x": 907.51465,
+          "y": 523.9947
+        },
+        {
+          "x": 1042.01465,
+          "y": 523.9947
+        },
+        {
+          "x": 1042.01465,
+          "y": 650.4947
+        },
+        {
+          "x": 907.51465,
+          "y": 650.4947
+        }
+      ],
+      "onScreen": true,
+      "attachmentPoints": {
+        "handle": {
+          "world": {
+            "x": 1025.01385,
+            "y": 575.49285
+          },
+          "screen": {
+            "x": 1025.01385,
+            "y": 575.49285
+          },
+          "normalized": {
+            "x": 0.8736,
+            "y": 0.4071
+          }
+        },
+        "rim_center": {
+          "world": {
+            "x": 960.01,
+            "y": 528.99145
+          },
+          "screen": {
+            "x": 960.01,
+            "y": 528.99145
+          },
+          "normalized": {
+            "x": 0.3903,
+            "y": 0.0395
+          }
+        },
+        "base_center": {
+          "world": {
+            "x": 960.01,
+            "y": 647.99
+          },
+          "screen": {
+            "x": 960.01,
+            "y": 647.99
+          },
+          "normalized": {
+            "x": 0.3903,
+            "y": 0.9802
+          }
+        }
+      },
+      "localMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 960.01,
+        "f": 647.99
+      },
+      "worldMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 960.01,
+        "f": 647.99
+      }
+    },
+    {
+      "id": "character",
+      "parent": null,
+      "asset": null,
+      "z": 0,
+      "drawIndex": null,
+      "visible": true,
+      "opacity": 1,
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "local": {
+        "x": 570.2380952380952,
+        "y": 990,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "anchorX": 0.5,
+        "anchorY": 0.5
+      },
+      "worldRotation": 0,
+      "worldScale": {
+        "x": 1,
+        "y": 1
+      },
+      "worldPivot": {
+        "x": 570.238095,
+        "y": 990
+      },
+      "worldCenter": {
+        "x": 570.238095,
+        "y": 990
+      },
+      "worldBounds": {
+        "left": 570.238095,
+        "top": 990,
+        "right": 570.238095,
+        "bottom": 990
+      },
+      "worldCorners": [
+        {
+          "x": 570.238095,
+          "y": 990
+        },
+        {
+          "x": 570.238095,
+          "y": 990
+        },
+        {
+          "x": 570.238095,
+          "y": 990
+        },
+        {
+          "x": 570.238095,
+          "y": 990
+        }
+      ],
+      "screenPivot": {
+        "x": 570.238095,
+        "y": 990
+      },
+      "screenCenter": {
+        "x": 570.238095,
+        "y": 990
+      },
+      "screenBounds": {
+        "left": 570.238095,
+        "top": 990,
+        "right": 570.238095,
+        "bottom": 990
+      },
+      "screenCorners": [
+        {
+          "x": 570.238095,
+          "y": 990
+        },
+        {
+          "x": 570.238095,
+          "y": 990
+        },
+        {
+          "x": 570.238095,
+          "y": 990
+        },
+        {
+          "x": 570.238095,
+          "y": 990
+        }
+      ],
+      "onScreen": true,
+      "attachmentPoints": {},
+      "localMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 570.238095,
+        "f": 990
+      },
+      "worldMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 570.238095,
+        "f": 990
+      }
+    },
+    {
+      "id": "left_leg",
+      "parent": "character",
+      "asset": "left_leg",
+      "z": 5,
+      "drawIndex": 4,
+      "visible": true,
+      "opacity": 1,
+      "size": {
+        "width": 67,
+        "height": 408.5
+      },
+      "local": {
+        "x": 38,
+        "y": -388,
+        "rotation": -7,
+        "scaleX": 1,
+        "scaleY": 1,
+        "anchorX": 0.5,
+        "anchorY": 0.049
+      },
+      "worldRotation": -7,
+      "worldScale": {
+        "x": 1,
+        "y": 1
+      },
+      "worldPivot": {
+        "x": 608.238095,
+        "y": 602
+      },
+      "worldCenter": {
+        "x": 630.690511,
+        "y": 784.860251
+      },
+      "worldBounds": {
+        "left": 572.548401,
+        "top": 578.050077,
+        "right": 688.83262,
+        "bottom": 991.670426
+      },
+      "worldCorners": [
+        {
+          "x": 572.548401,
+          "y": 586.215323
+        },
+        {
+          "x": 639.048994,
+          "y": 578.050077
+        },
+        {
+          "x": 688.83262,
+          "y": 983.50518
+        },
+        {
+          "x": 622.332028,
+          "y": 991.670426
+        }
+      ],
+      "screenPivot": {
+        "x": 608.238095,
+        "y": 602
+      },
+      "screenCenter": {
+        "x": 630.690511,
+        "y": 784.860251
+      },
+      "screenBounds": {
+        "left": 572.548401,
+        "top": 578.050077,
+        "right": 688.83262,
+        "bottom": 991.670426
+      },
+      "screenCorners": [
+        {
+          "x": 572.548401,
+          "y": 586.215323
+        },
+        {
+          "x": 639.048994,
+          "y": 578.050077
+        },
+        {
+          "x": 688.83262,
+          "y": 983.50518
+        },
+        {
+          "x": 622.332028,
+          "y": 991.670426
+        }
+      ],
+      "onScreen": true,
+      "attachmentPoints": {
+        "hip": {
+          "world": {
+            "x": 608.238095,
+            "y": 602
+          },
+          "screen": {
+            "x": 608.238095,
+            "y": 602
+          },
+          "normalized": {
+            "x": 0.5,
+            "y": 0.049
+          }
+        },
+        "foot": {
+          "world": {
+            "x": 654.546825,
+            "y": 979.154337
+          },
+          "screen": {
+            "x": 654.546825,
+            "y": 979.154337
+          },
+          "normalized": {
+            "x": 0.5,
+            "y": 0.9792
+          }
+        }
+      },
+      "localMatrix": {
+        "a": 0.992546,
+        "b": -0.121869,
+        "c": 0.121869,
+        "d": 0.992546,
+        "e": 38,
+        "f": -388
+      },
+      "worldMatrix": {
+        "a": 0.992546,
+        "b": -0.121869,
+        "c": 0.121869,
+        "d": 0.992546,
+        "e": 608.238095,
+        "f": 602
+      }
+    },
+    {
+      "id": "right_leg",
+      "parent": "character",
+      "asset": "right_leg",
+      "z": 5,
+      "drawIndex": 5,
+      "visible": true,
+      "opacity": 1,
+      "size": {
+        "width": 67,
+        "height": 408.5
+      },
+      "local": {
+        "x": -38,
+        "y": -388,
+        "rotation": 7,
+        "scaleX": 1,
+        "scaleY": 1,
+        "anchorX": 0.5,
+        "anchorY": 0.049
+      },
+      "worldRotation": 7,
+      "worldScale": {
+        "x": 1,
+        "y": 1
+      },
+      "worldPivot": {
+        "x": 532.238095,
+        "y": 602
+      },
+      "worldCenter": {
+        "x": 509.78568,
+        "y": 784.860251
+      },
+      "worldBounds": {
+        "left": 451.64357,
+        "top": 578.050077,
+        "right": 567.927789,
+        "bottom": 991.670426
+      },
+      "worldCorners": [
+        {
+          "x": 501.427197,
+          "y": 578.050077
+        },
+        {
+          "x": 567.927789,
+          "y": 586.215323
+        },
+        {
+          "x": 518.144162,
+          "y": 991.670426
+        },
+        {
+          "x": 451.64357,
+          "y": 983.50518
+        }
+      ],
+      "screenPivot": {
+        "x": 532.238095,
+        "y": 602
+      },
+      "screenCenter": {
+        "x": 509.78568,
+        "y": 784.860251
+      },
+      "screenBounds": {
+        "left": 451.64357,
+        "top": 578.050077,
+        "right": 567.927789,
+        "bottom": 991.670426
+      },
+      "screenCorners": [
+        {
+          "x": 501.427197,
+          "y": 578.050077
+        },
+        {
+          "x": 567.927789,
+          "y": 586.215323
+        },
+        {
+          "x": 518.144162,
+          "y": 991.670426
+        },
+        {
+          "x": 451.64357,
+          "y": 983.50518
+        }
+      ],
+      "onScreen": true,
+      "attachmentPoints": {
+        "hip": {
+          "world": {
+            "x": 532.238095,
+            "y": 602
+          },
+          "screen": {
+            "x": 532.238095,
+            "y": 602
+          },
+          "normalized": {
+            "x": 0.5,
+            "y": 0.049
+          }
+        },
+        "foot": {
+          "world": {
+            "x": 485.929366,
+            "y": 979.154337
+          },
+          "screen": {
+            "x": 485.929366,
+            "y": 979.154337
+          },
+          "normalized": {
+            "x": 0.5,
+            "y": 0.9792
+          }
+        }
+      },
+      "localMatrix": {
+        "a": 0.992546,
+        "b": 0.121869,
+        "c": -0.121869,
+        "d": 0.992546,
+        "e": -38,
+        "f": -388
+      },
+      "worldMatrix": {
+        "a": 0.992546,
+        "b": 0.121869,
+        "c": -0.121869,
+        "d": 0.992546,
+        "e": 532.238095,
+        "f": 602
+      }
+    },
+    {
+      "id": "torso",
+      "parent": "character",
+      "asset": "torso",
+      "z": 10,
+      "drawIndex": 6,
+      "visible": true,
+      "opacity": 1,
+      "size": {
+        "width": 210,
+        "height": 323.5
+      },
+      "local": {
+        "x": 0,
+        "y": -380,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "anchorX": 0.5,
+        "anchorY": 0.9428
+      },
+      "worldRotation": 0,
+      "worldScale": {
+        "x": 1,
+        "y": 1
+      },
+      "worldPivot": {
+        "x": 570.238095,
+        "y": 610
+      },
+      "worldCenter": {
+        "x": 570.238095,
+        "y": 466.7542
+      },
+      "worldBounds": {
+        "left": 465.238095,
+        "top": 305.0042,
+        "right": 675.238095,
+        "bottom": 628.5042
+      },
+      "worldCorners": [
+        {
+          "x": 465.238095,
+          "y": 305.0042
+        },
+        {
+          "x": 675.238095,
+          "y": 305.0042
+        },
+        {
+          "x": 675.238095,
+          "y": 628.5042
+        },
+        {
+          "x": 465.238095,
+          "y": 628.5042
+        }
+      ],
+      "screenPivot": {
+        "x": 570.238095,
+        "y": 610
+      },
+      "screenCenter": {
+        "x": 570.238095,
+        "y": 466.7542
+      },
+      "screenBounds": {
+        "left": 465.238095,
+        "top": 305.0042,
+        "right": 675.238095,
+        "bottom": 628.5042
+      },
+      "screenCorners": [
+        {
+          "x": 465.238095,
+          "y": 305.0042
+        },
+        {
+          "x": 675.238095,
+          "y": 305.0042
+        },
+        {
+          "x": 675.238095,
+          "y": 628.5042
+        },
+        {
+          "x": 465.238095,
+          "y": 628.5042
+        }
+      ],
+      "onScreen": true,
+      "attachmentPoints": {
+        "neck": {
+          "world": {
+            "x": 570.238095,
+            "y": 312.5094
+          },
+          "screen": {
+            "x": 570.238095,
+            "y": 312.5094
+          },
+          "normalized": {
+            "x": 0.5,
+            "y": 0.0232
+          }
+        },
+        "right_shoulder": {
+          "world": {
+            "x": 490.228095,
+            "y": 342.49785
+          },
+          "screen": {
+            "x": 490.228095,
+            "y": 342.49785
+          },
+          "normalized": {
+            "x": 0.119,
+            "y": 0.1159
+          }
+        },
+        "left_shoulder": {
+          "world": {
+            "x": 650.248095,
+            "y": 342.49785
+          },
+          "screen": {
+            "x": 650.248095,
+            "y": 342.49785
+          },
+          "normalized": {
+            "x": 0.881,
+            "y": 0.1159
+          }
+        },
+        "hips": {
+          "world": {
+            "x": 570.238095,
+            "y": 610
+          },
+          "screen": {
+            "x": 570.238095,
+            "y": 610
+          },
+          "normalized": {
+            "x": 0.5,
+            "y": 0.9428
+          }
+        }
+      },
+      "localMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 0,
+        "f": -380
+      },
+      "worldMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 570.238095,
+        "f": 610
+      }
+    },
+    {
+      "id": "head",
+      "parent": "torso",
+      "asset": "head",
+      "z": 11,
+      "drawIndex": 7,
+      "visible": true,
+      "opacity": 1,
+      "size": {
+        "width": 167,
+        "height": 212
+      },
+      "local": {
+        "x": 0,
+        "y": 12,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "anchorX": 0.5,
+        "anchorY": 0.9481
+      },
+      "worldRotation": 0,
+      "worldScale": {
+        "x": 1,
+        "y": 1
+      },
+      "worldPivot": {
+        "x": 570.238095,
+        "y": 324.5094
+      },
+      "worldCenter": {
+        "x": 570.238095,
+        "y": 229.5122
+      },
+      "worldBounds": {
+        "left": 486.738095,
+        "top": 123.5122,
+        "right": 653.738095,
+        "bottom": 335.5122
+      },
+      "worldCorners": [
+        {
+          "x": 486.738095,
+          "y": 123.5122
+        },
+        {
+          "x": 653.738095,
+          "y": 123.5122
+        },
+        {
+          "x": 653.738095,
+          "y": 335.5122
+        },
+        {
+          "x": 486.738095,
+          "y": 335.5122
+        }
+      ],
+      "screenPivot": {
+        "x": 570.238095,
+        "y": 324.5094
+      },
+      "screenCenter": {
+        "x": 570.238095,
+        "y": 229.5122
+      },
+      "screenBounds": {
+        "left": 486.738095,
+        "top": 123.5122,
+        "right": 653.738095,
+        "bottom": 335.5122
+      },
+      "screenCorners": [
+        {
+          "x": 486.738095,
+          "y": 123.5122
+        },
+        {
+          "x": 653.738095,
+          "y": 123.5122
+        },
+        {
+          "x": 653.738095,
+          "y": 335.5122
+        },
+        {
+          "x": 486.738095,
+          "y": 335.5122
+        }
+      ],
+      "onScreen": true,
+      "attachmentPoints": {
+        "head_center": {
+          "world": {
+            "x": 570.238095,
+            "y": 232.0138
+          },
+          "screen": {
+            "x": 570.238095,
+            "y": 232.0138
+          },
+          "normalized": {
+            "x": 0.5,
+            "y": 0.5118
+          }
+        },
+        "eyes_center": {
+          "world": {
+            "x": 570.238095,
+            "y": 222.0074
+          },
+          "screen": {
+            "x": 570.238095,
+            "y": 222.0074
+          },
+          "normalized": {
+            "x": 0.5,
+            "y": 0.4646
+          }
+        },
+        "mouth_center": {
+          "world": {
+            "x": 570.238095,
+            "y": 277.0214
+          },
+          "screen": {
+            "x": 570.238095,
+            "y": 277.0214
+          },
+          "normalized": {
+            "x": 0.5,
+            "y": 0.7241
+          }
+        }
+      },
+      "localMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 0,
+        "f": -285.4906
+      },
+      "worldMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 570.238095,
+        "f": 324.5094
+      }
+    },
+    {
+      "id": "eyes",
+      "parent": "head",
+      "asset": "eyes_open",
+      "z": 12,
+      "drawIndex": 8,
+      "visible": true,
+      "opacity": 1,
+      "size": {
+        "width": 208,
+        "height": 88
+      },
+      "local": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 0.5,
+        "scaleY": 0.5,
+        "anchorX": 0.5,
+        "anchorY": 0.5
+      },
+      "worldRotation": 0,
+      "worldScale": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "worldPivot": {
+        "x": 570.238095,
+        "y": 222.0074
+      },
+      "worldCenter": {
+        "x": 570.238095,
+        "y": 222.0074
+      },
+      "worldBounds": {
+        "left": 518.238095,
+        "top": 200.0074,
+        "right": 622.238095,
+        "bottom": 244.0074
+      },
+      "worldCorners": [
+        {
+          "x": 518.238095,
+          "y": 200.0074
+        },
+        {
+          "x": 622.238095,
+          "y": 200.0074
+        },
+        {
+          "x": 622.238095,
+          "y": 244.0074
+        },
+        {
+          "x": 518.238095,
+          "y": 244.0074
+        }
+      ],
+      "screenPivot": {
+        "x": 570.238095,
+        "y": 222.0074
+      },
+      "screenCenter": {
+        "x": 570.238095,
+        "y": 222.0074
+      },
+      "screenBounds": {
+        "left": 518.238095,
+        "top": 200.0074,
+        "right": 622.238095,
+        "bottom": 244.0074
+      },
+      "screenCorners": [
+        {
+          "x": 518.238095,
+          "y": 200.0074
+        },
+        {
+          "x": 622.238095,
+          "y": 200.0074
+        },
+        {
+          "x": 622.238095,
+          "y": 244.0074
+        },
+        {
+          "x": 518.238095,
+          "y": 244.0074
+        }
+      ],
+      "onScreen": true,
+      "attachmentPoints": {},
+      "localMatrix": {
+        "a": 0.5,
+        "b": 0,
+        "c": 0,
+        "d": 0.5,
+        "e": 0,
+        "f": -102.502
+      },
+      "worldMatrix": {
+        "a": 0.5,
+        "b": 0,
+        "c": 0,
+        "d": 0.5,
+        "e": 570.238095,
+        "f": 222.0074
+      }
+    },
+    {
+      "id": "mouth",
+      "parent": "head",
+      "asset": "mouth_rest",
+      "z": 12,
+      "drawIndex": 9,
+      "visible": true,
+      "opacity": 1,
+      "size": {
+        "width": 82,
+        "height": 23
+      },
+      "local": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 0.5,
+        "scaleY": 0.5,
+        "anchorX": 0.5,
+        "anchorY": 0.5
+      },
+      "worldRotation": 0,
+      "worldScale": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "worldPivot": {
+        "x": 570.238095,
+        "y": 277.0214
+      },
+      "worldCenter": {
+        "x": 570.238095,
+        "y": 277.0214
+      },
+      "worldBounds": {
+        "left": 549.738095,
+        "top": 271.2714,
+        "right": 590.738095,
+        "bottom": 282.7714
+      },
+      "worldCorners": [
+        {
+          "x": 549.738095,
+          "y": 271.2714
+        },
+        {
+          "x": 590.738095,
+          "y": 271.2714
+        },
+        {
+          "x": 590.738095,
+          "y": 282.7714
+        },
+        {
+          "x": 549.738095,
+          "y": 282.7714
+        }
+      ],
+      "screenPivot": {
+        "x": 570.238095,
+        "y": 277.0214
+      },
+      "screenCenter": {
+        "x": 570.238095,
+        "y": 277.0214
+      },
+      "screenBounds": {
+        "left": 549.738095,
+        "top": 271.2714,
+        "right": 590.738095,
+        "bottom": 282.7714
+      },
+      "screenCorners": [
+        {
+          "x": 549.738095,
+          "y": 271.2714
+        },
+        {
+          "x": 590.738095,
+          "y": 271.2714
+        },
+        {
+          "x": 590.738095,
+          "y": 282.7714
+        },
+        {
+          "x": 549.738095,
+          "y": 282.7714
+        }
+      ],
+      "onScreen": true,
+      "attachmentPoints": {},
+      "localMatrix": {
+        "a": 0.5,
+        "b": 0,
+        "c": 0,
+        "d": 0.5,
+        "e": 0,
+        "f": -47.488
+      },
+      "worldMatrix": {
+        "a": 0.5,
+        "b": 0,
+        "c": 0,
+        "d": 0.5,
+        "e": 570.238095,
+        "f": 277.0214
+      }
+    },
+    {
+      "id": "left_upper_arm",
+      "parent": "torso",
+      "asset": "left_upper_arm",
+      "z": 13,
+      "drawIndex": 10,
+      "visible": true,
+      "opacity": 1,
+      "size": {
+        "width": 55,
+        "height": 200
+      },
+      "local": {
+        "x": -6,
+        "y": 0,
+        "rotation": -3.8,
+        "scaleX": 1,
+        "scaleY": 1,
+        "anchorX": 0.5,
+        "anchorY": 0.125
+      },
+      "worldRotation": -3.8,
+      "worldScale": {
+        "x": 1,
+        "y": 1
+      },
+      "worldPivot": {
+        "x": 644.248095,
+        "y": 342.49785
+      },
+      "worldCenter": {
+        "x": 649.218638,
+        "y": 417.33296
+      },
+      "worldBounds": {
+        "left": 615.151707,
+        "top": 315.730281,
+        "right": 683.285568,
+        "bottom": 518.935639
+      },
+      "worldCorners": [
+        {
+          "x": 615.151707,
+          "y": 319.375346
+        },
+        {
+          "x": 670.030788,
+          "y": 315.730281
+        },
+        {
+          "x": 683.285568,
+          "y": 515.290575
+        },
+        {
+          "x": 628.406487,
+          "y": 518.935639
+        }
+      ],
+      "screenPivot": {
+        "x": 644.248095,
+        "y": 342.49785
+      },
+      "screenCenter": {
+        "x": 649.218638,
+        "y": 417.33296
+      },
+      "screenBounds": {
+        "left": 615.151707,
+        "top": 315.730281,
+        "right": 683.285568,
+        "bottom": 518.935639
+      },
+      "screenCorners": [
+        {
+          "x": 615.151707,
+          "y": 319.375346
+        },
+        {
+          "x": 670.030788,
+          "y": 315.730281
+        },
+        {
+          "x": 683.285568,
+          "y": 515.290575
+        },
+        {
+          "x": 628.406487,
+          "y": 518.935639
+        }
+      ],
+      "onScreen": true,
+      "attachmentPoints": {
+        "shoulder": {
+          "world": {
+            "x": 644.248095,
+            "y": 342.49785
+          },
+          "screen": {
+            "x": 644.248095,
+            "y": 342.49785
+          },
+          "normalized": {
+            "x": 0.5,
+            "y": 0.125
+          }
+        },
+        "elbow": {
+          "world": {
+            "x": 654.023496,
+            "y": 489.673567
+          },
+          "screen": {
+            "x": 654.023496,
+            "y": 489.673567
+          },
+          "normalized": {
+            "x": 0.5,
+            "y": 0.8625
+          }
+        }
+      },
+      "localMatrix": {
+        "a": 0.997801,
+        "b": -0.066274,
+        "c": 0.066274,
+        "d": 0.997801,
+        "e": 74.01,
+        "f": -267.50215
+      },
+      "worldMatrix": {
+        "a": 0.997801,
+        "b": -0.066274,
+        "c": 0.066274,
+        "d": 0.997801,
+        "e": 644.248095,
+        "f": 342.49785
+      }
+    },
+    {
+      "id": "left_forearm",
+      "parent": "left_upper_arm",
+      "asset": "left_forearm",
+      "z": 14,
+      "drawIndex": 12,
+      "visible": true,
+      "opacity": 1,
+      "size": {
+        "width": 51,
+        "height": 181.5
+      },
+      "local": {
+        "x": 0,
+        "y": 0,
+        "rotation": 4,
+        "scaleX": 1,
+        "scaleY": 1,
+        "anchorX": 0.5,
+        "anchorY": 0.1185
+      },
+      "worldRotation": 0.2,
+      "worldScale": {
+        "x": 1,
+        "y": 1
+      },
+      "worldPivot": {
+        "x": 654.023496,
+        "y": 489.673567
+      },
+      "worldCenter": {
+        "x": 653.781795,
+        "y": 558.915395
+      },
+      "worldBounds": {
+        "left": 627.965174,
+        "top": 468.076936,
+        "right": 679.598416,
+        "bottom": 649.753853
+      },
+      "worldCorners": [
+        {
+          "x": 628.598727,
+          "y": 468.076936
+        },
+        {
+          "x": 679.598416,
+          "y": 468.254959
+        },
+        {
+          "x": 678.964863,
+          "y": 649.753853
+        },
+        {
+          "x": 627.965174,
+          "y": 649.57583
+        }
+      ],
+      "screenPivot": {
+        "x": 654.023496,
+        "y": 489.673567
+      },
+      "screenCenter": {
+        "x": 653.781795,
+        "y": 558.915395
+      },
+      "screenBounds": {
+        "left": 627.965174,
+        "top": 468.076936,
+        "right": 679.598416,
+        "bottom": 649.753853
+      },
+      "screenCorners": [
+        {
+          "x": 628.598727,
+          "y": 468.076936
+        },
+        {
+          "x": 679.598416,
+          "y": 468.254959
+        },
+        {
+          "x": 678.964863,
+          "y": 649.753853
+        },
+        {
+          "x": 627.965174,
+          "y": 649.57583
+        }
+      ],
+      "onScreen": true,
+      "attachmentPoints": {
+        "elbow": {
+          "world": {
+            "x": 654.023496,
+            "y": 489.673567
+          },
+          "screen": {
+            "x": 654.023496,
+            "y": 489.673567
+          },
+          "normalized": {
+            "x": 0.5,
+            "y": 0.1185
+          }
+        },
+        "wrist": {
+          "world": {
+            "x": 653.526093,
+            "y": 632.168348
+          },
+          "screen": {
+            "x": 653.526093,
+            "y": 632.168348
+          },
+          "normalized": {
+            "x": 0.5,
+            "y": 0.9036
+          }
+        }
+      },
+      "localMatrix": {
+        "a": 0.997564,
+        "b": 0.069756,
+        "c": -0.069756,
+        "d": 0.997564,
+        "e": 0,
+        "f": 147.5
+      },
+      "worldMatrix": {
+        "a": 0.999994,
+        "b": 0.003491,
+        "c": -0.003491,
+        "d": 0.999994,
+        "e": 654.023496,
+        "f": 489.673567
+      }
+    },
+    {
+      "id": "left_hand",
+      "parent": "left_forearm",
+      "asset": "left_hand",
+      "z": 15,
+      "drawIndex": 14,
+      "visible": true,
+      "opacity": 1,
+      "size": {
+        "width": 64.5,
+        "height": 65
+      },
+      "local": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "anchorX": 0.5736,
+        "anchorY": 0.0385
+      },
+      "worldRotation": 0.2,
+      "worldScale": {
+        "x": 1,
+        "y": 1
+      },
+      "worldPivot": {
+        "x": 653.526093,
+        "y": 632.168348
+      },
+      "worldCenter": {
+        "x": 648.674211,
+        "y": 662.149095
+      },
+      "worldBounds": {
+        "left": 616.310961,
+        "top": 629.536719,
+        "right": 681.037461,
+        "bottom": 694.76147
+      },
+      "worldCorners": [
+        {
+          "x": 616.537854,
+          "y": 629.536719
+        },
+        {
+          "x": 681.037461,
+          "y": 629.761866
+        },
+        {
+          "x": 680.810568,
+          "y": 694.76147
+        },
+        {
+          "x": 616.310961,
+          "y": 694.536323
+        }
+      ],
+      "screenPivot": {
+        "x": 653.526093,
+        "y": 632.168348
+      },
+      "screenCenter": {
+        "x": 648.674211,
+        "y": 662.149095
+      },
+      "screenBounds": {
+        "left": 616.310961,
+        "top": 629.536719,
+        "right": 681.037461,
+        "bottom": 694.76147
+      },
+      "screenCorners": [
+        {
+          "x": 616.537854,
+          "y": 629.536719
+        },
+        {
+          "x": 681.037461,
+          "y": 629.761866
+        },
+        {
+          "x": 680.810568,
+          "y": 694.76147
+        },
+        {
+          "x": 616.310961,
+          "y": 694.536323
+        }
+      ],
+      "onScreen": true,
+      "attachmentPoints": {
+        "wrist": {
+          "world": {
+            "x": 653.526093,
+            "y": 632.168348
+          },
+          "screen": {
+            "x": 653.526093,
+            "y": 632.168348
+          },
+          "normalized": {
+            "x": 0.5736,
+            "y": 0.0385
+          }
+        },
+        "grip": {
+          "world": {
+            "x": 653.395199,
+            "y": 669.66662
+          },
+          "screen": {
+            "x": 653.395199,
+            "y": 669.66662
+          },
+          "normalized": {
+            "x": 0.5736,
+            "y": 0.6154
+          }
+        }
+      },
+      "localMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 0,
+        "f": 142.49565
+      },
+      "worldMatrix": {
+        "a": 0.999994,
+        "b": 0.003491,
+        "c": -0.003491,
+        "d": 0.999994,
+        "e": 653.526093,
+        "f": 632.168348
+      }
+    },
+    {
+      "id": "right_upper_arm",
+      "parent": "torso",
+      "asset": "right_upper_arm",
+      "z": 13,
+      "drawIndex": 11,
+      "visible": true,
+      "opacity": 1,
+      "size": {
+        "width": 55,
+        "height": 200
+      },
+      "local": {
+        "x": 6,
+        "y": 0,
+        "rotation": 3.8,
+        "scaleX": 1,
+        "scaleY": 1,
+        "anchorX": 0.5,
+        "anchorY": 0.125
+      },
+      "worldRotation": 3.8,
+      "worldScale": {
+        "x": 1,
+        "y": 1
+      },
+      "worldPivot": {
+        "x": 496.228095,
+        "y": 342.49785
+      },
+      "worldCenter": {
+        "x": 491.257553,
+        "y": 417.33296
+      },
+      "worldBounds": {
+        "left": 457.190622,
+        "top": 315.730281,
+        "right": 525.324483,
+        "bottom": 518.935639
+      },
+      "worldCorners": [
+        {
+          "x": 470.445402,
+          "y": 315.730281
+        },
+        {
+          "x": 525.324483,
+          "y": 319.375346
+        },
+        {
+          "x": 512.069703,
+          "y": 518.935639
+        },
+        {
+          "x": 457.190622,
+          "y": 515.290575
+        }
+      ],
+      "screenPivot": {
+        "x": 496.228095,
+        "y": 342.49785
+      },
+      "screenCenter": {
+        "x": 491.257553,
+        "y": 417.33296
+      },
+      "screenBounds": {
+        "left": 457.190622,
+        "top": 315.730281,
+        "right": 525.324483,
+        "bottom": 518.935639
+      },
+      "screenCorners": [
+        {
+          "x": 470.445402,
+          "y": 315.730281
+        },
+        {
+          "x": 525.324483,
+          "y": 319.375346
+        },
+        {
+          "x": 512.069703,
+          "y": 518.935639
+        },
+        {
+          "x": 457.190622,
+          "y": 515.290575
+        }
+      ],
+      "onScreen": true,
+      "attachmentPoints": {
+        "shoulder": {
+          "world": {
+            "x": 496.228095,
+            "y": 342.49785
+          },
+          "screen": {
+            "x": 496.228095,
+            "y": 342.49785
+          },
+          "normalized": {
+            "x": 0.5,
+            "y": 0.125
+          }
+        },
+        "elbow": {
+          "world": {
+            "x": 486.452695,
+            "y": 489.673567
+          },
+          "screen": {
+            "x": 486.452695,
+            "y": 489.673567
+          },
+          "normalized": {
+            "x": 0.5,
+            "y": 0.8625
+          }
+        }
+      },
+      "localMatrix": {
+        "a": 0.997801,
+        "b": 0.066274,
+        "c": -0.066274,
+        "d": 0.997801,
+        "e": -74.01,
+        "f": -267.50215
+      },
+      "worldMatrix": {
+        "a": 0.997801,
+        "b": 0.066274,
+        "c": -0.066274,
+        "d": 0.997801,
+        "e": 496.228095,
+        "f": 342.49785
+      }
+    },
+    {
+      "id": "right_forearm",
+      "parent": "right_upper_arm",
+      "asset": "right_forearm",
+      "z": 14,
+      "drawIndex": 13,
+      "visible": true,
+      "opacity": 1,
+      "size": {
+        "width": 51,
+        "height": 181.5
+      },
+      "local": {
+        "x": 0,
+        "y": 0,
+        "rotation": -4,
+        "scaleX": 1,
+        "scaleY": 1,
+        "anchorX": 0.5,
+        "anchorY": 0.1185
+      },
+      "worldRotation": -0.2,
+      "worldScale": {
+        "x": 1,
+        "y": 1
+      },
+      "worldPivot": {
+        "x": 486.452695,
+        "y": 489.673567
+      },
+      "worldCenter": {
+        "x": 486.694395,
+        "y": 558.915395
+      },
+      "worldBounds": {
+        "left": 460.877774,
+        "top": 468.076936,
+        "right": 512.511017,
+        "bottom": 649.753853
+      },
+      "worldCorners": [
+        {
+          "x": 460.877774,
+          "y": 468.254959
+        },
+        {
+          "x": 511.877464,
+          "y": 468.076936
+        },
+        {
+          "x": 512.511017,
+          "y": 649.57583
+        },
+        {
+          "x": 461.511327,
+          "y": 649.753853
+        }
+      ],
+      "screenPivot": {
+        "x": 486.452695,
+        "y": 489.673567
+      },
+      "screenCenter": {
+        "x": 486.694395,
+        "y": 558.915395
+      },
+      "screenBounds": {
+        "left": 460.877774,
+        "top": 468.076936,
+        "right": 512.511017,
+        "bottom": 649.753853
+      },
+      "screenCorners": [
+        {
+          "x": 460.877774,
+          "y": 468.254959
+        },
+        {
+          "x": 511.877464,
+          "y": 468.076936
+        },
+        {
+          "x": 512.511017,
+          "y": 649.57583
+        },
+        {
+          "x": 461.511327,
+          "y": 649.753853
+        }
+      ],
+      "onScreen": true,
+      "attachmentPoints": {
+        "elbow": {
+          "world": {
+            "x": 486.452695,
+            "y": 489.673567
+          },
+          "screen": {
+            "x": 486.452695,
+            "y": 489.673567
+          },
+          "normalized": {
+            "x": 0.5,
+            "y": 0.1185
+          }
+        },
+        "wrist": {
+          "world": {
+            "x": 486.950098,
+            "y": 632.168348
+          },
+          "screen": {
+            "x": 486.950098,
+            "y": 632.168348
+          },
+          "normalized": {
+            "x": 0.5,
+            "y": 0.9036
+          }
+        }
+      },
+      "localMatrix": {
+        "a": 0.997564,
+        "b": -0.069756,
+        "c": 0.069756,
+        "d": 0.997564,
+        "e": 0,
+        "f": 147.5
+      },
+      "worldMatrix": {
+        "a": 0.999994,
+        "b": -0.003491,
+        "c": 0.003491,
+        "d": 0.999994,
+        "e": 486.452695,
+        "f": 489.673567
+      }
+    },
+    {
+      "id": "right_hand",
+      "parent": "right_forearm",
+      "asset": "right_hand",
+      "z": 15,
+      "drawIndex": 15,
+      "visible": true,
+      "opacity": 1,
+      "size": {
+        "width": 64.5,
+        "height": 65
+      },
+      "local": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "anchorX": 0.4264,
+        "anchorY": 0.0385
+      },
+      "worldRotation": -0.2,
+      "worldScale": {
+        "x": 1,
+        "y": 1
+      },
+      "worldPivot": {
+        "x": 486.950098,
+        "y": 632.168348
+      },
+      "worldCenter": {
+        "x": 491.801979,
+        "y": 662.149095
+      },
+      "worldBounds": {
+        "left": 459.43873,
+        "top": 629.536719,
+        "right": 524.165229,
+        "bottom": 694.76147
+      },
+      "worldCorners": [
+        {
+          "x": 459.43873,
+          "y": 629.761866
+        },
+        {
+          "x": 523.938337,
+          "y": 629.536719
+        },
+        {
+          "x": 524.165229,
+          "y": 694.536323
+        },
+        {
+          "x": 459.665622,
+          "y": 694.76147
+        }
+      ],
+      "screenPivot": {
+        "x": 486.950098,
+        "y": 632.168348
+      },
+      "screenCenter": {
+        "x": 491.801979,
+        "y": 662.149095
+      },
+      "screenBounds": {
+        "left": 459.43873,
+        "top": 629.536719,
+        "right": 524.165229,
+        "bottom": 694.76147
+      },
+      "screenCorners": [
+        {
+          "x": 459.43873,
+          "y": 629.761866
+        },
+        {
+          "x": 523.938337,
+          "y": 629.536719
+        },
+        {
+          "x": 524.165229,
+          "y": 694.536323
+        },
+        {
+          "x": 459.665622,
+          "y": 694.76147
+        }
+      ],
+      "onScreen": true,
+      "attachmentPoints": {
+        "wrist": {
+          "world": {
+            "x": 486.950098,
+            "y": 632.168348
+          },
+          "screen": {
+            "x": 486.950098,
+            "y": 632.168348
+          },
+          "normalized": {
+            "x": 0.4264,
+            "y": 0.0385
+          }
+        },
+        "grip": {
+          "world": {
+            "x": 487.080992,
+            "y": 669.66662
+          },
+          "screen": {
+            "x": 487.080992,
+            "y": 669.66662
+          },
+          "normalized": {
+            "x": 0.4264,
+            "y": 0.6154
+          }
+        }
+      },
+      "localMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 0,
+        "f": 142.49565
+      },
+      "worldMatrix": {
+        "a": 0.999994,
+        "b": -0.003491,
+        "c": 0.003491,
+        "d": 0.999994,
+        "e": 486.950098,
+        "f": 632.168348
+      }
+    },
+    {
+      "id": "cup_in_hand",
+      "parent": "right_hand",
+      "asset": "cup_keyed",
+      "z": 30.5,
+      "drawIndex": null,
+      "visible": false,
+      "opacity": 1,
+      "size": {
+        "width": 134.5,
+        "height": 126.5
+      },
+      "local": {
+        "x": 0,
+        "y": 0,
+        "rotation": 25.799999999999997,
+        "scaleX": 1,
+        "scaleY": 1,
+        "anchorX": 0.8736,
+        "anchorY": 0.4071
+      },
+      "worldRotation": 25.6,
+      "worldScale": {
+        "x": 1,
+        "y": 1
+      },
+      "worldPivot": {
+        "x": 487.080992,
+        "y": 669.66662
+      },
+      "worldCenter": {
+        "x": 436.686822,
+        "y": 658.552857
+      },
+      "worldBounds": {
+        "left": 348.709161,
+        "top": 572.454183,
+        "right": 524.664483,
+        "bottom": 744.651531
+      },
+      "worldCorners": [
+        {
+          "x": 403.368008,
+          "y": 572.454183
+        },
+        {
+          "x": 524.664483,
+          "y": 630.569717
+        },
+        {
+          "x": 470.005636,
+          "y": 744.651531
+        },
+        {
+          "x": 348.709161,
+          "y": 686.535998
+        }
+      ],
+      "screenPivot": {
+        "x": 487.080992,
+        "y": 669.66662
+      },
+      "screenCenter": {
+        "x": 436.686822,
+        "y": 658.552857
+      },
+      "screenBounds": {
+        "left": 348.709161,
+        "top": 572.454183,
+        "right": 524.664483,
+        "bottom": 744.651531
+      },
+      "screenCorners": [
+        {
+          "x": 403.368008,
+          "y": 572.454183
+        },
+        {
+          "x": 524.664483,
+          "y": 630.569717
+        },
+        {
+          "x": 470.005636,
+          "y": 744.651531
+        },
+        {
+          "x": 348.709161,
+          "y": 686.535998
+        }
+      ],
+      "onScreen": true,
+      "attachmentPoints": {
+        "handle": {
+          "world": {
+            "x": 487.080992,
+            "y": 669.66662
+          },
+          "screen": {
+            "x": 487.080992,
+            "y": 669.66662
+          },
+          "normalized": {
+            "x": 0.8736,
+            "y": 0.4071
+          }
+        },
+        "rim_center": {
+          "world": {
+            "x": 448.550998,
+            "y": 599.642908
+          },
+          "screen": {
+            "x": 448.550998,
+            "y": 599.642908
+          },
+          "normalized": {
+            "x": 0.3903,
+            "y": 0.0395
+          }
+        },
+        "base_center": {
+          "world": {
+            "x": 397.13342,
+            "y": 706.959671
+          },
+          "screen": {
+            "x": 397.13342,
+            "y": 706.959671
+          },
+          "normalized": {
+            "x": 0.3903,
+            "y": 0.9802
+          }
+        }
+      },
+      "localMatrix": {
+        "a": 0.900319,
+        "b": 0.435231,
+        "c": -0.435231,
+        "d": 0.900319,
+        "e": 0,
+        "f": 37.4985
+      },
+      "worldMatrix": {
+        "a": 0.901833,
+        "b": 0.432086,
+        "c": -0.432086,
+        "d": 0.901833,
+        "e": 487.080992,
+        "f": 669.66662
+      }
+    },
+    {
+      "id": "steam",
+      "parent": "cup_in_hand",
+      "asset": "steam",
+      "z": 33,
+      "drawIndex": null,
+      "visible": false,
+      "opacity": 0,
+      "size": {
+        "width": 47,
+        "height": 93
+      },
+      "local": {
+        "x": 0,
+        "y": -4,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 0.6,
+        "anchorX": 0.5,
+        "anchorY": 0.9839
+      },
+      "worldRotation": 25.6,
+      "worldScale": {
+        "x": 1,
+        "y": 0.6
+      },
+      "worldPivot": {
+        "x": 450.279341,
+        "y": 596.035578
+      },
+      "worldCenter": {
+        "x": 461.946356,
+        "y": 571.684638
+      },
+      "worldBounds": {
+        "left": 428.698099,
+        "top": 536.369496,
+        "right": 495.194613,
+        "bottom": 606.999781
+      },
+      "worldCorners": [
+        {
+          "x": 452.808484,
+          "y": 536.369496
+        },
+        {
+          "x": 495.194613,
+          "y": 556.677526
+        },
+        {
+          "x": 471.084228,
+          "y": 606.999781
+        },
+        {
+          "x": 428.698099,
+          "y": 586.691751
+        }
+      ],
+      "screenPivot": {
+        "x": 450.279341,
+        "y": 596.035578
+      },
+      "screenCenter": {
+        "x": 461.946356,
+        "y": 571.684638
+      },
+      "screenBounds": {
+        "left": 428.698099,
+        "top": 536.369496,
+        "right": 495.194613,
+        "bottom": 606.999781
+      },
+      "screenCorners": [
+        {
+          "x": 452.808484,
+          "y": 536.369496
+        },
+        {
+          "x": 495.194613,
+          "y": 556.677526
+        },
+        {
+          "x": 471.084228,
+          "y": 606.999781
+        },
+        {
+          "x": 428.698099,
+          "y": 586.691751
+        }
+      ],
+      "onScreen": true,
+      "attachmentPoints": {},
+      "localMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 0.6,
+        "e": -65.00385,
+        "f": -50.5014
+      },
+      "worldMatrix": {
+        "a": 0.901833,
+        "b": 0.432086,
+        "c": -0.259251,
+        "d": 0.5411,
+        "e": 450.279341,
+        "f": 596.035578
+      }
+    },
+    {
+      "id": "plant",
+      "parent": null,
+      "asset": "plant_keyed",
+      "z": 50,
+      "drawIndex": 18,
+      "visible": true,
+      "opacity": 1,
+      "size": {
+        "width": 479,
+        "height": 505
+      },
+      "local": {
+        "x": 170,
+        "y": 1085,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "anchorX": 0.4718,
+        "anchorY": 0.996
+      },
+      "worldRotation": 0,
+      "worldScale": {
+        "x": 1,
+        "y": 1
+      },
+      "worldPivot": {
+        "x": 170,
+        "y": 1085
+      },
+      "worldCenter": {
+        "x": 183.5078,
+        "y": 834.52
+      },
+      "worldBounds": {
+        "left": -55.9922,
+        "top": 582.02,
+        "right": 423.0078,
+        "bottom": 1087.02
+      },
+      "worldCorners": [
+        {
+          "x": -55.9922,
+          "y": 582.02
+        },
+        {
+          "x": 423.0078,
+          "y": 582.02
+        },
+        {
+          "x": 423.0078,
+          "y": 1087.02
+        },
+        {
+          "x": -55.9922,
+          "y": 1087.02
+        }
+      ],
+      "screenPivot": {
+        "x": 170,
+        "y": 1085
+      },
+      "screenCenter": {
+        "x": 183.5078,
+        "y": 834.52
+      },
+      "screenBounds": {
+        "left": -55.9922,
+        "top": 582.02,
+        "right": 423.0078,
+        "bottom": 1087.02
+      },
+      "screenCorners": [
+        {
+          "x": -55.9922,
+          "y": 582.02
+        },
+        {
+          "x": 423.0078,
+          "y": 582.02
+        },
+        {
+          "x": 423.0078,
+          "y": 1087.02
+        },
+        {
+          "x": -55.9922,
+          "y": 1087.02
+        }
+      ],
+      "onScreen": true,
+      "attachmentPoints": {},
+      "localMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 170,
+        "f": 1085
+      },
+      "worldMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 170,
+        "f": 1085
+      }
+    },
+    {
+      "id": "fade",
+      "parent": null,
+      "asset": null,
+      "z": 100,
+      "drawIndex": null,
+      "visible": true,
+      "opacity": 0,
+      "size": {
+        "width": 1920,
+        "height": 1080
+      },
+      "local": {
+        "x": 960,
+        "y": 540,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "anchorX": 0.5,
+        "anchorY": 0.5
+      },
+      "worldRotation": 0,
+      "worldScale": {
+        "x": 1,
+        "y": 1
+      },
+      "worldPivot": {
+        "x": 960,
+        "y": 540
+      },
+      "worldCenter": {
+        "x": 960,
+        "y": 540
+      },
+      "worldBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 1920,
+        "bottom": 1080
+      },
+      "worldCorners": [
+        {
+          "x": 0,
+          "y": 0
+        },
+        {
+          "x": 1920,
+          "y": 0
+        },
+        {
+          "x": 1920,
+          "y": 1080
+        },
+        {
+          "x": 0,
+          "y": 1080
+        }
+      ],
+      "screenPivot": {
+        "x": 960,
+        "y": 540
+      },
+      "screenCenter": {
+        "x": 960,
+        "y": 540
+      },
+      "screenBounds": {
+        "left": 0,
+        "top": 0,
+        "right": 1920,
+        "bottom": 1080
+      },
+      "screenCorners": [
+        {
+          "x": 0,
+          "y": 0
+        },
+        {
+          "x": 1920,
+          "y": 0
+        },
+        {
+          "x": 1920,
+          "y": 1080
+        },
+        {
+          "x": 0,
+          "y": 1080
+        }
+      ],
+      "onScreen": true,
+      "attachmentPoints": {},
+      "localMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 960,
+        "f": 540
+      },
+      "worldMatrix": {
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1,
+        "e": 960,
+        "f": 540
+      }
+    }
+  ]
+}

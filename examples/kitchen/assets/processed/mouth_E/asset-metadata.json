@@ -1,0 +1,66 @@
+{
+  "ok": true,
+  "source": "../../originals/mouth_E.png",
+  "sourceSha256": "9b628fd450163572e62d10172d40c74d62e7648d503194b4c0e0716934e7fb8e",
+  "path": "native-alpha",
+  "files": {
+    "original": "original.png",
+    "backgroundMask": "background-mask.png",
+    "untrimmed": "untrimmed-transparent.png",
+    "processed": "processed-transparent.png",
+    "metadata": "asset-metadata.json"
+  },
+  "alpha": {
+    "hasAlphaChannel": true,
+    "borderTransparentFraction": 1,
+    "transparentFraction": 0.8611,
+    "partialFraction": 0.0107,
+    "opaqueFraction": 0.1282
+  },
+  "components": [
+    {
+      "id": 1,
+      "pixelCount": 2660,
+      "bounds": {
+        "left": 37,
+        "top": 41,
+        "right": 123,
+        "bottom": 79
+      },
+      "centroid": {
+        "x": 79.5,
+        "y": 59.5
+      },
+      "share": 1
+    }
+  ],
+  "removedComponents": [],
+  "issues": [],
+  "trim": {
+    "originalWidth": 160,
+    "originalHeight": 120,
+    "trimmedWidth": 90,
+    "trimmedHeight": 42,
+    "offsetX": 35,
+    "offsetY": 39,
+    "visibleBounds": {
+      "left": 37,
+      "top": 41,
+      "right": 123,
+      "bottom": 79
+    },
+    "alphaThreshold": 4,
+    "padding": 2,
+    "empty": false
+  },
+  "size": {
+    "width": 90,
+    "height": 42
+  },
+  "attachmentPoints": {
+    "__pivot": {
+      "x": 0.5,
+      "y": 0.5
+    }
+  }
+}

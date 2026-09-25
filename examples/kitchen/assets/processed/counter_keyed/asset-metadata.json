@@ -1,0 +1,116 @@
+{
+  "ok": true,
+  "source": "../../originals/counter_keyed.png",
+  "sourceSha256": "e6665c6bbf5324254d8183acf45ee1a8f06745ab0b0b5bdb62f446e4651df59d",
+  "path": "color-key",
+  "files": {
+    "original": "original.png",
+    "backgroundMask": "background-mask.png",
+    "untrimmed": "untrimmed-transparent.png",
+    "processed": "processed-transparent.png",
+    "metadata": "asset-metadata.json"
+  },
+  "alpha": {
+    "hasAlphaChannel": true,
+    "borderTransparentFraction": 0,
+    "transparentFraction": 0,
+    "partialFraction": 0,
+    "opaqueFraction": 1
+  },
+  "components": [
+    {
+      "id": 1,
+      "pixelCount": 515976,
+      "bounds": {
+        "left": 43,
+        "top": 48,
+        "right": 1287,
+        "bottom": 470
+      },
+      "centroid": {
+        "x": 664.5,
+        "y": 258.1
+      },
+      "share": 1
+    }
+  ],
+  "removedComponents": [],
+  "issues": [],
+  "detection": {
+    "ok": true,
+    "backgroundDetected": true,
+    "detectedColor": {
+      "r": 35,
+      "g": 196,
+      "b": 58
+    },
+    "detectedColorHex": "#23c43a",
+    "borderUniformity": 1,
+    "sideUniformity": {
+      "top": 1,
+      "right": 1,
+      "bottom": 1,
+      "left": 1
+    },
+    "sideColorSpread": 0,
+    "noise": 1.72,
+    "confidence": 1,
+    "sampledPixels": 43824,
+    "issues": [],
+    "options": {
+      "borderSampleSize": 12,
+      "uniformityTolerance": 12,
+      "minUniformity": 0.9,
+      "minSideUniformity": 0.97
+    }
+  },
+  "removal": {
+    "holes": [],
+    "stats": {
+      "removedPixels": 175624,
+      "edgeBandPixels": 9960,
+      "partialAlphaPixels": 4438,
+      "preservedEnclosedPixels": 0
+    },
+    "options": {
+      "colorTolerance": 18,
+      "edgeSoftness": 3,
+      "despill": true,
+      "minContrast": 30,
+      "residualTolerance": 0.1,
+      "removeHoles": [],
+      "minHoleSize": 25
+    }
+  },
+  "trim": {
+    "originalWidth": 1330,
+    "originalHeight": 520,
+    "trimmedWidth": 1248,
+    "trimmedHeight": 426,
+    "offsetX": 41,
+    "offsetY": 46,
+    "visibleBounds": {
+      "left": 43,
+      "top": 48,
+      "right": 1287,
+      "bottom": 470
+    },
+    "alphaThreshold": 4,
+    "padding": 2,
+    "empty": false
+  },
+  "size": {
+    "width": 1248,
+    "height": 426
+  },
+  "attachmentPoints": {
+    "top_left": {
+      "x": 0.0032,
+      "y": 0.0094
+    },
+    "top_right": {
+      "x": 0.9968,
+      "y": 0.0094
+    }
+  }
+}

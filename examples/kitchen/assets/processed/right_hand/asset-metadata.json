@@ -1,0 +1,74 @@
+{
+  "ok": true,
+  "source": "../../originals/right_hand.png",
+  "sourceSha256": "27f4647f2a6e0fba4955c011ab6dd862ef9412c1c2b2696383a79a271b323906",
+  "path": "native-alpha",
+  "files": {
+    "original": "original.png",
+    "backgroundMask": "background-mask.png",
+    "untrimmed": "untrimmed-transparent.png",
+    "processed": "processed-transparent.png",
+    "metadata": "asset-metadata.json"
+  },
+  "alpha": {
+    "hasAlphaChannel": true,
+    "borderTransparentFraction": 1,
+    "transparentFraction": 0.7663,
+    "partialFraction": 0.0079,
+    "opaqueFraction": 0.2258
+  },
+  "components": [
+    {
+      "id": 1,
+      "pixelCount": 11601,
+      "bounds": {
+        "left": 49,
+        "top": 40,
+        "right": 174,
+        "bottom": 166
+      },
+      "centroid": {
+        "x": 106.3,
+        "y": 102.1
+      },
+      "share": 1
+    }
+  ],
+  "removedComponents": [],
+  "issues": [],
+  "trim": {
+    "originalWidth": 228,
+    "originalHeight": 218,
+    "trimmedWidth": 129,
+    "trimmedHeight": 130,
+    "offsetX": 47,
+    "offsetY": 38,
+    "visibleBounds": {
+      "left": 49,
+      "top": 40,
+      "right": 174,
+      "bottom": 166
+    },
+    "alphaThreshold": 4,
+    "padding": 2,
+    "empty": false
+  },
+  "size": {
+    "width": 129,
+    "height": 130
+  },
+  "attachmentPoints": {
+    "wrist": {
+      "x": 0.4264,
+      "y": 0.0385
+    },
+    "grip": {
+      "x": 0.4264,
+      "y": 0.6154
+    },
+    "__pivot": {
+      "x": 0.4264,
+      "y": 0.0385
+    }
+  }
+}

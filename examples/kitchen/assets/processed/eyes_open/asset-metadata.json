@@ -1,0 +1,117 @@
+{
+  "ok": true,
+  "source": "../../originals/eyes_open.png",
+  "sourceSha256": "3326b96ba96fde5f85638302180da95fec01188cf4630a9d376aefd431646a43",
+  "path": "native-alpha",
+  "files": {
+    "original": "original.png",
+    "backgroundMask": "background-mask.png",
+    "untrimmed": "untrimmed-transparent.png",
+    "processed": "processed-transparent.png",
+    "metadata": "asset-metadata.json"
+  },
+  "alpha": {
+    "hasAlphaChannel": true,
+    "borderTransparentFraction": 1,
+    "transparentFraction": 0.7383,
+    "partialFraction": 0.0217,
+    "opaqueFraction": 0.24
+  },
+  "components": [
+    {
+      "id": 1,
+      "pixelCount": 3828,
+      "bounds": {
+        "left": 38,
+        "top": 32,
+        "right": 112,
+        "bottom": 98
+      },
+      "centroid": {
+        "x": 74.5,
+        "y": 64.4
+      },
+      "share": 0.435792
+    },
+    {
+      "id": 2,
+      "pixelCount": 3828,
+      "bounds": {
+        "left": 168,
+        "top": 32,
+        "right": 242,
+        "bottom": 98
+      },
+      "centroid": {
+        "x": 204.5,
+        "y": 64.4
+      },
+      "share": 0.435792
+    },
+    {
+      "id": 3,
+      "pixelCount": 564,
+      "bounds": {
+        "left": 43,
+        "top": 14,
+        "right": 107,
+        "bottom": 28
+      },
+      "centroid": {
+        "x": 74.5,
+        "y": 19.7
+      },
+      "share": 0.064208
+    },
+    {
+      "id": 4,
+      "pixelCount": 564,
+      "bounds": {
+        "left": 173,
+        "top": 14,
+        "right": 237,
+        "bottom": 28
+      },
+      "centroid": {
+        "x": 204.5,
+        "y": 19.7
+      },
+      "share": 0.064208
+    }
+  ],
+  "removedComponents": [],
+  "issues": [
+    {
+      "severity": "warning",
+      "code": "MULTIPLE_COMPONENTS",
+      "message": "4 disconnected visible components remain. Inspect them and pass removeComponents with the ids of artifacts, if any."
+    }
+  ],
+  "trim": {
+    "originalWidth": 280,
+    "originalHeight": 120,
+    "trimmedWidth": 208,
+    "trimmedHeight": 88,
+    "offsetX": 36,
+    "offsetY": 12,
+    "visibleBounds": {
+      "left": 38,
+      "top": 14,
+      "right": 242,
+      "bottom": 98
+    },
+    "alphaThreshold": 4,
+    "padding": 2,
+    "empty": false
+  },
+  "size": {
+    "width": 208,
+    "height": 88
+  },
+  "attachmentPoints": {
+    "__pivot": {
+      "x": 0.5,
+      "y": 0.6023
+    }
+  }
+}

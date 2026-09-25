@@ -1,0 +1,24 @@
+/** Public entry point. */
+export * from "./math/matrix.js";
+export * from "./scene/schema.js";
+export * from "./scene/validate.js";
+export * from "./timeline/easing.js";
+export * from "./timeline/evaluate.js";
+export * from "./engine/transform.js";
+export * from "./engine/displayList.js";
+export * from "./engine/layout.js";
+export * from "./engine/debugOverlay.js";
+export * from "./engine/assets.js";
+export * from "./render/renderer.js";
+export { SkiaRenderer } from "./render/skia.js";
+export { startEncoder, ffmpegPath } from "./render/video.js";
+export * from "./assets/image.js";
+export * from "./assets/color.js";
+export * from "./assets/background.js";
+export * from "./assets/removal.js";
+export * from "./assets/trim.js";
+export * from "./assets/components.js";
+export * from "./assets/pipeline.js";
+export { AnimationEngine } from "./api/engine.js";
+export * as ops from "./api/operations.js";
+export { EngineSession, TOOLS, toolDefinitions } from "./api/tools.js";
