@@ -5,7 +5,7 @@
  * with 2D: applyTimelineOps / setAudio / setSceneProps work on 3D documents unchanged.
  */
 import { CanvasSchema } from "../scene/schema.js";
-import { issue, transact, zodIssues, type OpResult, type SceneDoc } from "../api/operations.js";
+import { issue, ownedIssue, transact, zodIssues, type OpResult, type SceneDoc } from "../api/operations.js";
 import { Camera3DSchema, Light3DSchema, Object3DSchema, Render3DSchema, Scene3DSchema, World3DSchema } from "./schema.js";
 
 const clone = <T>(v: T): T => structuredClone(v);
@@ -80,6 +80,8 @@ function locate(d: SceneDoc, id: string): { list: "objects" | "lights"; index: n
 export function updateEntity3D(doc: SceneDoc, id: string, patch: Record<string, unknown>): OpResult<{ kind: "object" | "light" }> {
   const at = locate(doc, id);
   if (!at) return { ok: false, errors: [issue("MISSING_TARGET", ["id"], `No object or light "${id}"`)] };
+  const owned = ownedIssue(doc, id);
+  if (owned) return { ok: false, errors: [owned] };
   if ("id" in patch && patch.id !== id) {
     return { ok: false, errors: [issue("IMMUTABLE_ID", ["patch", "id"], "Ids cannot be changed; remove and re-add instead")] };
   }
@@ -109,6 +111,8 @@ export function updateEntity3D(doc: SceneDoc, id: string, patch: Record<string, 
 export function removeEntity3D(doc: SceneDoc, id: string, children: "error" | "cascade" | "detach" = "error"): OpResult<{ removed: string[] }> {
   const at = locate(doc, id);
   if (!at) return { ok: false, errors: [issue("MISSING_TARGET", ["id"], `No object or light "${id}"`)] };
+  const ownedR = ownedIssue(doc, id);
+  if (ownedR) return { ok: false, errors: [ownedR] };
   const dependsOn = (o: any, set: Set<string>) => (o.parent && set.has(o.parent)) || (o.attach && set.has(o.attach.object));
   const direct = (doc.objects ?? []).filter((o: any) => dependsOn(o, new Set([id]))).map((o: any) => o.id);
   if (direct.length && children === "error") {

@@ -49,7 +49,7 @@ describe("glTF inspection", () => {
   it("describes clips, skeleton, sockets and morph targets", () => {
     expect(character.format).toBe("glb");
     expect(character.rigged).toBe(true);
-    expect(character.clips.map((c) => c.name).sort()).toEqual(["idle", "walk", "wave"]);
+    expect(character.clips.map((c) => c.name).sort()).toEqual(["idle", "point", "run", "walk", "wave"]);
     expect(character.clips.find((c) => c.name === "walk")!.duration).toBeCloseTo(1, 2);
     expect(character.sockets).toMatchObject({ rightHand: "hand.R", leftHand: "hand.L", head: "head", root: "root" });
     expect(character.morphTargets.sort()).toEqual(["blink", "mouth_oh", "mouth_open", "smile"]);
@@ -258,7 +258,7 @@ describe("3D in the workspace", () => {
     const rec = ws.getAsset("mika");
     expect(rec.kind).toBe("model");
     expect(rec.mime).toBe("model/gltf-binary");
-    expect(rec.model!.clips.length).toBe(3);
+    expect(rec.model!.clips.length).toBe(5);
     const again = await ws.importAsset({ kind: "file", file: mgr.resolveLibraryFile("models", "character.glb"), origin: {} });
     expect(again.reused).toBe(true);
     expect(mgr.listLibrary("models").filter((f) => f.kind === "model").map((f) => f.path).sort()).toEqual(["character.glb", "mug.glb", "room.glb", "third_party/fox/Fox.glb"]);

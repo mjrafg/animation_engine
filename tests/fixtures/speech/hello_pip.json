@@ -1,0 +1,206 @@
+{
+ "text": "Hello! My name is Pip. Nice to meet you.",
+ "duration": 3.565,
+ "characters": [
+  {
+   "char": "H",
+   "start": 0.05,
+   "end": 0.125
+  },
+  {
+   "char": "e",
+   "start": 0.125,
+   "end": 0.2
+  },
+  {
+   "char": "l",
+   "start": 0.2,
+   "end": 0.275
+  },
+  {
+   "char": "l",
+   "start": 0.275,
+   "end": 0.35
+  },
+  {
+   "char": "o",
+   "start": 0.35,
+   "end": 0.425
+  },
+  {
+   "char": "!",
+   "start": 0.425,
+   "end": 0.705
+  },
+  {
+   "char": " ",
+   "start": 0.705,
+   "end": 0.755
+  },
+  {
+   "char": "M",
+   "start": 0.755,
+   "end": 0.83
+  },
+  {
+   "char": "y",
+   "start": 0.83,
+   "end": 0.905
+  },
+  {
+   "char": " ",
+   "start": 0.905,
+   "end": 0.955
+  },
+  {
+   "char": "n",
+   "start": 0.955,
+   "end": 1.03
+  },
+  {
+   "char": "a",
+   "start": 1.03,
+   "end": 1.105
+  },
+  {
+   "char": "m",
+   "start": 1.105,
+   "end": 1.18
+  },
+  {
+   "char": "e",
+   "start": 1.18,
+   "end": 1.255
+  },
+  {
+   "char": " ",
+   "start": 1.255,
+   "end": 1.305
+  },
+  {
+   "char": "i",
+   "start": 1.305,
+   "end": 1.38
+  },
+  {
+   "char": "s",
+   "start": 1.38,
+   "end": 1.455
+  },
+  {
+   "char": " ",
+   "start": 1.455,
+   "end": 1.505
+  },
+  {
+   "char": "P",
+   "start": 1.505,
+   "end": 1.58
+  },
+  {
+   "char": "i",
+   "start": 1.58,
+   "end": 1.655
+  },
+  {
+   "char": "p",
+   "start": 1.655,
+   "end": 1.73
+  },
+  {
+   "char": ".",
+   "start": 1.73,
+   "end": 2.01
+  },
+  {
+   "char": " ",
+   "start": 2.01,
+   "end": 2.06
+  },
+  {
+   "char": "N",
+   "start": 2.06,
+   "end": 2.135
+  },
+  {
+   "char": "i",
+   "start": 2.135,
+   "end": 2.21
+  },
+  {
+   "char": "c",
+   "start": 2.21,
+   "end": 2.285
+  },
+  {
+   "char": "e",
+   "start": 2.285,
+   "end": 2.36
+  },
+  {
+   "char": " ",
+   "start": 2.36,
+   "end": 2.41
+  },
+  {
+   "char": "t",
+   "start": 2.41,
+   "end": 2.485
+  },
+  {
+   "char": "o",
+   "start": 2.485,
+   "end": 2.56
+  },
+  {
+   "char": " ",
+   "start": 2.56,
+   "end": 2.61
+  },
+  {
+   "char": "m",
+   "start": 2.61,
+   "end": 2.685
+  },
+  {
+   "char": "e",
+   "start": 2.685,
+   "end": 2.76
+  },
+  {
+   "char": "e",
+   "start": 2.76,
+   "end": 2.835
+  },
+  {
+   "char": "t",
+   "start": 2.835,
+   "end": 2.91
+  },
+  {
+   "char": " ",
+   "start": 2.91,
+   "end": 2.96
+  },
+  {
+   "char": "y",
+   "start": 2.96,
+   "end": 3.035
+  },
+  {
+   "char": "o",
+   "start": 3.035,
+   "end": 3.11
+  },
+  {
+   "char": "u",
+   "start": 3.11,
+   "end": 3.185
+  },
+  {
+   "char": ".",
+   "start": 3.185,
+   "end": 3.465
+  }
+ ]
+}

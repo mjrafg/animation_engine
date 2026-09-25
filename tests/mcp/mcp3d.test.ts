@@ -62,7 +62,7 @@ describe("3D over MCP", () => {
     if (HAS_BLENDER) {
       const insp = await ok("asset_inspect", { assetId: "mika" });
       expect(fs.statSync(insp.viewPath).size).toBeLessThan(150_000);
-      expect(insp.blender.clipsFound).toEqual(["idle", "walk", "wave"]);
+      expect(insp.blender.clipsFound).toEqual(["idle", "point", "run", "walk", "wave"]);
     }
   }, 60_000);
 
