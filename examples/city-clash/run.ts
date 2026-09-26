@@ -32,6 +32,7 @@ const OUT = path.join(HERE, "out");
 const FPS = 24;
 const F = (s: number) => Math.round(s * FPS);
 const preview = process.argv.includes("--preview");
+const buildOnly = process.argv.includes("--build-only");
 const qi = process.argv.indexOf("--quality");
 const quality = (qi > 0 ? process.argv[qi + 1] : "high") as "draft" | "standard" | "high";
 
@@ -39,6 +40,8 @@ const quality = (qi > 0 ? process.argv[qi + 1] : "high") as "draft" | "standard"
 process.env.VE3D_TUNE = JSON.stringify({ "eevee.use_bloom": true, "eevee.bloom_intensity": 0.06, "eevee.bloom_threshold": 0.9, "eevee.bloom_radius": 5.5 });
 
 async function main() {
+  const tStart = Date.now();
+  process.on("exit", () => console.log(`total ${((Date.now() - tStart) / 1000).toFixed(1)} s`));
   fs.rmSync(path.join(OUT, "ws"), { recursive: true, force: true });
   fs.mkdirSync(OUT, { recursive: true });
   const mgr = new WorkspaceManager({ root: path.join(OUT, "ws"), libraries: { characters: path.join(ROOT, "assets", "characters"), interactions: path.join(ROOT, "assets", "interactions") } });
@@ -114,6 +117,11 @@ async function main() {
   const tl: any = await ws.inspectInteractions(s);
   for (const ix of tl.interactions) console.log(ix.id, ix.interaction, `${ix.start}-${ix.end}s`, "distance", ix.alignment.distance, JSON.stringify(ix.injectedActions));
 
+  if (buildOnly) {
+    const doc = ws.getSceneDoc(s);
+    console.log(`built: ${doc.objects.length} objects, ${doc.animations.length} tracks, ${doc.animations.reduce((n: number, t: any) => n + t.keyframes.length, 0)} keyframes`);
+    return;
+  }
   if (preview) {
     for (const t of [1.2, 3.2, 4.95, 6.7, 9.3]) {
       const a = await ws.renderPreview(s, F(t), { quality });
