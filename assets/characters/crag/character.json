@@ -1,0 +1,110 @@
+{
+  "id": "crag",
+  "name": "Crag (3D)",
+  "version": 1,
+  "kind": "3d",
+  "description": "Original stone brute, 2.2 m (assets/3d/src/build_heroes.py): slate skin with glowing lava bands, heavy fists. Clips idle, walk, run, guard, punch, roar, hit; morphs blink, angry (brow), mouth_open/mouth_oh/smile.",
+  "model": "crag.glb",
+  "scale": 1,
+  "blendFrames": 5,
+  "actions": {
+    "idle": {
+      "kind": "idle",
+      "clip": "idle"
+    },
+    "walk": {
+      "kind": "locomotion",
+      "clip": "walk",
+      "speed": 1.2,
+      "description": "Walk cycle; moves and turns toward its direction."
+    },
+    "run": {
+      "kind": "locomotion",
+      "clip": "run",
+      "speed": 3.0,
+      "description": "Run cycle, leaning forward."
+    },
+    "guard": {
+      "kind": "gesture",
+      "clip": "guard",
+      "description": "Fighting stance: fists up, knees bent (loops)."
+    },
+    "punch": {
+      "kind": "gesture",
+      "clip": "punch",
+      "description": "Fast right straight punch from the guard (0.7 s)."
+    },
+    "roar": {
+      "kind": "gesture",
+      "clip": "roar",
+      "description": "Arms spread wide and up, chest out (1.6 s)."
+    },
+    "hit": {
+      "kind": "gesture",
+      "clip": "hit",
+      "description": "Recoils from a hit and recovers (0.8 s)."
+    }
+  },
+  "expressions": {
+    "smile": {
+      "morphs": {
+        "smile": 1
+      }
+    },
+    "angry": {
+      "morphs": {
+        "angry": 1
+      }
+    },
+    "roar": {
+      "morphs": {
+        "angry": 1,
+        "mouth_open": 1
+      }
+    },
+    "surprised": {
+      "morphs": {
+        "mouth_oh": 0.7
+      }
+    }
+  },
+  "mouth": {
+    "sets": {
+      "neutral": {
+        "rest": {},
+        "MBP": {},
+        "AI": {
+          "mouth_open": 1.0
+        },
+        "E": {
+          "mouth_open": 0.4,
+          "smile": 0.3
+        },
+        "O": {
+          "mouth_oh": 1
+        },
+        "U": {
+          "mouth_oh": 0.6
+        },
+        "FV": {
+          "mouth_open": 0.15
+        },
+        "L": {
+          "mouth_open": 0.5
+        }
+      }
+    }
+  },
+  "eyes": {
+    "blink": {
+      "blink": 1
+    }
+  },
+  "defaults": {
+    "blend": 0.2,
+    "turnTime": 0.3,
+    "blinkDuration": 0.15,
+    "autoBlinkInterval": 3.2,
+    "facing": "camera"
+  }
+}

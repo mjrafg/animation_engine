@@ -453,7 +453,8 @@ def build_room():
     export(os.path.join(OUT, "room.glb"))
 
 
-os.makedirs(OUT, exist_ok=True)
-build_character()
-build_mug()
-build_room()
+if __name__ == "__main__":
+    os.makedirs(OUT, exist_ok=True)
+    build_character()
+    build_mug()
+    build_room()

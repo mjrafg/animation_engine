@@ -1,0 +1,27 @@
+{
+  "id": "strike",
+  "name": "Strike",
+  "description": "Example custom interaction: the striker steps in and lands a fast right-hand strike on the target's chest; the target is knocked back a step, then both recover. Choreography only (no physics).",
+  "version": 1,
+  "roles": [
+    { "name": "striker", "requires": { "actions": ["walk"], "sockets": ["rightHand"] } },
+    { "name": "target", "description": "Knocked back a step.", "requires": { "actions": ["walk"], "sockets": [] } }
+  ],
+  "duration": { "default": 1.4, "min": 0.8 },
+  "alignment": { "mode": "face_to_face", "distance": { "reach": 0.95, "roles": [], "height": 0.3 }, "anchor": "second" },
+  "phases": [
+    { "name": "approach", "end": 0.35 },
+    { "name": "reach", "end": 0.47 },
+    { "name": "contact", "end": 0.53 },
+    { "name": "motion", "end": 0.78 },
+    { "name": "release", "end": 0.88 },
+    { "name": "return", "end": 1 }
+  ],
+  "targets": {
+    "chest": { "kind": "partner", "of": "target", "height": { "shoulder": 0.88 }, "forward": 0.1, "lateral": -0.03 }
+  },
+  "effectors": [
+    { "role": "striker", "hand": "right", "target": "chest", "from": "reach", "until": "motion" }
+  ],
+  "moves": [{ "role": "target", "phase": "motion", "back": 0.14 }]
+}
