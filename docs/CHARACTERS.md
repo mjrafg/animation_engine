@@ -198,6 +198,16 @@ Packages live in a read-only library that the operator configures, e.g. `VIDEO_E
   - The 12.5 s 720p 2D proof video renders in about 3 s. 3D renders at about 1.5 s per frame (draft, CPU).
   - An agent needs one `character_actions` call for a whole performance, versus hundreds of keyframes by hand.
 
+## Multi-character interactions
+
+Characters in the same scene can interact: `handshake`, `high_five`, `hug`, `give_object`, `receive_object`, `push`, or custom definitions. The runtime then plans all characters of the scene together:
+
+- it adds approach, turn and hold actions to the actors (listed as `interactionActions` in `character_timeline`);
+- it drives their arms with IK;
+- it switches props between hands.
+
+An interaction owns its actors' locomotion, facing and the arms it uses. Talk, expressions and blinks continue. See [`INTERACTIONS.md`](INTERACTIONS.md).
+
 ## MCP tools (9 new; the low-level tools remain)
 
 | Tool | |
@@ -205,7 +215,7 @@ Packages live in a read-only library that the operator configures, e.g. `VIDEO_E
 | `character_list` | Prepared characters and speech timings; with `library`, the available packages |
 | `character_import` | Prepare a package once (`reused: true` on repeat) |
 | `character_inspect` | Capabilities (actions, expressions, speech, sockets, combinations, rules) |
-| `character_add` / `character_update` / `character_remove` | Place, change placement or props, remove |
+| `character_add` / `character_update` / `character_remove` | Place, change placement or props, remove (`removeInteractions: true` also removes the interactions it takes part in) |
 | `character_actions` | Atomic batch of add/update/replace/remove/shift/clear; returns the resolved schedule |
 | `character_timeline` | Resolved schedule: seconds and frames, channels, paths, speech source, blinks, generated content, staleness |
 | `speech_timing_save` | Provider-neutral timing (visemes, characters or words, plus optional audio) |

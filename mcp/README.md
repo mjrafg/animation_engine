@@ -92,7 +92,7 @@ Configuration comes from flags or environment. Tandem passes environment variabl
 - **Asset reuse:** layers reference assets by id (`"asset": "cup"`). Any number of layers and scenes use one asset file, and re-importing identical bytes returns the existing asset (`reused: true`).
 - **Processing is non-destructive:** `asset_process`, `asset_trim` and `asset_component_remove` create a new asset whose `provenance` names its source.
 
-## Tools (49)
+## Tools (54)
 
 | Group | Tools |
 |---|---|
@@ -105,6 +105,9 @@ Configuration comes from flags or environment. Tandem passes environment variabl
 | Layout & render | `measure_layout`, `render_preview` (`debug`), `render_frame`, `render_video_start`, `render_video_status` (`waitSeconds` ≤ 45), `render_video_cancel`, `artifact_list` |
 | Characters | `character_list`, `character_import`, `character_inspect`, `character_add`, `character_update`, `character_remove`, `character_actions` (atomic high-level action batch), `character_timeline`, `speech_timing_save` |
 | 3D | `object_add`, `object_update`, `object_remove`, `object_list`, `scene_settings_3d`. `scene_create kind:"3d"`; timeline, measure and render tools work on both kinds. |
+| Interactions | `interaction_list` (built-in + custom, full description), `interaction_check` (compatibility and fit for given characters/sizes), `interaction_define` (custom definition as data), `interaction_apply` (atomic batch: add/update/replace/remove/shift/clear), `interaction_inspect` (phases, alignment, contacts, transfers, ownership; measured contact at a frame) |
+
+**Multi-character interactions** (see [`docs/INTERACTIONS.md`](../docs/INTERACTIONS.md)): place the characters, then `interaction_apply {operations: [{type: "add", interaction: {interaction: "handshake", actors: ["a", "b"], start: 11, duration: 3}}]}`. The runtime aligns, approaches, reaches, holds contact, hands objects over and returns, and it rejects overlapping walks, turns or gestures with `ACTION_CONFLICT` naming the interaction.
 
 **Prepared characters** (see [`docs/CHARACTERS.md`](../docs/CHARACTERS.md)):
 

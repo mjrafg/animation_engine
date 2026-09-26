@@ -226,11 +226,61 @@ function evalHeight(spec: HeightSpec | undefined, dims: ActorDims[]): number {
   return (spec.shoulder ?? 0) * sh + (spec.reach ?? 0) * reach + (spec.height ?? 0) * h;
 }
 
-/** How far forward of its feet an actor's grip reaches at world height h (above its feet). */
-function forwardReach(arm: ArmDims, h: number, rho: number): { fwd: number; ok: boolean } {
-  const r = rho * arm.reach;
-  const q = r * r - (h - arm.shoulder.up) ** 2 - arm.shoulder.lateral ** 2;
-  return q >= 0 ? { fwd: arm.shoulder.forward + Math.sqrt(q), ok: true } : { fwd: arm.shoulder.forward, ok: false };
+/**
+ * How far forward of its feet an actor's grip reaches at height h (above its feet) and lateral
+ * offset lat (actor frame, + = its left), using rho x its reach; falls back to the fully stretched
+ * arm, and reports ok:false only when even that cannot reach the height.
+ */
+function forwardReach(arm: ArmDims, h: number, rho: number, lat = 0): { fwd: number; ok: boolean } {
+  const rest = (h - arm.shoulder.up) ** 2 + (lat - arm.shoulder.lateral) ** 2;
+  for (const r of [rho * arm.reach, 0.999 * arm.reach]) {
+    const q = r * r - rest;
+    if (q >= 0) return { fwd: arm.shoulder.forward + Math.sqrt(q), ok: true };
+  }
+  return { fwd: arm.shoulder.forward, ok: false };
+}
+
+/** Target height (above the partner's feet) and lateral offset of a partner target. */
+function partnerHeight(t: Extract<TargetSpec, { kind: "partner" }>, partner: ActorDims, both: ActorDims[]) {
+  return evalHeight(t.height, t.heightFrom === "both" ? both : [partner]);
+}
+
+/**
+ * Face-to-face distance (feet to feet) for two actors: the reach of `distance.roles` toward the
+ * shared ('between') target height plus `distance.height` x average height, capped so that every
+ * hand with a partner target reaches it. Also the split point for 'between' targets.
+ */
+function alignDistance(def: InteractionDefinition, dims: Record<string, ActorDims>, handOf: (role: string) => Hand) {
+  const [r0, r1] = def.roles.map((r) => r.name);
+  const both = [dims[r0], dims[r1]];
+  const avgH = (both[0].height + both[1].height) / 2;
+  const between = Object.values(def.targets).find((t) => t.kind === "between") as Extract<TargetSpec, { kind: "between" }> | undefined;
+  const hT = evalHeight(def.alignment.height ?? between?.height, both);
+  const reachRoles = def.alignment.distance.roles ?? [...new Set(def.effectors.filter((e) => def.targets[e.target]?.kind === "between").map((e) => e.role))];
+  const hr: Record<string, number> = {};
+  const limits: { role: string; problem: string; details: Record<string, unknown> }[] = [];
+  for (const role of reachRoles) {
+    const arm = armOf(dims[role], handOf(role));
+    if (!arm) continue;
+    const fr = forwardReach(arm, hT, def.alignment.distance.reach);
+    if (!fr.ok) limits.push({ role, problem: `cannot reach the ${def.id} height (${r3(hT)} above the feet) with its arm; its hand stops short`, details: { targetHeight: r3(hT), shoulderHeight: arm.shoulder.up, reach: arm.reach } });
+    hr[role] = fr.fwd;
+  }
+  let D = Object.values(hr).reduce((s, v) => s + v, 0) + def.alignment.distance.height * avgH;
+  // partner targets: stand close enough for every such hand to reach
+  for (const e of def.effectors) {
+    const t = def.targets[e.target];
+    if (t?.kind !== "partner" || t.of === e.role) continue;
+    const arm = armOf(dims[e.role], e.hand === "left" ? "left" : e.hand === "right" ? "right" : handOf(e.role));
+    if (!arm) continue;
+    const p = dims[t.of];
+    // face to face, the partner's left is the actor's right
+    const fr = forwardReach(arm, partnerHeight(t, p, both), def.alignment.distance.reach, -t.lateral * p.height);
+    if (fr.ok) D = Math.min(D, fr.fwd + t.forward * p.height);
+  }
+  D = Math.max(D, 0.05 * avgH);
+  const along = hr[r0] !== undefined && hr[r1] !== undefined && hr[r0] + hr[r1] > 0 ? hr[r0] / (hr[r0] + hr[r1]) : 0.5;
+  return { D, along, hT, hr, limits };
 }
 
 // ---- plans --------------------------------------------------------------------------------------
@@ -514,34 +564,19 @@ export function planScene(doc: SceneDoc, ctx: InteractionLookups): ScenePlan {
     const dB = dimsOf(B);
     const avgH = (dA.height + dB.height) / 2;
 
-    // distance from the actors' reach toward the shared target height
-    const between = Object.values(def.targets).find((t) => t.kind === "between") as Extract<TargetSpec, { kind: "between" }> | undefined;
-    const hT = evalHeight(def.alignment.height ?? between?.height, [dA, dB]);
-    const rolesWithBetween = [...new Set(def.effectors.filter((e) => def.targets[e.target]?.kind === "between").map((e) => e.role))];
-    const reachRoles = def.alignment.distance.roles ?? rolesWithBetween;
-    const hr: Record<string, number> = {};
-    for (const role of reachRoles) {
-      const actor = ip.roles[role];
+    // distance from the actors' reach (shared target) and body targets
+    const roleDims = Object.fromEntries(def.roles.map((r, i) => [r.name, dimsOf(ip.actors[i])]));
+    const al = alignDistance(def, roleDims, (role) => {
       const e = def.effectors.find((x) => x.role === role);
-      const arm = armOf(dimsOf(actor), (e && effectorHand(e, ip.params)) || "right");
-      if (!arm) continue;
-      const fr = forwardReach(arm, hT, def.alignment.distance.reach);
-      if (!fr.ok) {
-        warn("INTERACTION_OUT_OF_REACH", [...p, "actors", ip.actors.indexOf(actor)], `"${actor}" cannot reach the ${def.id} height (${r3(hT)} ${kind === "2d" ? "px" : "m"} above the feet) with its arm; its hand stops short`, {
-          actor,
-          targetHeight: r3(hT),
-          shoulderHeight: arm.shoulder.up,
-          reach: arm.reach,
-        });
-      }
-      hr[role] = fr.fwd;
+      return (e && effectorHand(e, ip.params)) || "right";
+    });
+    for (const l of al.limits) {
+      const actor = ip.roles[l.role];
+      warn("INTERACTION_OUT_OF_REACH", [...p, "actors", ip.actors.indexOf(actor)], `"${actor}" ${l.problem}`, { actor, ...l.details });
     }
-    let D = Object.values(hr).reduce((s, v) => s + v, 0) + def.alignment.distance.height * avgH;
-    D = Math.max(D, 0.05 * avgH);
+    const D = al.D;
     ip.distance = r4(D);
-    const r0 = def.roles[0].name;
-    const r1 = def.roles[1].name;
-    ip.along = hr[r0] !== undefined && hr[r1] !== undefined && hr[r0] + hr[r1] > 0 ? hr[r0] / (hr[r0] + hr[r1]) : 0.5;
+    ip.along = al.along;
 
     // aligned positions
     const anchor = ip.params.anchor ?? def.alignment.anchor;
@@ -571,7 +606,8 @@ export function planScene(doc: SceneDoc, ctx: InteractionLookups): ScenePlan {
     }
     const faceToward = (from: V3, to: V3) => (kind === "2d" ? (to.x >= from.x ? 1 : -1) : (Math.atan2(to.x - from.x, to.z - from.z) * 180) / Math.PI);
     const want: Record<string, number> = { [A]: faceToward(TA, TB), [B]: faceToward(TB, TA) };
-    const tol = 0.01 * avgH;
+    // small offsets are left to the arms (targets follow the actual positions); no shuffling steps
+    const tol = 0.03 * avgH;
     const approach = ip.phases.find((x) => x.name === "approach");
     const holdFrom: Record<string, number> = {};
     for (const [actor, P, T, plan] of [
@@ -593,9 +629,9 @@ export function planScene(doc: SceneDoc, ctx: InteractionLookups): ScenePlan {
       holdFrom[actor] = ip.f0;
       if (moving) {
         const apEnd = approach?.f1 ?? ip.f0;
-        const frs = apEnd - walkStart;
+        const room = apEnd - walkStart;
         const role = def.roles[ip.actors.indexOf(actor)].name;
-        if (!approach || frs < 1) {
+        if (!approach || room < 1) {
           err("INTERACTION_INVALID", [...p], `"${actor}" must move ${r3(flat(kind, P, T))} ${kind === "2d" ? "px" : "m"} to stand at the ${def.id} distance, but "${def.id}" has no approach time for it (place the actors first or lengthen the interaction)`, {
             actor,
             requiredPosition: T,
@@ -612,8 +648,11 @@ export function planScene(doc: SceneDoc, ctx: InteractionLookups): ScenePlan {
           });
           continue;
         }
-        const speed = flat(kind, P, T) / (frs / fps);
         const nominal = (walk.speed ?? (kind === "2d" ? 160 : 1.2)) * (insts[index.get(actor)!].scale ?? 1);
+        // walk at the character's own speed and arrive by the end of the approach phase
+        const frs = Math.min(room, Math.max(Math.round(0.4 * fps), Math.round((flat(kind, P, T) / nominal) * fps)));
+        walkStart = apEnd - frs;
+        const speed = flat(kind, P, T) / (frs / fps);
         if (speed > 2.2 * nominal) {
           warn("INTERACTION_FAST_APPROACH", [...p], `"${actor}" must cover ${r3(flat(kind, P, T))} ${kind === "2d" ? "px" : "m"} in the ${r3(frs / fps)}s approach (${r3(speed)} vs walk ${r3(nominal)}); walk it closer first or start the interaction earlier`, {
             actor,
@@ -630,6 +669,8 @@ export function planScene(doc: SceneDoc, ctx: InteractionLookups): ScenePlan {
           ...(towardPartner ? {} : { keepFacing: true }),
         });
         holdFrom[actor] = apEnd;
+        // it waits where it is until it sets off (reserved: its own walks would break the alignment)
+        if (walkStart > ip.f0) inject(actor, { id: `${ip.id}:wait`, action: "idle", start: sec(ip.f0), duration: sec(walkStart - ip.f0) });
       }
       ip.alignment[actor] = { from: P, to: T, facing: r3(want[actor]), walks: moving };
     }
@@ -732,7 +773,7 @@ export function planScene(doc: SceneDoc, ctx: InteractionLookups): ScenePlan {
       }
       const partner = ip.roles[t.of];
       const dp = dimsOf(partner);
-      return toWorld(kind, pos(partner, f), face(partner, f), { forward: t.forward * dp.height, up: evalHeight(t.height, [dp]), lateral: t.lateral * dp.height });
+      return toWorld(kind, pos(partner, f), face(partner, f), { forward: t.forward * dp.height, up: partnerHeight(t, dp, [dimsOf(a0), dimsOf(a1)]), lateral: t.lateral * dp.height });
     };
     for (const e of def.effectors) {
       const actor = ip.roles[e.role];
@@ -1087,29 +1128,16 @@ export function checkInteraction(
   // fit (face to face)
   let fit: Record<string, unknown> | null = null;
   if (def.alignment.mode === "face_to_face" && dims.length === 2 && kinds.size === 1) {
-    const between = Object.values(def.targets).find((t) => t.kind === "between") as Extract<TargetSpec, { kind: "between" }> | undefined;
-    const hT = evalHeight(def.alignment.height ?? between?.height, dims);
-    const reachRoles = def.alignment.distance.roles ?? [...new Set(def.effectors.filter((e) => def.targets[e.target]?.kind === "between").map((e) => e.role))];
-    let D = 0;
-    const reach: Record<string, { reachesTargetHeight: boolean; forward: number }> = {};
-    for (const role of reachRoles) {
-      const i = def.roles.findIndex((r) => r.name === role);
-      const arm = armOf(dims[i], "right");
-      if (!arm) continue;
-      const fr = forwardReach(arm, hT, def.alignment.distance.reach);
-      reach[role] = { reachesTargetHeight: fr.ok, forward: r4(fr.fwd) };
-      D += fr.fwd;
-      if (!fr.ok) issues.push({ role, actor: actors[i].id, problem: `arm too short for the target height (${r3(hT)}); the hand stops short (warning, not an error)` });
-    }
-    const avgH = (dims[0].height + dims[1].height) / 2;
-    D = Math.max(D + def.alignment.distance.height * avgH, 0.05 * avgH);
+    const roleDims = Object.fromEntries(def.roles.map((r, i) => [r.name, dims[i]]));
+    const al = alignDistance(def, roleDims, (role) => roles.find((x) => x.role === role)?.hands[0]?.hand ?? "right");
+    for (const l of al.limits) issues.push({ role: l.role, actor: actors[def.roles.findIndex((r) => r.name === l.role)].id, problem: `${l.problem} (warning, not an error)` });
     fit = {
-      distance: r4(D),
-      targetHeight: r4(hT),
+      distance: r4(al.D),
+      sharedTargetHeight: r4(al.hT),
       unit: dims[0].kind === "2d" ? "px" : "m",
       heightRatio: r3(Math.min(dims[0].height, dims[1].height) / Math.max(dims[0].height, dims[1].height)),
-      reach,
-      note: "distance = feet to feet when aligned; targets adapt to each actor's shoulder height and arm length",
+      forwardReach: Object.fromEntries(Object.entries(al.hr).map(([k, v]) => [k, r4(v)])),
+      note: "distance = feet to feet when aligned; contact targets adapt to each actor's shoulder height and arm length",
     };
   }
   const blocking = issues.filter((x) => !x.problem.includes("(warning"));

@@ -45,9 +45,30 @@ Compatible actions combine: walk + talk, talk + smile + blink. Conflicts return 
 - Details: [`docs/CHARACTERS.md`](docs/CHARACTERS.md).
 - Proof: `npx tsx examples/characters-proof/run.ts` → `examples/characters-proof/out/pip_2d.mp4`, `mika_3d.mp4`.
 
+## Multi-character interactions
+
+Placed characters interact through reusable definitions: `handshake`, `high_five`, `hug`, `give_object` / `receive_object`, `push`, or custom ones registered as data (`interaction_define`). One call names the interaction, its actors, when it starts and how long it lasts:
+
+```jsonc
+{ "interaction": "handshake", "actors": ["anna", "ben"], "start": 11, "duration": 3 }
+```
+
+The runtime handles the choreography:
+
+- aligns the actors face to face, using their own reach and size;
+- walks the approaching actor into place and turns both to face each other;
+- holds them there;
+- drives their arms to the contact targets (2D and 3D two-bone IK);
+- hands objects over, switching the attachment exactly once.
+
+Everything compiles into the canonical timeline. Talking, expressions and blinking keep running on each character independently. Overlapping walks, turns or gestures are structured `ACTION_CONFLICT` errors that name the interaction.
+
+- Details: [`docs/INTERACTIONS.md`](docs/INTERACTIONS.md).
+- Measured proof, with the conversation scene, the 3D and 2D showcases and the different-size results: [`docs/interactions/REPORT.md`](docs/interactions/REPORT.md), produced by `npx tsx examples/interactions-proof/run.ts`.
+
 ## Agent control over MCP (Tandem)
 
-The engine runs as an **MCP server** (`video-engine-mcp`, 49 tools: 2D, 3D and characters), so agents can control it
+The engine runs as an **MCP server** (`video-engine-mcp`, 54 tools: 2D, 3D, characters and interactions), so agents can control it
 entirely through structured tool calls. They inspect capabilities, work in isolated workspaces,
 process assets, build and animate scenes, measure layout, look at previews and render MP4s as
 jobs. Tandem registers it as a standard MCP Integration.
@@ -368,13 +389,15 @@ src/
   api/operations.ts       pure transactional scene edits
   api/tools.ts            agent tool layer (JSON in/out, JSON schemas)
   workspace/              ID-based workspaces, artifacts, render jobs
-  characters/             character runtime: packages, actions -> plan -> compiled tracks, speech
+  characters/             character runtime: packages, actions -> plan -> compiled tracks, speech,
+                          multi-character interactions (definitions, alignment, reach IK, transfers)
   scene3d/                3D: glTF inspection, Scene3D schema/validation/evaluation/operations,
                           Blender runner (blender.ts) + backend script (blender/engine3d.py)
   cli.ts
 mcp/                      MCP server (thin adapter over the core)
 assets/3d/                3D test assets (+ src/build_assets.py generator, third_party/fox)
 assets/characters/        prepared test characters: pip (2D, + src/build-pip.ts), mika (3D), props
+assets/interactions/      example custom interaction definition (professor_greeting.json)
 tests/                    vitest suites (tests/mcp: MCP over stdio)
 examples/kitchen/         test scene: generators, processed assets, scene.json, outputs
 examples/3d-proof/        first 3D proof (run.ts) and its outputs

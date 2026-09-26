@@ -54,6 +54,7 @@ export const TargetSpecSchema = z.discriminatedUnion("kind", [
       height: HeightSpec,
       forward: num().default(0).describe("x that actor's height along its facing direction (negative = behind: its back)."),
       lateral: num().default(0).describe("3D: x its height toward its LEFT side (negative = its right). Ignored in 2D."),
+      heightFrom: z.enum(["partner", "both"]).default("partner").describe("Whose shoulders/height the height spec uses: the partner's, or both actors' average (e.g. a hug between different sizes)."),
     })
     .strict(),
 ]);
@@ -88,7 +89,7 @@ export const InteractionDefinitionSchema = z
           .object({
             reach: num().gt(0).max(1).default(0.9).describe("Fraction of full arm reach used at the shared target (1 = arms fully stretched)."),
             roles: z.array(Id).optional().describe("Roles whose reach toward the shared target sets the distance (default: roles with a 'between' target)."),
-            height: num().default(0).describe("+ x average body height (e.g. body depth for a hug or push)."),
+            height: num().default(0).describe("+ x average body height (e.g. body depth for a hug or push). The distance is then capped so every hand with a 'partner' target can reach it."),
           })
           .strict()
           .default({ reach: 0.9, height: 0 }),
@@ -230,10 +231,10 @@ const raw: unknown[] = [
       { name: "return", end: 1 },
     ],
     targets: {
-      a_right: { kind: "partner", of: "b", height: { shoulder: 0.88 }, forward: -0.04, lateral: 0.07 },
-      a_left: { kind: "partner", of: "b", height: { shoulder: 0.88 }, forward: -0.04, lateral: -0.07 },
-      b_right: { kind: "partner", of: "a", height: { shoulder: 0.82 }, forward: -0.04, lateral: 0.07 },
-      b_left: { kind: "partner", of: "a", height: { shoulder: 0.82 }, forward: -0.04, lateral: -0.07 },
+      a_right: { kind: "partner", of: "b", height: { shoulder: 0.88 }, heightFrom: "both", forward: -0.025, lateral: 0.07 },
+      a_left: { kind: "partner", of: "b", height: { shoulder: 0.88 }, heightFrom: "both", forward: -0.025, lateral: -0.07 },
+      b_right: { kind: "partner", of: "a", height: { shoulder: 0.82 }, heightFrom: "both", forward: -0.025, lateral: 0.07 },
+      b_left: { kind: "partner", of: "a", height: { shoulder: 0.82 }, heightFrom: "both", forward: -0.025, lateral: -0.07 },
     },
     effectors: [
       { role: "a", hand: "right", target: "a_right", from: "reach", until: "release" },
