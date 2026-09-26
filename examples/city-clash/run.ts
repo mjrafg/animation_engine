@@ -62,7 +62,7 @@ async function main() {
   );
   await ws.mutateScene(s, (d) =>
     ops3d.setSettings3D(d, {
-      camera: { position: { x: -2.4, y: 1.0, z: 5.6 }, lookAt: { x: 0.35, y: 1.25, z: 0 }, fov: 40 },
+      camera: { position: { x: -0.9, y: 1.0, z: 5.8 }, lookAt: { x: 0.4, y: 1.25, z: 0 }, fov: 40 },
       world: { color: "#22335a", strength: 0.55 },
       render: { quality, engine: "eevee" },
     }),
@@ -71,15 +71,15 @@ async function main() {
   const cam = (prop: string, keys: [number, number][]) => ({ type: "track.set", target: "camera", property: prop, keyframes: keys.map(([t, v]) => ({ frame: F(t), value: v, interpolation: "ease-in-out" })) });
   await ws.mutateScene(s, (d) =>
     ops.applyTimelineOps(d, [
-      cam("position.x", [[0, -2.4], [5, -1.5], [9.95, -0.7]]),
-      cam("position.z", [[0, 5.6], [5, 4.6], [9.95, 3.7]]),
+      cam("position.x", [[0, -0.9], [5, 0.3], [9.95, 1.4]]),
+      cam("position.z", [[0, 5.8], [5, 4.8], [9.95, 3.9]]),
       cam("position.y", [[0, 1.0], [9.95, 0.8]]),
       cam("lookAt.y", [[0, 1.2], [9.95, 1.4]]),
     ]),
   );
 
-  await ws.mutateScene(s, (d) => ch.addCharacter(d, { id: "volt", character: "volt", position: { x: -4.6, y: 0, z: 0.6 }, facing: "right" }, ctx()));
-  await ws.mutateScene(s, (d) => ch.addCharacter(d, { id: "crag", character: "crag", position: { x: 4.8, y: 0, z: -0.6 }, facing: "left" }, ctx()));
+  await ws.mutateScene(s, (d) => ch.addCharacter(d, { id: "volt", character: "volt", position: { x: -3.2, y: 0, z: 0.4 }, facing: "right" }, ctx()));
+  await ws.mutateScene(s, (d) => ch.addCharacter(d, { id: "crag", character: "crag", position: { x: 3.8, y: 0, z: -0.4 }, facing: "left" }, ctx()));
   const act = (who: string, list: Record<string, unknown>[]) => ws.mutateScene(s, (d) => ch.applyCharacterActions(d, who, list.map((action) => ({ type: "add", action })), ctx()));
   await act("volt", [
     { action: "walk", start: 0, duration: 2.2, to: { x: -0.35, z: 0.05 } },

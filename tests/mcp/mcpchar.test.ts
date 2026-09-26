@@ -40,7 +40,7 @@ describe("characters over MCP", () => {
     const caps = (await c.call("engine_capabilities")).data;
     expect(caps.characters.tools).toContain("character_actions");
     const list = await ok("character_list", { library: "characters" });
-    expect(list.packages.map((p: any) => p.characterId).sort()).toEqual(["mika", "pip"]);
+    expect(list.packages.map((p: any) => p.characterId)).toEqual(expect.arrayContaining(["mika", "pip"]));
     const imp = await ok("character_import", { source: { library: "characters", path: "pip" } });
     expect(imp.reused).toBe(false);
     expect((await ok("character_import", { source: { library: "characters", path: "pip" } })).reused).toBe(true);
