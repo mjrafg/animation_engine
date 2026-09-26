@@ -261,7 +261,7 @@ describe("3D in the workspace", () => {
     expect(rec.model!.clips.length).toBe(5);
     const again = await ws.importAsset({ kind: "file", file: mgr.resolveLibraryFile("models", "character.glb"), origin: {} });
     expect(again.reused).toBe(true);
-    expect(mgr.listLibrary("models").filter((f) => f.kind === "model").map((f) => f.path).sort()).toEqual(["character.glb", "mug.glb", "room.glb", "third_party/fox/Fox.glb"]);
+    expect(mgr.listLibrary("models").filter((f) => f.kind === "model").map((f) => f.path).sort()).toEqual(["character.glb", "city.glb", "crag.glb", "mug.glb", "room.glb", "third_party/fox/Fox.glb", "volt.glb"]);
     await expectCode(ws.importAsset({ kind: "bytes", data: Buffer.from("junk"), filename: "bad.glb", origin: {} }), "INVALID_ASSET");
     expect(ws.listAssets().length).toBe(2); // the failed import left nothing behind
   });

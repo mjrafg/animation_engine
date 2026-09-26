@@ -12,3 +12,6 @@ examples/interactions-proof/out/ws/
 examples/city-clash/out/ws/
 examples/city-clash/out/preview_*.png
 examples/city-clash/out/parts/
+examples/bruno-meadow/out/ws/
+examples/bruno-meadow/out/preview_*.png
+examples/bruno-meadow/out/generated/

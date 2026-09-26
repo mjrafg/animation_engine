@@ -1,0 +1,1005 @@
+{
+  "id": "bruno",
+  "name": "Bruno the bear",
+  "version": 1,
+  "kind": "2d",
+  "description": "Bear cub in a yellow shirt and teal overalls (front view, head turned a little toward its facing; mirrored for left). ~360 px tall at scale 1. Actions: walk (waddle), run, wave, cheer, point, shy, look; expressions smile, happy, sad, surprised; full lip sync and blinks.",
+  "assets": {
+    "upper_arm": "parts/upper_arm.png",
+    "forearm": "parts/forearm.png",
+    "hand": "parts/hand.png",
+    "hand_open": "parts/hand_open.png",
+    "thigh": "parts/thigh.png",
+    "shin": "parts/shin.png",
+    "foot": "parts/foot.png",
+    "pelvis": "parts/pelvis.png",
+    "torso": "parts/torso.png",
+    "head": "parts/head.png",
+    "eyes_open": "parts/eyes_open.png",
+    "eyes_wide": "parts/eyes_wide.png",
+    "eyes_closed": "parts/eyes_closed.png",
+    "eyes_happy": "parts/eyes_happy.png",
+    "brows": "parts/brows.png",
+    "brows_up": "parts/brows_up.png",
+    "brows_sad": "parts/brows_sad.png",
+    "brows_happy": "parts/brows_happy.png",
+    "mouth_rest": "parts/mouth_rest.png",
+    "mouth_MBP": "parts/mouth_MBP.png",
+    "mouth_AI": "parts/mouth_AI.png",
+    "mouth_E": "parts/mouth_E.png",
+    "mouth_O": "parts/mouth_O.png",
+    "mouth_U": "parts/mouth_U.png",
+    "mouth_FV": "parts/mouth_FV.png",
+    "mouth_L": "parts/mouth_L.png",
+    "mouth_smile": "parts/mouth_smile.png",
+    "mouth_smile_AI": "parts/mouth_smile_AI.png",
+    "mouth_smile_E": "parts/mouth_smile_E.png",
+    "mouth_sad": "parts/mouth_sad.png",
+    "mouth_O_big": "parts/mouth_O_big.png"
+  },
+  "rig": {
+    "facing": "right",
+    "height": 360,
+    "parts": [
+      {
+        "id": "thigh_r",
+        "asset": "thigh",
+        "parent": "hips",
+        "x": -26,
+        "y": 14,
+        "width": 50,
+        "height": 84,
+        "anchorX": 0.5,
+        "anchorY": 0.2976190476190476,
+        "z": 4
+      },
+      {
+        "id": "shin_r",
+        "asset": "shin",
+        "parent": "thigh_r",
+        "x": 0,
+        "y": 34,
+        "width": 40,
+        "height": 70,
+        "anchorX": 0.5,
+        "anchorY": 0.2857142857142857,
+        "z": 4.1
+      },
+      {
+        "id": "foot_r",
+        "asset": "foot",
+        "parent": "shin_r",
+        "x": 0,
+        "y": 30,
+        "width": 50,
+        "height": 34,
+        "anchorX": 0.5,
+        "anchorY": 0.29411764705882354,
+        "z": 4.2
+      },
+      {
+        "id": "thigh_l",
+        "asset": "thigh",
+        "parent": "hips",
+        "x": 26,
+        "y": 14,
+        "width": 50,
+        "height": 84,
+        "anchorX": 0.5,
+        "anchorY": 0.2976190476190476,
+        "z": 4
+      },
+      {
+        "id": "shin_l",
+        "asset": "shin",
+        "parent": "thigh_l",
+        "x": 0,
+        "y": 34,
+        "width": 40,
+        "height": 70,
+        "anchorX": 0.5,
+        "anchorY": 0.2857142857142857,
+        "z": 4.1
+      },
+      {
+        "id": "foot_l",
+        "asset": "foot",
+        "parent": "shin_l",
+        "x": 0,
+        "y": 30,
+        "width": 50,
+        "height": 34,
+        "anchorX": 0.5,
+        "anchorY": 0.29411764705882354,
+        "z": 4.2
+      },
+      {
+        "id": "hips",
+        "asset": "pelvis",
+        "x": 0,
+        "y": -100,
+        "width": 124,
+        "height": 62,
+        "anchorX": 0.5,
+        "anchorY": 0.23,
+        "z": 8
+      },
+      {
+        "id": "torso",
+        "asset": "torso",
+        "parent": "hips",
+        "x": 0,
+        "y": -4,
+        "width": 128,
+        "height": 100,
+        "anchorX": 0.5,
+        "anchorY": 1,
+        "z": 10
+      },
+      {
+        "id": "head",
+        "asset": "head",
+        "parent": "torso",
+        "x": 2,
+        "y": -92,
+        "width": 184,
+        "height": 176,
+        "anchorX": 0.5,
+        "anchorY": 0.95,
+        "z": 14,
+        "attachmentPoints": {
+          "top": {
+            "x": 0.5,
+            "y": 0.1
+          }
+        }
+      },
+      {
+        "id": "brows",
+        "asset": "brows",
+        "parent": "head",
+        "x": 8,
+        "y": -122,
+        "width": 96,
+        "height": 22,
+        "z": 15
+      },
+      {
+        "id": "eyes",
+        "asset": "eyes_open",
+        "parent": "head",
+        "x": 8,
+        "y": -96,
+        "width": 96,
+        "height": 40,
+        "z": 15
+      },
+      {
+        "id": "mouth",
+        "asset": "mouth_rest",
+        "parent": "head",
+        "x": 16,
+        "y": -30,
+        "width": 44,
+        "height": 32,
+        "z": 15
+      },
+      {
+        "id": "upper_arm_r",
+        "asset": "upper_arm",
+        "parent": "torso",
+        "x": -54,
+        "y": -84,
+        "rotation": 6,
+        "width": 42,
+        "height": 76,
+        "anchorX": 0.5,
+        "anchorY": 0.27631578947368424,
+        "z": 16
+      },
+      {
+        "id": "forearm_r",
+        "asset": "forearm",
+        "parent": "upper_arm_r",
+        "x": 0,
+        "y": 34,
+        "rotation": -4,
+        "width": 33,
+        "height": 65,
+        "anchorX": 0.5,
+        "anchorY": 0.25384615384615383,
+        "z": 16.1
+      },
+      {
+        "id": "hand_r",
+        "asset": "hand",
+        "parent": "forearm_r",
+        "x": 0,
+        "y": 32,
+        "width": 38,
+        "height": 47,
+        "anchorX": 0.5,
+        "anchorY": 0.40425531914893614,
+        "z": 16.2,
+        "attachmentPoints": {
+          "grip": {
+            "x": 0.5,
+            "y": 0.6170212765957447
+          }
+        }
+      },
+      {
+        "id": "upper_arm_l",
+        "asset": "upper_arm",
+        "parent": "torso",
+        "x": 54,
+        "y": -84,
+        "rotation": -6,
+        "width": 42,
+        "height": 76,
+        "anchorX": 0.5,
+        "anchorY": 0.27631578947368424,
+        "z": 16
+      },
+      {
+        "id": "forearm_l",
+        "asset": "forearm",
+        "parent": "upper_arm_l",
+        "x": 0,
+        "y": 34,
+        "rotation": 4,
+        "width": 33,
+        "height": 65,
+        "anchorX": 0.5,
+        "anchorY": 0.25384615384615383,
+        "z": 16.1
+      },
+      {
+        "id": "hand_l",
+        "asset": "hand",
+        "parent": "forearm_l",
+        "x": 0,
+        "y": 32,
+        "width": 38,
+        "height": 47,
+        "anchorX": 0.5,
+        "anchorY": 0.40425531914893614,
+        "z": 16.2,
+        "attachmentPoints": {
+          "grip": {
+            "x": 0.5,
+            "y": 0.6170212765957447
+          }
+        }
+      }
+    ]
+  },
+  "sockets": {
+    "rightHand": {
+      "part": "hand_r",
+      "point": "grip"
+    },
+    "leftHand": {
+      "part": "hand_l",
+      "point": "grip"
+    },
+    "head": {
+      "part": "head",
+      "point": "top"
+    }
+  },
+  "motions": {
+    "idle": {
+      "duration": 2.6,
+      "tracks": {
+        "torso.rotation": [
+          [
+            0,
+            0
+          ],
+          [
+            1.3,
+            1.4
+          ]
+        ],
+        "torso.scaleY": [
+          [
+            0,
+            0
+          ],
+          [
+            1.3,
+            0.015
+          ]
+        ],
+        "head.rotation": [
+          [
+            0,
+            0
+          ],
+          [
+            1.3,
+            -2.5
+          ]
+        ],
+        "upper_arm_r.rotation": [
+          [
+            0,
+            1.5
+          ],
+          [
+            1.3,
+            -1.5
+          ]
+        ],
+        "upper_arm_l.rotation": [
+          [
+            0,
+            -1.5
+          ],
+          [
+            1.3,
+            1.5
+          ]
+        ],
+        "hips.y": [
+          [
+            0,
+            0
+          ],
+          [
+            1.3,
+            1.5
+          ]
+        ]
+      }
+    },
+    "walk": {
+      "duration": 0.72,
+      "tracks": {
+        "thigh_r.y": [
+          [
+            0,
+            0
+          ],
+          [
+            0.18,
+            -10
+          ],
+          [
+            0.36,
+            0
+          ]
+        ],
+        "thigh_l.y": [
+          [
+            0,
+            0
+          ],
+          [
+            0.36,
+            0
+          ],
+          [
+            0.54,
+            -10
+          ]
+        ],
+        "thigh_r.rotation": [
+          [
+            0,
+            0
+          ],
+          [
+            0.18,
+            6
+          ],
+          [
+            0.36,
+            0
+          ]
+        ],
+        "thigh_l.rotation": [
+          [
+            0,
+            0
+          ],
+          [
+            0.36,
+            0
+          ],
+          [
+            0.54,
+            -6
+          ]
+        ],
+        "shin_r.rotation": [
+          [
+            0,
+            0
+          ],
+          [
+            0.18,
+            -8
+          ],
+          [
+            0.36,
+            0
+          ]
+        ],
+        "shin_l.rotation": [
+          [
+            0,
+            0
+          ],
+          [
+            0.36,
+            0
+          ],
+          [
+            0.54,
+            8
+          ]
+        ],
+        "hips.y": [
+          [
+            0,
+            0
+          ],
+          [
+            0.18,
+            -4
+          ],
+          [
+            0.36,
+            0
+          ],
+          [
+            0.54,
+            -4
+          ]
+        ],
+        "hips.rotation": [
+          [
+            0,
+            -3
+          ],
+          [
+            0.36,
+            3
+          ]
+        ],
+        "torso.rotation": [
+          [
+            0,
+            3
+          ],
+          [
+            0.36,
+            -3
+          ]
+        ],
+        "head.rotation": [
+          [
+            0,
+            -3
+          ],
+          [
+            0.36,
+            3
+          ]
+        ],
+        "upper_arm_r.rotation": [
+          [
+            0,
+            16
+          ],
+          [
+            0.36,
+            -6
+          ]
+        ],
+        "upper_arm_l.rotation": [
+          [
+            0,
+            6
+          ],
+          [
+            0.36,
+            -16
+          ]
+        ],
+        "forearm_r.rotation": [
+          [
+            0,
+            -10
+          ],
+          [
+            0.36,
+            -2
+          ]
+        ],
+        "forearm_l.rotation": [
+          [
+            0,
+            2
+          ],
+          [
+            0.36,
+            10
+          ]
+        ]
+      }
+    },
+    "run": {
+      "duration": 0.44,
+      "tracks": {
+        "thigh_r.y": [
+          [
+            0,
+            0
+          ],
+          [
+            0.11,
+            -16
+          ],
+          [
+            0.22,
+            0
+          ]
+        ],
+        "thigh_l.y": [
+          [
+            0,
+            0
+          ],
+          [
+            0.22,
+            0
+          ],
+          [
+            0.33,
+            -16
+          ]
+        ],
+        "shin_r.rotation": [
+          [
+            0,
+            0
+          ],
+          [
+            0.11,
+            -14
+          ],
+          [
+            0.22,
+            0
+          ]
+        ],
+        "shin_l.rotation": [
+          [
+            0,
+            0
+          ],
+          [
+            0.22,
+            0
+          ],
+          [
+            0.33,
+            14
+          ]
+        ],
+        "hips.y": [
+          [
+            0,
+            0
+          ],
+          [
+            0.11,
+            -10
+          ],
+          [
+            0.22,
+            0
+          ],
+          [
+            0.33,
+            -10
+          ]
+        ],
+        "hips.rotation": [
+          [
+            0,
+            -4
+          ],
+          [
+            0.22,
+            4
+          ]
+        ],
+        "torso.rotation": [
+          [
+            0,
+            7
+          ],
+          [
+            0.22,
+            3
+          ]
+        ],
+        "head.rotation": [
+          [
+            0,
+            -4
+          ]
+        ],
+        "upper_arm_r.rotation": [
+          [
+            0,
+            40
+          ],
+          [
+            0.22,
+            10
+          ]
+        ],
+        "upper_arm_l.rotation": [
+          [
+            0,
+            -10
+          ],
+          [
+            0.22,
+            -40
+          ]
+        ],
+        "forearm_r.rotation": [
+          [
+            0,
+            -50
+          ]
+        ],
+        "forearm_l.rotation": [
+          [
+            0,
+            50
+          ]
+        ]
+      }
+    },
+    "wave": {
+      "duration": 0.7,
+      "blend": 0.25,
+      "tracks": {
+        "upper_arm_r.rotation": [
+          [
+            0,
+            112
+          ]
+        ],
+        "forearm_r.rotation": [
+          [
+            0,
+            52
+          ],
+          [
+            0.35,
+            82
+          ]
+        ],
+        "head.rotation": [
+          [
+            0,
+            -5
+          ]
+        ]
+      },
+      "assets": {
+        "hand_r": "hand_open"
+      }
+    },
+    "cheer": {
+      "duration": 0.5,
+      "blend": 0.2,
+      "tracks": {
+        "upper_arm_r.rotation": [
+          [
+            0,
+            150
+          ],
+          [
+            0.25,
+            158
+          ]
+        ],
+        "upper_arm_l.rotation": [
+          [
+            0,
+            -150
+          ],
+          [
+            0.25,
+            -158
+          ]
+        ],
+        "forearm_r.rotation": [
+          [
+            0,
+            14
+          ],
+          [
+            0.25,
+            4
+          ]
+        ],
+        "forearm_l.rotation": [
+          [
+            0,
+            -14
+          ],
+          [
+            0.25,
+            -4
+          ]
+        ],
+        "hips.y": [
+          [
+            0,
+            0
+          ],
+          [
+            0.25,
+            -10
+          ]
+        ],
+        "head.rotation": [
+          [
+            0,
+            0
+          ]
+        ]
+      },
+      "assets": {
+        "hand_r": "hand_open",
+        "hand_l": "hand_open"
+      }
+    },
+    "point": {
+      "duration": 0.35,
+      "loop": false,
+      "blend": 0.15,
+      "tracks": {
+        "upper_arm_l.rotation": [
+          [
+            0,
+            -20
+          ],
+          [
+            0.35,
+            -86
+          ]
+        ],
+        "forearm_l.rotation": [
+          [
+            0,
+            0
+          ],
+          [
+            0.35,
+            -6
+          ]
+        ]
+      }
+    },
+    "shy": {
+      "duration": 1.6,
+      "blend": 0.3,
+      "tracks": {
+        "upper_arm_r.rotation": [
+          [
+            0,
+            -24
+          ]
+        ],
+        "upper_arm_l.rotation": [
+          [
+            0,
+            24
+          ]
+        ],
+        "forearm_r.rotation": [
+          [
+            0,
+            -46
+          ]
+        ],
+        "forearm_l.rotation": [
+          [
+            0,
+            46
+          ]
+        ],
+        "head.rotation": [
+          [
+            0,
+            7
+          ],
+          [
+            0.8,
+            9
+          ]
+        ],
+        "torso.rotation": [
+          [
+            0,
+            2
+          ]
+        ]
+      }
+    },
+    "look_up": {
+      "duration": 0.3,
+      "loop": false,
+      "tracks": {
+        "head.rotation": [
+          [
+            0,
+            -8
+          ]
+        ],
+        "head.y": [
+          [
+            0,
+            -3
+          ]
+        ]
+      }
+    },
+    "look_down": {
+      "duration": 0.3,
+      "loop": false,
+      "tracks": {
+        "head.rotation": [
+          [
+            0,
+            6
+          ]
+        ],
+        "head.y": [
+          [
+            0,
+            3
+          ]
+        ]
+      }
+    }
+  },
+  "expressions": {
+    "smile": {
+      "parts": {
+        "brows": {
+          "asset": "brows_happy",
+          "y": -2
+        }
+      },
+      "mouthSet": "smile"
+    },
+    "happy": {
+      "parts": {
+        "brows": {
+          "asset": "brows_happy",
+          "y": -3
+        },
+        "eyes": {
+          "asset": "eyes_happy"
+        }
+      },
+      "mouthSet": "smile"
+    },
+    "sad": {
+      "parts": {
+        "brows": {
+          "asset": "brows_sad"
+        },
+        "head": {
+          "rotation": 4
+        }
+      },
+      "mouthSet": "sad"
+    },
+    "surprised": {
+      "parts": {
+        "brows": {
+          "asset": "brows_up",
+          "y": -4
+        },
+        "eyes": {
+          "asset": "eyes_wide"
+        }
+      },
+      "mouthSet": "surprised"
+    }
+  },
+  "mouth": {
+    "part": "mouth",
+    "sets": {
+      "neutral": {
+        "rest": "mouth_rest",
+        "MBP": "mouth_MBP",
+        "AI": "mouth_AI",
+        "E": "mouth_E",
+        "O": "mouth_O",
+        "U": "mouth_U",
+        "FV": "mouth_FV",
+        "L": "mouth_L"
+      },
+      "smile": {
+        "rest": "mouth_smile",
+        "MBP": "mouth_smile",
+        "AI": "mouth_smile_AI",
+        "E": "mouth_smile_E"
+      },
+      "sad": {
+        "rest": "mouth_sad"
+      },
+      "surprised": {
+        "rest": "mouth_O_big"
+      }
+    }
+  },
+  "eyes": {
+    "part": "eyes",
+    "open": "eyes_open",
+    "closed": "eyes_closed"
+  },
+  "actions": {
+    "walk": {
+      "kind": "locomotion",
+      "motion": "walk",
+      "speed": 150,
+      "description": "Front-view waddle; moves the character."
+    },
+    "run": {
+      "kind": "locomotion",
+      "motion": "run",
+      "speed": 340,
+      "description": "Quick bouncy run."
+    },
+    "wave": {
+      "kind": "gesture",
+      "motion": "wave",
+      "description": "Raises the right paw beside the head and waves."
+    },
+    "cheer": {
+      "kind": "gesture",
+      "motion": "cheer",
+      "description": "Both paws up, bouncing."
+    },
+    "point": {
+      "kind": "gesture",
+      "motion": "point",
+      "description": "Points toward its facing with the left paw and holds."
+    },
+    "shy": {
+      "kind": "gesture",
+      "motion": "shy",
+      "description": "Paws together in front of the belly, head tilted."
+    },
+    "look": {
+      "kind": "look",
+      "motions": {
+        "up": "look_up",
+        "down": "look_down"
+      },
+      "description": "Looks up/down (forward = back to normal)."
+    }
+  },
+  "defaults": {
+    "blend": 0.2,
+    "turnTime": 0.2,
+    "blinkDuration": 0.15,
+    "autoBlinkInterval": 3,
+    "facing": "right"
+  }
+}

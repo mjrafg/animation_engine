@@ -74,6 +74,12 @@ export interface ActorDims {
   arms: Partial<Record<Hand, ArmDims>>;
   /** Why an arm is unavailable (missing socket, too short a chain, no rest pose). */
   armIssues: Partial<Record<Hand, string>>;
+  /**
+   * How far the body (without arms and head) extends in front of the feet along the facing
+   * direction: small for a side-view rig, half the body width for a front-view one. Face-to-face
+   * alignment keeps the bodies from overlapping by more than a little.
+   */
+  front: number;
 }
 
 const HAND_SOCKET: Record<Hand, string> = { right: "rightHand", left: "leftHand" };
@@ -147,7 +153,28 @@ export function actorDims(def: CharacterDefinition, inst: Pick<CharacterInstance
         reach: r4(L1 + L2),
       };
     }
-    return { kind: "2d", height: r4(-minY * s), arms, armIssues };
+    // body extent toward the facing direction (arms and head excluded)
+    const skip = new Set<string>();
+    for (const a of Object.values(arms)) skip.add(a!.upper), skip.add(a!.lower), skip.add(a!.end);
+    const headPart = def.sockets.head?.part;
+    if (headPart) skip.add(headPart);
+    const excluded = (id: string): boolean => {
+      for (let cur: string | null | undefined = id; cur; cur = byId.get(cur)?.parent ?? null) if (skip.has(cur)) return true;
+      return false;
+    };
+    let front = 0;
+    for (const p of def.rig.parts) {
+      if (!p.width || !p.height || excluded(p.id)) continue;
+      const m = fk(p.id);
+      for (const [cx, cy] of [
+        [0, 0],
+        [1, 0],
+        [0, 1],
+        [1, 1],
+      ])
+        front = Math.max(front, apply(m, { x: (cx - p.anchorX) * p.width, y: (cy - p.anchorY) * p.height }).x * rigSign);
+    }
+    return { kind: "2d", height: r4(-minY * s), arms, armIssues, front: r4(front * s) };
   }
   const s = (inst.scale ?? 1) * def.scale;
   const height = model?.bounds ? model.bounds.max[1] * s : 0;
@@ -192,7 +219,7 @@ export function actorDims(def: CharacterDefinition, inst: Pick<CharacterInstance
       reach: r4(L1 + L2 + grip),
     };
   }
-  return { kind: "3d", height: r4(height), arms, armIssues };
+  return { kind: "3d", height: r4(height), arms, armIssues, front: r4(model?.bounds ? Math.max(0, model.bounds.max[2]) * s * 0.8 : 0) };
 }
 
 // ---- geometry -----------------------------------------------------------------------------------
@@ -278,7 +305,8 @@ function alignDistance(def: InteractionDefinition, dims: Record<string, ActorDim
     const fr = forwardReach(arm, partnerHeight(t, p, both), def.alignment.distance.reach, -t.lateral * p.height);
     if (fr.ok) D = Math.min(D, fr.fwd + t.forward * p.height);
   }
-  D = Math.max(D, 0.05 * avgH);
+  // bodies may touch (a hug presses them together) but not pass through each other
+  D = Math.max(D, 0.05 * avgH, (def.alignment.distance.height > 0 ? 0.55 : 0.8) * (both[0].front + both[1].front));
   const along = hr[r0] !== undefined && hr[r1] !== undefined && hr[r0] + hr[r1] > 0 ? hr[r0] / (hr[r0] + hr[r1]) : 0.5;
   return { D, along, hT, hr, limits };
 }

@@ -94,7 +94,7 @@ describe("prepared character packages", () => {
     expect(again.reused).toBe(true);
     expect(ws.listAssets({ tag: "pip" }).length).toBe(Object.keys(ws.getCharacter("pip").def.kind === "2d" ? (ws.getCharacter("pip").def as any).assets : {}).length);
     expect(ws.listCharacters().map((c) => c.characterId)).toEqual(["pip"]);
-    expect(mgr.listCharacterPackages("characters").map((p) => p.path).sort()).toEqual(["crag", "mika", "pip", "volt"]);
+    expect(mgr.listCharacterPackages("characters").map((p) => p.path).sort()).toEqual(["bruno", "crag", "mika", "pip", "volt"]);
     expect((await codeOf(Promise.resolve().then(() => ws.getCharacter("nobody")))).code).toBe("CHARACTER_NOT_FOUND");
   });
 });
