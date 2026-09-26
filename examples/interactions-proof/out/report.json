@@ -1,0 +1,2126 @@
+{
+  "seconds": 84.3,
+  "passed": 37,
+  "total": 37,
+  "checks": [
+    {
+      "group": "conversation_3d",
+      "name": "no interaction warnings",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "group": "conversation_3d",
+      "name": "3-6: only A's mouth moves",
+      "ok": true,
+      "detail": {
+        "a": 0.7,
+        "b": 0
+      }
+    },
+    {
+      "group": "conversation_3d",
+      "name": "6-9: only B's mouth moves",
+      "ok": true,
+      "detail": {
+        "a": 0,
+        "b": 0.85
+      }
+    },
+    {
+      "group": "conversation_3d",
+      "name": "9-11: both mouths move",
+      "ok": true,
+      "detail": {
+        "a": 0.85,
+        "b": 0.7
+      }
+    },
+    {
+      "group": "conversation_3d",
+      "name": "3-6: A smiles, B does not",
+      "ok": true,
+      "detail": {
+        "a": 1,
+        "b": 0
+      }
+    },
+    {
+      "group": "conversation_3d",
+      "name": "3-6: B blinks (scheduled)",
+      "ok": true,
+      "detail": {
+        "b": 1
+      }
+    },
+    {
+      "group": "conversation_3d",
+      "name": "each voice line is its speaker's own audio",
+      "ok": true,
+      "detail": [
+        [
+          "a",
+          3
+        ],
+        [
+          "a",
+          9
+        ],
+        [
+          "b",
+          6
+        ],
+        [
+          "b",
+          9
+        ]
+      ]
+    },
+    {
+      "group": "conversation_3d",
+      "name": "0-3: A walked up to B",
+      "ok": true,
+      "detail": {
+        "a": {
+          "x": 0.2,
+          "y": 0,
+          "z": 0
+        },
+        "distance": 0.7
+      }
+    },
+    {
+      "group": "conversation_3d",
+      "name": "11-14: handshake, measured palm-to-palm distance < 1 cm",
+      "ok": true,
+      "detail": {
+        "frame": 308,
+        "metres": 0.0004
+      }
+    },
+    {
+      "group": "conversation_3d",
+      "name": "14-16: they separate",
+      "ok": true,
+      "detail": {
+        "at13_5": 0.7,
+        "at16": 2.531
+      }
+    },
+    {
+      "group": "interactions_3d",
+      "name": "no interaction warnings (different sizes adapt)",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "group": "interactions_3d",
+      "name": "handshake (scale 1 vs 0.8): palms meet < 1 cm",
+      "ok": true,
+      "detail": {
+        "metres": 0.0004
+      }
+    },
+    {
+      "group": "interactions_3d",
+      "name": "high five: hands meet < 1 cm",
+      "ok": true,
+      "detail": {
+        "metres": 0.0006
+      }
+    },
+    {
+      "group": "interactions_3d",
+      "name": "hug: hands on the partner's back within 3 cm",
+      "ok": true,
+      "detail": {
+        "metres": 0.0009
+      }
+    },
+    {
+      "group": "interactions_3d",
+      "name": "transfer: owner switches once (a.mug hidden, b.mug shown at the same frame)",
+      "ok": true,
+      "detail": {
+        "frame": 390
+      }
+    },
+    {
+      "group": "interactions_3d",
+      "name": "transfer: the mug does not jump (< 1 cm)",
+      "ok": true,
+      "detail": {
+        "metres": 0.0019
+      }
+    },
+    {
+      "group": "interactions_3d",
+      "name": "before: the mug follows A's hand",
+      "ok": true,
+      "detail": [
+        0.075,
+        0.075
+      ]
+    },
+    {
+      "group": "interactions_3d",
+      "name": "after: the mug follows B's hand (walking away)",
+      "ok": true,
+      "detail": [
+        0.1174,
+        0.1174,
+        0.1175
+      ]
+    },
+    {
+      "group": "interactions_3d",
+      "name": "simultaneous faces at 18.5 s: A smiles while B talks and smiles",
+      "ok": true
+    },
+    {
+      "group": "interactions_3d",
+      "name": "save/reload: recompiling the reloaded scene reproduces it byte for byte",
+      "ok": true
+    },
+    {
+      "group": "interactions_3d",
+      "name": "save/reload: the transferred mug is in the same place after reload",
+      "ok": true
+    },
+    {
+      "group": "sizes_3d",
+      "name": "handshake with a partner at scale 0.65: palms meet < 1 cm",
+      "ok": true,
+      "detail": {
+        "metres": 0.0002,
+        "distance": 0.4943
+      }
+    },
+    {
+      "group": "sizes_3d",
+      "name": "handshake with a partner at scale 0.8: palms meet < 1 cm",
+      "ok": true,
+      "detail": {
+        "metres": 0.0003,
+        "distance": 0.6666
+      }
+    },
+    {
+      "group": "sizes_3d",
+      "name": "handshake with a partner at scale 1.2: palms meet < 1 cm",
+      "ok": true,
+      "detail": {
+        "metres": 0.0004,
+        "distance": 0.8294
+      }
+    },
+    {
+      "group": "interactions_2d",
+      "name": "no interaction warnings",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "group": "interactions_2d",
+      "name": "shake: measured grip-to-grip distance < 1 px",
+      "ok": true,
+      "detail": {
+        "px": 0.147
+      }
+    },
+    {
+      "group": "interactions_2d",
+      "name": "gift: measured grip-to-grip distance < 1 px",
+      "ok": true,
+      "detail": {
+        "px": 0.1302
+      }
+    },
+    {
+      "group": "interactions_2d",
+      "name": "five: measured grip-to-grip distance < 1 px",
+      "ok": true,
+      "detail": {
+        "px": 0.1895
+      }
+    },
+    {
+      "group": "interactions_2d",
+      "name": "hug: hands at the partner's back (< 2 px)",
+      "ok": true,
+      "detail": {
+        "px": 0.0951
+      }
+    },
+    {
+      "group": "interactions_2d",
+      "name": "transfer: the mug does not jump (corners < 0.5 px)",
+      "ok": true,
+      "detail": {
+        "px": 0.1723
+      }
+    },
+    {
+      "group": "interactions_2d",
+      "name": "transfer: exactly one owner change",
+      "ok": true,
+      "detail": {
+        "a": [
+          [
+            0,
+            false
+          ],
+          [
+            254,
+            true
+          ],
+          [
+            305,
+            false
+          ]
+        ],
+        "b": [
+          [
+            0,
+            false
+          ],
+          [
+            305,
+            true
+          ]
+        ]
+      }
+    },
+    {
+      "group": "interactions_2d",
+      "name": "they separate at the end",
+      "ok": true,
+      "detail": {
+        "a": 181.951,
+        "b": 1044.156
+      }
+    },
+    {
+      "group": "sizes_2d",
+      "name": "handshake with partner scale 0.5: contact < 1 px",
+      "ok": true,
+      "detail": {
+        "px": 0.1251
+      }
+    },
+    {
+      "group": "sizes_2d",
+      "name": "handshake with partner scale 0.75: contact < 1 px",
+      "ok": true,
+      "detail": {
+        "px": 0.1706
+      }
+    },
+    {
+      "group": "sizes_2d",
+      "name": "handshake with partner scale 1.5: contact < 1 px",
+      "ok": true,
+      "detail": {
+        "px": 0.2394
+      }
+    },
+    {
+      "group": "sizes_2d",
+      "name": "give_object with partner scale 0.6: contact < 1 px",
+      "ok": true,
+      "detail": {
+        "px": 0.1399
+      }
+    },
+    {
+      "group": "sizes_2d",
+      "name": "high_five with partner scale 0.35: limit reported (arm too short), still rendered",
+      "ok": true,
+      "detail": {
+        "px": 51.6183,
+        "warn": [
+          {
+            "code": "INTERACTION_OUT_OF_REACH",
+            "message": "\"b\" cannot reach the high_five height (147.508 above the feet) with its arm; its hand stops short"
+          },
+          {
+            "code": "INTERACTION_OUT_OF_REACH",
+            "message": "\"b\"'s right hand stays ~51.258 px short of the \"slap\" target (arm too short for this pose)"
+          }
+        ]
+      }
+    }
+  ],
+  "conversation_3d": {
+    "mouthOpenMax": {
+      "3-6 A talks": {
+        "a": 0.7,
+        "b": 0
+      },
+      "6-9 B talks": {
+        "a": 0,
+        "b": 0.85
+      },
+      "9-11 both talk": {
+        "a": 0.85,
+        "b": 0.7
+      }
+    },
+    "handshake": {
+      "frame": 308,
+      "hands": [
+        {
+          "ix": "shake",
+          "actor": "a",
+          "hand": "right",
+          "target": "grip",
+          "weight": 1,
+          "inContact": true,
+          "grip": {
+            "x": 0.531,
+            "y": 1.055,
+            "z": 0
+          },
+          "distanceToTarget": 0.0005,
+          "partner": "b",
+          "distanceToPartnerHand": 0.0004
+        },
+        {
+          "ix": "shake",
+          "actor": "b",
+          "hand": "right",
+          "target": "grip",
+          "weight": 1,
+          "inContact": true,
+          "grip": {
+            "x": 0.5307,
+            "y": 1.0548,
+            "z": 0.0002
+          },
+          "distanceToTarget": 0.0004,
+          "partner": "a",
+          "distanceToPartnerHand": 0.0004
+        }
+      ],
+      "worst": 0.0004
+    },
+    "video": null,
+    "interactions": [
+      {
+        "id": "shake",
+        "interaction": "handshake",
+        "actors": [
+          "a",
+          "b"
+        ],
+        "roles": {
+          "a": "a",
+          "b": "b"
+        },
+        "params": {},
+        "start": 11,
+        "end": 14,
+        "startFrame": 264,
+        "endFrame": 336,
+        "stale": false,
+        "phases": [
+          {
+            "name": "approach",
+            "start": 11,
+            "end": 11.917,
+            "startFrame": 264,
+            "endFrame": 286
+          },
+          {
+            "name": "reach",
+            "start": 11.917,
+            "end": 12.333,
+            "startFrame": 286,
+            "endFrame": 296
+          },
+          {
+            "name": "contact",
+            "start": 12.333,
+            "end": 12.542,
+            "startFrame": 296,
+            "endFrame": 301
+          },
+          {
+            "name": "motion",
+            "start": 12.542,
+            "end": 13.333,
+            "startFrame": 301,
+            "endFrame": 320
+          },
+          {
+            "name": "release",
+            "start": 13.333,
+            "end": 13.625,
+            "startFrame": 320,
+            "endFrame": 327
+          },
+          {
+            "name": "return",
+            "start": 13.625,
+            "end": 14,
+            "startFrame": 327,
+            "endFrame": 336
+          }
+        ],
+        "alignment": {
+          "anchor": "second",
+          "distance": 0.7196,
+          "actors": {
+            "a": {
+              "from": {
+                "x": 0.2,
+                "y": 0,
+                "z": 0
+              },
+              "to": {
+                "x": 0.1804,
+                "y": 0,
+                "z": 0
+              },
+              "facing": 90,
+              "walks": false
+            },
+            "b": {
+              "from": {
+                "x": 0.9,
+                "y": 0,
+                "z": 0
+              },
+              "to": {
+                "x": 0.9,
+                "y": 0,
+                "z": 0
+              },
+              "facing": -90,
+              "walks": false
+            }
+          }
+        },
+        "injectedActions": {
+          "a": [
+            "shake:face:turn",
+            "shake:hold:idle"
+          ],
+          "b": [
+            "shake:hold:idle"
+          ]
+        },
+        "contacts": [
+          {
+            "actor": "a",
+            "role": "a",
+            "hand": "right",
+            "target": "grip",
+            "reachStart": 11.917,
+            "contactStart": 12.333,
+            "contactEnd": 13.333,
+            "end": 14,
+            "targetAtContact": {
+              "x": 0.5309,
+              "y": 1.0546,
+              "z": 0
+            },
+            "predictedMiss": 0
+          },
+          {
+            "actor": "b",
+            "role": "b",
+            "hand": "right",
+            "target": "grip",
+            "reachStart": 11.917,
+            "contactStart": 12.333,
+            "contactEnd": 13.333,
+            "end": 14,
+            "targetAtContact": {
+              "x": 0.5309,
+              "y": 1.0546,
+              "z": 0
+            },
+            "predictedMiss": 0
+          }
+        ]
+      }
+    ]
+  },
+  "interactions_3d": {
+    "contacts": {
+      "shake": {
+        "frame": 145,
+        "hands": [
+          {
+            "ix": "shake",
+            "actor": "a",
+            "hand": "right",
+            "target": "grip",
+            "weight": 1,
+            "inContact": true,
+            "grip": {
+              "x": 0.243,
+              "y": 1.021,
+              "z": 0.065
+            },
+            "distanceToTarget": 0.0005,
+            "partner": "b",
+            "distanceToPartnerHand": 0.0004
+          },
+          {
+            "ix": "shake",
+            "actor": "b",
+            "hand": "right",
+            "target": "grip",
+            "weight": 1,
+            "inContact": true,
+            "grip": {
+              "x": 0.2433,
+              "y": 1.0211,
+              "z": 0.0648
+            },
+            "distanceToTarget": 0.0005,
+            "partner": "a",
+            "distanceToPartnerHand": 0.0004
+          }
+        ],
+        "worst": 0.0004
+      },
+      "five": {
+        "frame": 206,
+        "hands": [
+          {
+            "ix": "five",
+            "actor": "a",
+            "hand": "right",
+            "target": "slap",
+            "weight": 1,
+            "inContact": true,
+            "grip": {
+              "x": 0.3964,
+              "y": 1.512,
+              "z": 0.0373
+            },
+            "distanceToTarget": 0.0006,
+            "partner": "b",
+            "distanceToPartnerHand": 0.0006
+          },
+          {
+            "ix": "five",
+            "actor": "b",
+            "hand": "right",
+            "target": "slap",
+            "weight": 1,
+            "inContact": true,
+            "grip": {
+              "x": 0.3969,
+              "y": 1.5123,
+              "z": 0.0371
+            },
+            "distanceToTarget": 0.0006,
+            "partner": "a",
+            "distanceToPartnerHand": 0.0006
+          }
+        ],
+        "worst": 0.0006
+      },
+      "hug": {
+        "frame": 285,
+        "hands": [
+          {
+            "ix": "hug",
+            "actor": "a",
+            "hand": "right",
+            "target": "a_right",
+            "weight": 1,
+            "inContact": true,
+            "grip": {
+              "x": 0.5973,
+              "y": 1.109,
+              "z": 0.1058
+            },
+            "distanceToTarget": 0.0007
+          },
+          {
+            "ix": "hug",
+            "actor": "a",
+            "hand": "left",
+            "target": "a_left",
+            "weight": 1,
+            "inContact": true,
+            "grip": {
+              "x": 0.5603,
+              "y": 1.1089,
+              "z": -0.0979
+            },
+            "distanceToTarget": 0.0009
+          },
+          {
+            "ix": "hug",
+            "actor": "b",
+            "hand": "right",
+            "target": "b_right",
+            "weight": 1,
+            "inContact": true,
+            "grip": {
+              "x": 0.1434,
+              "y": 1.0332,
+              "z": -0.0491
+            },
+            "distanceToTarget": 0.0003
+          },
+          {
+            "ix": "hug",
+            "actor": "b",
+            "hand": "left",
+            "target": "b_left",
+            "weight": 1,
+            "inContact": true,
+            "grip": {
+              "x": 0.1904,
+              "y": 1.0332,
+              "z": 0.2069
+            },
+            "distanceToTarget": 0.0003
+          }
+        ],
+        "worst": 0.0009
+      }
+    },
+    "transfer": {
+      "object": "mug",
+      "from": "a",
+      "to": "b",
+      "at": 16.25,
+      "frame": 390,
+      "fromLayer": "a.mug",
+      "toLayer": "b.mug",
+      "giverHand": "right",
+      "receiverHand": "right",
+      "jumpMetres": 0.0019,
+      "followA": [
+        0.075,
+        0.075
+      ],
+      "followB": [
+        0.1174,
+        0.1174,
+        0.1175
+      ]
+    },
+    "video": null,
+    "interactions": [
+      {
+        "id": "shake",
+        "interaction": "handshake",
+        "actors": [
+          "a",
+          "b"
+        ],
+        "roles": {
+          "a": "a",
+          "b": "b"
+        },
+        "params": {},
+        "start": 4.208,
+        "end": 7.208,
+        "startFrame": 101,
+        "endFrame": 173,
+        "stale": false,
+        "phases": [
+          {
+            "name": "approach",
+            "start": 4.208,
+            "end": 5.125,
+            "startFrame": 101,
+            "endFrame": 123
+          },
+          {
+            "name": "reach",
+            "start": 5.125,
+            "end": 5.542,
+            "startFrame": 123,
+            "endFrame": 133
+          },
+          {
+            "name": "contact",
+            "start": 5.542,
+            "end": 5.75,
+            "startFrame": 133,
+            "endFrame": 138
+          },
+          {
+            "name": "motion",
+            "start": 5.75,
+            "end": 6.542,
+            "startFrame": 138,
+            "endFrame": 157
+          },
+          {
+            "name": "release",
+            "start": 6.542,
+            "end": 6.833,
+            "startFrame": 157,
+            "endFrame": 164
+          },
+          {
+            "name": "return",
+            "start": 6.833,
+            "end": 7.208,
+            "startFrame": 164,
+            "endFrame": 173
+          }
+        ],
+        "alignment": {
+          "anchor": "second",
+          "distance": 0.6666,
+          "actors": {
+            "a": {
+              "from": {
+                "x": -0.5,
+                "y": 0,
+                "z": 0.2
+              },
+              "to": {
+                "x": -0.0558,
+                "y": 0,
+                "z": 0.1192
+              },
+              "facing": 100.305,
+              "walks": true
+            },
+            "b": {
+              "from": {
+                "x": 0.6,
+                "y": 0,
+                "z": 0
+              },
+              "to": {
+                "x": 0.6,
+                "y": 0,
+                "z": 0
+              },
+              "facing": -79.695,
+              "walks": false
+            }
+          }
+        },
+        "injectedActions": {
+          "a": [
+            "shake:approach:walk",
+            "shake:wait:idle",
+            "shake:hold:idle"
+          ],
+          "b": [
+            "shake:hold:idle"
+          ]
+        },
+        "contacts": [
+          {
+            "actor": "a",
+            "role": "a",
+            "hand": "right",
+            "target": "grip",
+            "reachStart": 5.125,
+            "contactStart": 5.542,
+            "contactEnd": 6.542,
+            "end": 7.208,
+            "targetAtContact": {
+              "x": 0.2434,
+              "y": 1.0207,
+              "z": 0.0648
+            },
+            "predictedMiss": 0
+          },
+          {
+            "actor": "b",
+            "role": "b",
+            "hand": "right",
+            "target": "grip",
+            "reachStart": 5.125,
+            "contactStart": 5.542,
+            "contactEnd": 6.542,
+            "end": 7.208,
+            "targetAtContact": {
+              "x": 0.2434,
+              "y": 1.0207,
+              "z": 0.0648
+            },
+            "predictedMiss": 0
+          }
+        ]
+      },
+      {
+        "id": "five",
+        "interaction": "high_five",
+        "actors": [
+          "b",
+          "a"
+        ],
+        "roles": {
+          "a": "b",
+          "b": "a"
+        },
+        "params": {},
+        "start": 7.417,
+        "end": 9.417,
+        "startFrame": 178,
+        "endFrame": 226,
+        "stale": false,
+        "phases": [
+          {
+            "name": "approach",
+            "start": 7.417,
+            "end": 8,
+            "startFrame": 178,
+            "endFrame": 192
+          },
+          {
+            "name": "reach",
+            "start": 8,
+            "end": 8.5,
+            "startFrame": 192,
+            "endFrame": 204
+          },
+          {
+            "name": "contact",
+            "start": 8.5,
+            "end": 8.667,
+            "startFrame": 204,
+            "endFrame": 208
+          },
+          {
+            "name": "release",
+            "start": 8.667,
+            "end": 8.917,
+            "startFrame": 208,
+            "endFrame": 214
+          },
+          {
+            "name": "return",
+            "start": 8.917,
+            "end": 9.417,
+            "startFrame": 214,
+            "endFrame": 226
+          }
+        ],
+        "alignment": {
+          "anchor": "second",
+          "distance": 0.6073,
+          "actors": {
+            "b": {
+              "from": {
+                "x": 0.6,
+                "y": 0,
+                "z": 0
+              },
+              "to": {
+                "x": 0.5417,
+                "y": 0,
+                "z": 0.0106
+              },
+              "facing": -79.698,
+              "walks": true
+            },
+            "a": {
+              "from": {
+                "x": -0.0558,
+                "y": 0,
+                "z": 0.1192
+              },
+              "to": {
+                "x": -0.0558,
+                "y": 0,
+                "z": 0.1192
+              },
+              "facing": 100.302,
+              "walks": false
+            }
+          }
+        },
+        "injectedActions": {
+          "b": [
+            "five:approach:walk",
+            "five:wait:idle",
+            "five:hold:idle"
+          ],
+          "a": [
+            "five:hold:idle"
+          ]
+        },
+        "contacts": [
+          {
+            "actor": "a",
+            "role": "b",
+            "hand": "right",
+            "target": "slap",
+            "reachStart": 8,
+            "contactStart": 8.5,
+            "contactEnd": 8.667,
+            "end": 9.417,
+            "targetAtContact": {
+              "x": 0.3967,
+              "y": 1.5117,
+              "z": 0.0369
+            },
+            "predictedMiss": 0
+          },
+          {
+            "actor": "b",
+            "role": "a",
+            "hand": "right",
+            "target": "slap",
+            "reachStart": 8,
+            "contactStart": 8.5,
+            "contactEnd": 8.667,
+            "end": 9.417,
+            "targetAtContact": {
+              "x": 0.3967,
+              "y": 1.5117,
+              "z": 0.0369
+            },
+            "predictedMiss": 0
+          }
+        ]
+      },
+      {
+        "id": "hug",
+        "interaction": "hug",
+        "actors": [
+          "a",
+          "b"
+        ],
+        "roles": {
+          "a": "a",
+          "b": "b"
+        },
+        "params": {},
+        "start": 9.583,
+        "end": 13.417,
+        "startFrame": 230,
+        "endFrame": 322,
+        "stale": false,
+        "phases": [
+          {
+            "name": "approach",
+            "start": 9.583,
+            "end": 10.542,
+            "startFrame": 230,
+            "endFrame": 253
+          },
+          {
+            "name": "reach",
+            "start": 10.542,
+            "end": 11.208,
+            "startFrame": 253,
+            "endFrame": 269
+          },
+          {
+            "name": "contact",
+            "start": 11.208,
+            "end": 12.583,
+            "startFrame": 269,
+            "endFrame": 302
+          },
+          {
+            "name": "release",
+            "start": 12.583,
+            "end": 12.958,
+            "startFrame": 302,
+            "endFrame": 311
+          },
+          {
+            "name": "return",
+            "start": 12.958,
+            "end": 13.417,
+            "startFrame": 311,
+            "endFrame": 322
+          }
+        ],
+        "alignment": {
+          "anchor": "second",
+          "distance": 0.3346,
+          "actors": {
+            "a": {
+              "from": {
+                "x": -0.0558,
+                "y": 0,
+                "z": 0.1192
+              },
+              "to": {
+                "x": 0.2125,
+                "y": 0,
+                "z": 0.0704
+              },
+              "facing": 100.301,
+              "walks": true
+            },
+            "b": {
+              "from": {
+                "x": 0.5417,
+                "y": 0,
+                "z": 0.0106
+              },
+              "to": {
+                "x": 0.5417,
+                "y": 0,
+                "z": 0.0106
+              },
+              "facing": -79.699,
+              "walks": false
+            }
+          }
+        },
+        "injectedActions": {
+          "a": [
+            "hug:approach:walk",
+            "hug:wait:idle",
+            "hug:hold:idle"
+          ],
+          "b": [
+            "hug:hold:idle"
+          ]
+        },
+        "contacts": [
+          {
+            "actor": "a",
+            "role": "a",
+            "hand": "right",
+            "target": "a_right",
+            "reachStart": 10.542,
+            "contactStart": 11.208,
+            "contactEnd": 12.583,
+            "end": 13.417,
+            "targetAtContact": {
+              "x": 0.5969,
+              "y": 1.1088,
+              "z": 0.1064
+            },
+            "predictedMiss": 0
+          },
+          {
+            "actor": "a",
+            "role": "a",
+            "hand": "left",
+            "target": "a_left",
+            "reachStart": 10.542,
+            "contactStart": 11.208,
+            "contactEnd": 12.583,
+            "end": 13.417,
+            "targetAtContact": {
+              "x": 0.5597,
+              "y": 1.1088,
+              "z": -0.0985
+            },
+            "predictedMiss": 0
+          },
+          {
+            "actor": "b",
+            "role": "b",
+            "hand": "right",
+            "target": "b_right",
+            "reachStart": 10.542,
+            "contactStart": 11.208,
+            "contactEnd": 12.583,
+            "end": 13.417,
+            "targetAtContact": {
+              "x": 0.1435,
+              "y": 1.0332,
+              "z": -0.0493
+            },
+            "predictedMiss": 0
+          },
+          {
+            "actor": "b",
+            "role": "b",
+            "hand": "left",
+            "target": "b_left",
+            "reachStart": 10.542,
+            "contactStart": 11.208,
+            "contactEnd": 12.583,
+            "end": 13.417,
+            "targetAtContact": {
+              "x": 0.1901,
+              "y": 1.0332,
+              "z": 0.2068
+            },
+            "predictedMiss": 0
+          }
+        ]
+      },
+      {
+        "id": "gift",
+        "interaction": "give_object",
+        "actors": [
+          "a",
+          "b"
+        ],
+        "roles": {
+          "giver": "a",
+          "receiver": "b"
+        },
+        "params": {
+          "object": "mug"
+        },
+        "start": 14.208,
+        "end": 17.417,
+        "startFrame": 341,
+        "endFrame": 418,
+        "stale": false,
+        "phases": [
+          {
+            "name": "approach",
+            "start": 14.208,
+            "end": 15.167,
+            "startFrame": 341,
+            "endFrame": 364
+          },
+          {
+            "name": "reach",
+            "start": 15.167,
+            "end": 15.833,
+            "startFrame": 364,
+            "endFrame": 380
+          },
+          {
+            "name": "contact",
+            "start": 15.833,
+            "end": 16.25,
+            "startFrame": 380,
+            "endFrame": 390
+          },
+          {
+            "name": "release",
+            "start": 16.25,
+            "end": 16.708,
+            "startFrame": 390,
+            "endFrame": 401
+          },
+          {
+            "name": "return",
+            "start": 16.708,
+            "end": 17.417,
+            "startFrame": 401,
+            "endFrame": 418
+          }
+        ],
+        "alignment": {
+          "anchor": "second",
+          "distance": 0.6656,
+          "actors": {
+            "a": {
+              "from": {
+                "x": 0.2125,
+                "y": 0,
+                "z": 0.0704
+              },
+              "to": {
+                "x": -0.1132,
+                "y": 0,
+                "z": 0.1296
+              },
+              "facing": 100.296,
+              "walks": true
+            },
+            "b": {
+              "from": {
+                "x": 0.5417,
+                "y": 0,
+                "z": 0.0106
+              },
+              "to": {
+                "x": 0.5417,
+                "y": 0,
+                "z": 0.0106
+              },
+              "facing": -79.704,
+              "walks": false
+            }
+          }
+        },
+        "injectedActions": {
+          "a": [
+            "gift:approach:walk",
+            "gift:wait:idle",
+            "gift:hold:idle"
+          ],
+          "b": [
+            "gift:hold:idle"
+          ]
+        },
+        "contacts": [
+          {
+            "actor": "a",
+            "role": "giver",
+            "hand": "right",
+            "target": "handover",
+            "reachStart": 15.167,
+            "contactStart": 15.833,
+            "contactEnd": 16.25,
+            "end": 17.417,
+            "targetAtContact": {
+              "x": 0.1918,
+              "y": 1.077,
+              "z": 0.0742
+            },
+            "predictedMiss": 0
+          },
+          {
+            "actor": "b",
+            "role": "receiver",
+            "hand": "right",
+            "target": "handover",
+            "reachStart": 15.167,
+            "contactStart": 15.833,
+            "contactEnd": 16.25,
+            "end": 17.417,
+            "targetAtContact": {
+              "x": 0.1918,
+              "y": 1.077,
+              "z": 0.0742
+            },
+            "predictedMiss": 0
+          }
+        ],
+        "transfer": {
+          "object": "mug",
+          "from": "a",
+          "to": "b",
+          "at": 16.25,
+          "frame": 390,
+          "fromLayer": "a.mug",
+          "toLayer": "b.mug",
+          "giverHand": "right",
+          "receiverHand": "right"
+        }
+      }
+    ],
+    "objects": [
+      {
+        "object": "a.mug",
+        "owners": [
+          {
+            "actor": "a",
+            "layer": "a.mug",
+            "from": 14,
+            "until": 16.25
+          },
+          {
+            "actor": "b",
+            "layer": "b.mug",
+            "from": 16.25,
+            "until": null
+          }
+        ]
+      }
+    ]
+  },
+  "sizes_3d": [
+    {
+      "scale": 0.65,
+      "distance": 0.4943,
+      "contactHeight": 0.9571,
+      "measuredMetres": 0.0002,
+      "warnings": []
+    },
+    {
+      "scale": 0.8,
+      "distance": 0.6666,
+      "contactHeight": 1.0207,
+      "measuredMetres": 0.0003,
+      "warnings": []
+    },
+    {
+      "scale": 1.2,
+      "distance": 0.8294,
+      "contactHeight": 1.2418,
+      "measuredMetres": 0.0004,
+      "warnings": []
+    }
+  ],
+  "interactions_2d": {
+    "contacts": {
+      "shake": {
+        "frame": 190,
+        "hands": [
+          {
+            "ix": "shake",
+            "actor": "a",
+            "hand": "right",
+            "target": "grip",
+            "weight": 1,
+            "inContact": true,
+            "grip": {
+              "x": 756.4136,
+              "y": 503.1555
+            },
+            "distanceToTarget": 0.1558,
+            "partner": "b",
+            "distanceToPartnerHand": 0.147
+          },
+          {
+            "ix": "shake",
+            "actor": "b",
+            "hand": "right",
+            "target": "grip",
+            "weight": 1,
+            "inContact": true,
+            "grip": {
+              "x": 756.4542,
+              "y": 503.2967
+            },
+            "distanceToTarget": 0.0223,
+            "partner": "a",
+            "distanceToPartnerHand": 0.147
+          }
+        ],
+        "worst": 0.147
+      },
+      "gift": {
+        "frame": 300,
+        "hands": [
+          {
+            "ix": "gift",
+            "actor": "a",
+            "hand": "right",
+            "target": "handover",
+            "weight": 1,
+            "inContact": true,
+            "grip": {
+              "x": 727.0296,
+              "y": 495.5952
+            },
+            "distanceToTarget": 0.166,
+            "partner": "b",
+            "distanceToPartnerHand": 0.1302
+          },
+          {
+            "ix": "gift",
+            "actor": "b",
+            "hand": "right",
+            "target": "handover",
+            "weight": 1,
+            "inContact": true,
+            "grip": {
+              "x": 727.0295,
+              "y": 495.7255
+            },
+            "distanceToTarget": 0.0401,
+            "partner": "a",
+            "distanceToPartnerHand": 0.1302
+          }
+        ],
+        "worst": 0.1302
+      },
+      "five": {
+        "frame": 239,
+        "hands": [
+          {
+            "ix": "five",
+            "actor": "a",
+            "hand": "right",
+            "target": "slap",
+            "weight": 1,
+            "inContact": true,
+            "grip": {
+              "x": 779.432,
+              "y": 431.8025
+            },
+            "distanceToTarget": 0.1916,
+            "partner": "b",
+            "distanceToPartnerHand": 0.1895
+          },
+          {
+            "ix": "five",
+            "actor": "b",
+            "hand": "right",
+            "target": "slap",
+            "weight": 1,
+            "inContact": true,
+            "grip": {
+              "x": 779.5352,
+              "y": 431.9615
+            },
+            "distanceToTarget": 0.0083,
+            "partner": "a",
+            "distanceToPartnerHand": 0.1895
+          }
+        ],
+        "worst": 0.1895
+      },
+      "hug": {
+        "frame": 387,
+        "hands": [
+          {
+            "ix": "hug",
+            "actor": "a",
+            "hand": "right",
+            "target": "b_right",
+            "weight": 1,
+            "inContact": true,
+            "grip": {
+              "x": 710.6943,
+              "y": 503.3894
+            },
+            "distanceToTarget": 0.0942
+          },
+          {
+            "ix": "hug",
+            "actor": "a",
+            "hand": "left",
+            "target": "b_left",
+            "weight": 1,
+            "inContact": true,
+            "grip": {
+              "x": 710.6931,
+              "y": 503.39
+            },
+            "distanceToTarget": 0.0951
+          },
+          {
+            "ix": "hug",
+            "actor": "b",
+            "hand": "right",
+            "target": "a_right",
+            "weight": 1,
+            "inContact": true,
+            "grip": {
+              "x": 657.5007,
+              "y": 491.7779
+            },
+            "distanceToTarget": 0.0676
+          },
+          {
+            "ix": "hug",
+            "actor": "b",
+            "hand": "left",
+            "target": "a_left",
+            "weight": 1,
+            "inContact": true,
+            "grip": {
+              "x": 657.5204,
+              "y": 491.8036
+            },
+            "distanceToTarget": 0.0666
+          }
+        ],
+        "worst": 0.0951
+      }
+    },
+    "transfer": {
+      "object": "mug",
+      "from": "a",
+      "to": "b",
+      "at": 12.708,
+      "frame": 305,
+      "fromLayer": "a.mug",
+      "toLayer": "b.mug",
+      "giverHand": "right",
+      "receiverHand": "right",
+      "jumpPx": 0.1723
+    },
+    "video": null,
+    "interactions": [
+      {
+        "id": "shake",
+        "interaction": "handshake",
+        "actors": [
+          "a",
+          "b"
+        ],
+        "roles": {
+          "a": "a",
+          "b": "b"
+        },
+        "params": {},
+        "start": 6.208,
+        "end": 9,
+        "startFrame": 149,
+        "endFrame": 216,
+        "stale": false,
+        "phases": [
+          {
+            "name": "approach",
+            "start": 6.208,
+            "end": 7.042,
+            "startFrame": 149,
+            "endFrame": 169
+          },
+          {
+            "name": "reach",
+            "start": 7.042,
+            "end": 7.458,
+            "startFrame": 169,
+            "endFrame": 179
+          },
+          {
+            "name": "contact",
+            "start": 7.458,
+            "end": 7.667,
+            "startFrame": 179,
+            "endFrame": 184
+          },
+          {
+            "name": "motion",
+            "start": 7.667,
+            "end": 8.375,
+            "startFrame": 184,
+            "endFrame": 201
+          },
+          {
+            "name": "release",
+            "start": 8.375,
+            "end": 8.667,
+            "startFrame": 201,
+            "endFrame": 208
+          },
+          {
+            "name": "return",
+            "start": 8.667,
+            "end": 9,
+            "startFrame": 208,
+            "endFrame": 216
+          }
+        ],
+        "alignment": {
+          "anchor": "second",
+          "distance": 123.846,
+          "actors": {
+            "a": {
+              "from": {
+                "x": 520,
+                "y": 660
+              },
+              "to": {
+                "x": 696.154,
+                "y": 660
+              },
+              "facing": 1,
+              "walks": true
+            },
+            "b": {
+              "from": {
+                "x": 820,
+                "y": 660
+              },
+              "to": {
+                "x": 820,
+                "y": 660
+              },
+              "facing": -1,
+              "walks": false
+            }
+          }
+        },
+        "injectedActions": {
+          "a": [
+            "shake:approach:walk",
+            "shake:wait:idle",
+            "shake:hold:idle"
+          ],
+          "b": [
+            "shake:hold:idle"
+          ]
+        },
+        "contacts": [
+          {
+            "actor": "a",
+            "role": "a",
+            "hand": "right",
+            "target": "grip",
+            "reachStart": 7.042,
+            "contactStart": 7.458,
+            "contactEnd": 8.375,
+            "end": 9,
+            "targetAtContact": {
+              "x": 756.436,
+              "y": 503.31
+            },
+            "predictedMiss": 0
+          },
+          {
+            "actor": "b",
+            "role": "b",
+            "hand": "right",
+            "target": "grip",
+            "reachStart": 7.042,
+            "contactStart": 7.458,
+            "contactEnd": 8.375,
+            "end": 9,
+            "targetAtContact": {
+              "x": 756.436,
+              "y": 503.31
+            },
+            "predictedMiss": 0
+          }
+        ]
+      },
+      {
+        "id": "five",
+        "interaction": "high_five",
+        "actors": [
+          "b",
+          "a"
+        ],
+        "roles": {
+          "a": "b",
+          "b": "a"
+        },
+        "params": {},
+        "start": 9.083,
+        "end": 10.583,
+        "startFrame": 218,
+        "endFrame": 254,
+        "stale": false,
+        "phases": [
+          {
+            "name": "approach",
+            "start": 9.083,
+            "end": 9.542,
+            "startFrame": 218,
+            "endFrame": 229
+          },
+          {
+            "name": "reach",
+            "start": 9.542,
+            "end": 9.917,
+            "startFrame": 229,
+            "endFrame": 238
+          },
+          {
+            "name": "contact",
+            "start": 9.917,
+            "end": 10,
+            "startFrame": 238,
+            "endFrame": 240
+          },
+          {
+            "name": "release",
+            "start": 10,
+            "end": 10.208,
+            "startFrame": 240,
+            "endFrame": 245
+          },
+          {
+            "name": "return",
+            "start": 10.208,
+            "end": 10.583,
+            "startFrame": 245,
+            "endFrame": 254
+          }
+        ],
+        "alignment": {
+          "anchor": "second",
+          "distance": 93.2999,
+          "actors": {
+            "b": {
+              "from": {
+                "x": 820,
+                "y": 660
+              },
+              "to": {
+                "x": 789.454,
+                "y": 660
+              },
+              "facing": -1,
+              "walks": true
+            },
+            "a": {
+              "from": {
+                "x": 696.154,
+                "y": 660
+              },
+              "to": {
+                "x": 696.154,
+                "y": 660
+              },
+              "facing": 1,
+              "walks": false
+            }
+          }
+        },
+        "injectedActions": {
+          "b": [
+            "five:approach:walk",
+            "five:wait:idle",
+            "five:hold:idle"
+          ],
+          "a": [
+            "five:hold:idle"
+          ]
+        },
+        "contacts": [
+          {
+            "actor": "a",
+            "role": "b",
+            "hand": "right",
+            "target": "slap",
+            "reachStart": 9.542,
+            "contactStart": 9.917,
+            "contactEnd": 10,
+            "end": 10.583,
+            "targetAtContact": {
+              "x": 779.529,
+              "y": 431.968
+            },
+            "predictedMiss": 0
+          },
+          {
+            "actor": "b",
+            "role": "a",
+            "hand": "right",
+            "target": "slap",
+            "reachStart": 9.542,
+            "contactStart": 9.917,
+            "contactEnd": 10,
+            "end": 10.583,
+            "targetAtContact": {
+              "x": 779.529,
+              "y": 431.968
+            },
+            "predictedMiss": 0
+          }
+        ]
+      },
+      {
+        "id": "gift",
+        "interaction": "give_object",
+        "actors": [
+          "a",
+          "b"
+        ],
+        "roles": {
+          "giver": "a",
+          "receiver": "b"
+        },
+        "params": {
+          "object": "mug"
+        },
+        "start": 10.792,
+        "end": 13.792,
+        "startFrame": 259,
+        "endFrame": 331,
+        "stale": false,
+        "phases": [
+          {
+            "name": "approach",
+            "start": 10.792,
+            "end": 11.708,
+            "startFrame": 259,
+            "endFrame": 281
+          },
+          {
+            "name": "reach",
+            "start": 11.708,
+            "end": 12.292,
+            "startFrame": 281,
+            "endFrame": 295
+          },
+          {
+            "name": "contact",
+            "start": 12.292,
+            "end": 12.708,
+            "startFrame": 295,
+            "endFrame": 305
+          },
+          {
+            "name": "release",
+            "start": 12.708,
+            "end": 13.125,
+            "startFrame": 305,
+            "endFrame": 315
+          },
+          {
+            "name": "return",
+            "start": 13.125,
+            "end": 13.792,
+            "startFrame": 315,
+            "endFrame": 331
+          }
+        ],
+        "alignment": {
+          "anchor": "second",
+          "distance": 123.5028,
+          "actors": {
+            "a": {
+              "from": {
+                "x": 696.154,
+                "y": 660
+              },
+              "to": {
+                "x": 665.951,
+                "y": 660
+              },
+              "facing": 1,
+              "walks": true
+            },
+            "b": {
+              "from": {
+                "x": 789.454,
+                "y": 660
+              },
+              "to": {
+                "x": 789.454,
+                "y": 660
+              },
+              "facing": -1,
+              "walks": false
+            }
+          }
+        },
+        "injectedActions": {
+          "a": [
+            "gift:approach:walk",
+            "gift:wait:idle",
+            "gift:hold:idle"
+          ],
+          "b": [
+            "gift:hold:idle"
+          ]
+        },
+        "contacts": [
+          {
+            "actor": "a",
+            "role": "giver",
+            "hand": "right",
+            "target": "handover",
+            "reachStart": 11.708,
+            "contactStart": 12.292,
+            "contactEnd": 12.708,
+            "end": 13.792,
+            "targetAtContact": {
+              "x": 727.009,
+              "y": 495.76
+            },
+            "predictedMiss": 0
+          },
+          {
+            "actor": "b",
+            "role": "receiver",
+            "hand": "right",
+            "target": "handover",
+            "reachStart": 11.708,
+            "contactStart": 12.292,
+            "contactEnd": 12.708,
+            "end": 13.792,
+            "targetAtContact": {
+              "x": 727.009,
+              "y": 495.76
+            },
+            "predictedMiss": 0
+          }
+        ],
+        "transfer": {
+          "object": "mug",
+          "from": "a",
+          "to": "b",
+          "at": 12.708,
+          "frame": 305,
+          "fromLayer": "a.mug",
+          "toLayer": "b.mug",
+          "giverHand": "right",
+          "receiverHand": "right"
+        }
+      },
+      {
+        "id": "hug",
+        "interaction": "hug",
+        "actors": [
+          "b",
+          "a"
+        ],
+        "roles": {
+          "a": "b",
+          "b": "a"
+        },
+        "params": {},
+        "start": 14.208,
+        "end": 17.417,
+        "startFrame": 341,
+        "endFrame": 418,
+        "stale": false,
+        "phases": [
+          {
+            "name": "approach",
+            "start": 14.208,
+            "end": 15,
+            "startFrame": 341,
+            "endFrame": 360
+          },
+          {
+            "name": "reach",
+            "start": 15,
+            "end": 15.542,
+            "startFrame": 360,
+            "endFrame": 373
+          },
+          {
+            "name": "contact",
+            "start": 15.542,
+            "end": 16.708,
+            "startFrame": 373,
+            "endFrame": 401
+          },
+          {
+            "name": "release",
+            "start": 16.708,
+            "end": 17.042,
+            "startFrame": 401,
+            "endFrame": 409
+          },
+          {
+            "name": "return",
+            "start": 17.042,
+            "end": 17.417,
+            "startFrame": 409,
+            "endFrame": 418
+          }
+        ],
+        "alignment": {
+          "anchor": "second",
+          "distance": 38.2047,
+          "actors": {
+            "b": {
+              "from": {
+                "x": 789.454,
+                "y": 660
+              },
+              "to": {
+                "x": 704.156,
+                "y": 660
+              },
+              "facing": -1,
+              "walks": true
+            },
+            "a": {
+              "from": {
+                "x": 665.951,
+                "y": 660
+              },
+              "to": {
+                "x": 665.951,
+                "y": 660
+              },
+              "facing": 1,
+              "walks": false
+            }
+          }
+        },
+        "injectedActions": {
+          "b": [
+            "hug:approach:walk",
+            "hug:wait:idle",
+            "hug:hold:idle"
+          ],
+          "a": [
+            "hug:hold:idle"
+          ]
+        },
+        "contacts": [
+          {
+            "actor": "a",
+            "role": "b",
+            "hand": "right",
+            "target": "b_right",
+            "reachStart": 15,
+            "contactStart": 15.542,
+            "contactEnd": 16.708,
+            "end": 17.417,
+            "targetAtContact": {
+              "x": 710.717,
+              "y": 503.298
+            },
+            "predictedMiss": 0
+          },
+          {
+            "actor": "a",
+            "role": "b",
+            "hand": "left",
+            "target": "b_left",
+            "reachStart": 15,
+            "contactStart": 15.542,
+            "contactEnd": 16.708,
+            "end": 17.417,
+            "targetAtContact": {
+              "x": 710.717,
+              "y": 503.298
+            },
+            "predictedMiss": 0
+          },
+          {
+            "actor": "b",
+            "role": "a",
+            "hand": "right",
+            "target": "a_right",
+            "reachStart": 15,
+            "contactStart": 15.542,
+            "contactEnd": 16.708,
+            "end": 17.417,
+            "targetAtContact": {
+              "x": 657.46,
+              "y": 491.832
+            },
+            "predictedMiss": 0
+          },
+          {
+            "actor": "b",
+            "role": "a",
+            "hand": "left",
+            "target": "a_left",
+            "reachStart": 15,
+            "contactStart": 15.542,
+            "contactEnd": 16.708,
+            "end": 17.417,
+            "targetAtContact": {
+              "x": 657.46,
+              "y": 491.832
+            },
+            "predictedMiss": 0
+          }
+        ]
+      }
+    ]
+  },
+  "sizes_2d": [
+    {
+      "interaction": "handshake",
+      "scale": 0.5,
+      "measuredPx": 0.1251,
+      "warnings": []
+    },
+    {
+      "interaction": "handshake",
+      "scale": 0.75,
+      "measuredPx": 0.1706,
+      "warnings": []
+    },
+    {
+      "interaction": "handshake",
+      "scale": 1.5,
+      "measuredPx": 0.2394,
+      "warnings": []
+    },
+    {
+      "interaction": "give_object",
+      "scale": 0.6,
+      "measuredPx": 0.1399,
+      "warnings": []
+    },
+    {
+      "interaction": "high_five",
+      "scale": 0.35,
+      "measuredPx": 51.6183,
+      "warnings": [
+        {
+          "code": "INTERACTION_OUT_OF_REACH",
+          "message": "\"b\" cannot reach the high_five height (147.508 above the feet) with its arm; its hand stops short"
+        },
+        {
+          "code": "INTERACTION_OUT_OF_REACH",
+          "message": "\"b\"'s right hand stays ~51.258 px short of the \"slap\" target (arm too short for this pose)"
+        }
+      ]
+    }
+  ]
+}
