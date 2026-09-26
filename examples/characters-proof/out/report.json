@@ -1,5 +1,5 @@
 {
-  "seconds": 387.8,
+  "seconds": 414.1,
   "schedule": [
     {
       "id": "idle1",
@@ -51,11 +51,11 @@
   ],
   "videos": {
     "pip_2d": {
-      "bytes": 608183,
+      "bytes": 602727,
       "durationSeconds": 12.5
     },
     "mika_3d": {
-      "bytes": 383617,
+      "bytes": 375941,
       "durationSeconds": 12.5
     }
   },
@@ -91,7 +91,7 @@
       "name": "2D: video rendered",
       "ok": true,
       "detail": {
-        "seconds": 2.76
+        "seconds": 2.67
       }
     },
     {
@@ -114,7 +114,7 @@
       "name": "3D: video rendered",
       "ok": true,
       "detail": {
-        "seconds": 362.26
+        "seconds": 388.07
       }
     }
   ],

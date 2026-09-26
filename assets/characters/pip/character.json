@@ -47,10 +47,10 @@
         "parent": "torso",
         "x": -3,
         "y": -70,
-        "width": 20,
-        "height": 48,
+        "width": 25,
+        "height": 61,
         "anchorX": 0.5,
-        "anchorY": 0.12,
+        "anchorY": 0.20491803278688525,
         "z": 1
       },
       {
@@ -59,10 +59,10 @@
         "parent": "upper_arm_l",
         "x": 0,
         "y": 36,
-        "width": 18,
-        "height": 44,
+        "width": 20,
+        "height": 56,
         "anchorX": 0.5,
-        "anchorY": 0.08,
+        "anchorY": 0.17857142857142858,
         "z": 1.1
       },
       {
@@ -71,13 +71,15 @@
         "parent": "forearm_l",
         "x": 0,
         "y": 36,
+        "width": 22,
+        "height": 29,
         "anchorX": 0.5,
-        "anchorY": 0.3,
+        "anchorY": 0.3793103448275862,
         "z": 1.2,
         "attachmentPoints": {
           "grip": {
             "x": 0.5,
-            "y": 0.5
+            "y": 0.6206896551724138
           }
         }
       },
@@ -87,10 +89,10 @@
         "parent": "hips",
         "x": -5,
         "y": 4,
-        "width": 22,
-        "height": 64,
+        "width": 28,
+        "height": 82,
         "anchorX": 0.5,
-        "anchorY": 0.08,
+        "anchorY": 0.17073170731707318,
         "z": 4
       },
       {
@@ -99,22 +101,22 @@
         "parent": "thigh_l",
         "x": 0,
         "y": 54,
-        "width": 20,
-        "height": 62,
+        "width": 22,
+        "height": 76,
         "anchorX": 0.5,
-        "anchorY": 0.06,
+        "anchorY": 0.14473684210526316,
         "z": 4.1
       },
       {
         "id": "foot_l",
         "asset": "foot",
         "parent": "shin_l",
-        "x": 2,
+        "x": 0,
         "y": 54,
-        "width": 38,
-        "height": 16,
-        "anchorX": 0.25,
-        "anchorY": 0.3,
+        "width": 44,
+        "height": 26,
+        "anchorX": 0.22727272727272727,
+        "anchorY": 0.3076923076923077,
         "z": 4.2
       },
       {
@@ -123,10 +125,10 @@
         "parent": "hips",
         "x": 5,
         "y": 4,
-        "width": 22,
-        "height": 64,
+        "width": 28,
+        "height": 82,
         "anchorX": 0.5,
-        "anchorY": 0.08,
+        "anchorY": 0.17073170731707318,
         "z": 7
       },
       {
@@ -135,22 +137,22 @@
         "parent": "thigh_r",
         "x": 0,
         "y": 54,
-        "width": 20,
-        "height": 62,
+        "width": 22,
+        "height": 76,
         "anchorX": 0.5,
-        "anchorY": 0.06,
+        "anchorY": 0.14473684210526316,
         "z": 7.1
       },
       {
         "id": "foot_r",
         "asset": "foot",
         "parent": "shin_r",
-        "x": 2,
+        "x": 0,
         "y": 54,
-        "width": 38,
-        "height": 16,
-        "anchorX": 0.25,
-        "anchorY": 0.3,
+        "width": 44,
+        "height": 26,
+        "anchorX": 0.22727272727272727,
+        "anchorY": 0.3076923076923077,
         "z": 7.2
       },
       {
@@ -230,10 +232,10 @@
         "parent": "torso",
         "x": 4,
         "y": -70,
-        "width": 20,
-        "height": 48,
+        "width": 25,
+        "height": 61,
         "anchorX": 0.5,
-        "anchorY": 0.12,
+        "anchorY": 0.20491803278688525,
         "z": 16
       },
       {
@@ -242,10 +244,10 @@
         "parent": "upper_arm_r",
         "x": 0,
         "y": 36,
-        "width": 18,
-        "height": 44,
+        "width": 20,
+        "height": 56,
         "anchorX": 0.5,
-        "anchorY": 0.08,
+        "anchorY": 0.17857142857142858,
         "z": 16.1
       },
       {
@@ -254,13 +256,15 @@
         "parent": "forearm_r",
         "x": 0,
         "y": 36,
+        "width": 22,
+        "height": 29,
         "anchorX": 0.5,
-        "anchorY": 0.3,
+        "anchorY": 0.3793103448275862,
         "z": 16.2,
         "attachmentPoints": {
           "grip": {
             "x": 0.5,
-            "y": 0.5
+            "y": 0.6206896551724138
           }
         }
       }

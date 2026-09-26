@@ -23,7 +23,7 @@ import { EngineError } from "../errors.js";
 
 export interface CharacterContext {
   /** Prepared character definition (asset names already mapped to workspace asset ids). */
-  definition(id: string): { def: CharacterDefinition; sha: string } | undefined;
+  definition(id: string): { def: CharacterDefinition; sha: string; continuity?: { continuous: boolean; gaps?: string[]; rigidJoints?: string[] } } | undefined;
   speech?(id: string): SpeechTiming | undefined;
   /** Workspace-relative file of an audio asset (2D/3D scene audio entries use files). */
   audioSrc?(assetId: string): string | undefined;
@@ -133,10 +133,20 @@ export function addCharacter(doc: SceneDoc, instance: unknown, ctx: CharacterCon
   inst.actions = assignIds(inst.actions ?? []);
   const resolved = resolveSpeech(inst.actions, ctx);
   if (resolved) return { ok: false, errors: resolved };
-  return withCompile(doc, ctx, (d) => {
+  const r = withCompile(doc, ctx, (d) => {
     d.characters = [...instances(d), inst];
     return { id: inst.id };
   }, () => [inst.id]);
+  const cont = ctx.definition(inst.character)?.continuity;
+  if (r.ok && cont && !cont.continuous) {
+    r.warnings.push({
+      severity: "warning",
+      code: "CHARACTER_NOT_CONTINUOUS",
+      path: ["character", "character"],
+      message: `Character "${inst.character}" is not production-ready: joints ${[...(cont.gaps ?? cont.rigidJoints ?? [])].join(", ")} can show visible gaps when they bend (see character_inspect continuity)`,
+    });
+  }
+  return r;
 }
 
 const InstancePatch = CharacterInstanceSchema.omit({ id: true, character: true, actions: true, definitionSha: true }).partial();

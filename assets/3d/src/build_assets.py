@@ -103,6 +103,65 @@ LIPS = (0.55, 0.15, 0.15, 1)
 SHOE = (0.25, 0.16, 0.10, 1)
 
 
+def skinned_tube(name, cx, cy, profile, weights, material_of, materials, armature, rx_scale=1.0, segs=20, step=0.012):
+    """A closed, smooth tube around a vertical chain: rings interpolated from `profile`
+    [(z, rx, ry), ...] (top to bottom or bottom to top), capped at both ends, one connected
+    surface. Each vertex gets the bone weights of its height (`weights(z) -> {bone: w}`)."""
+    import bmesh
+
+    prof = sorted(profile, key=lambda p: p[0])
+    zs = []
+    for (z0, _, _), (z1, _, _) in zip(prof, prof[1:]):
+        n = max(1, int(math.ceil((z1 - z0) / step)))
+        zs += [z0 + (z1 - z0) * i / n for i in range(n)]
+    zs.append(prof[-1][0])
+
+    def radius(z):
+        for (z0, a0, b0), (z1, a1, b1) in zip(prof, prof[1:]):
+            if z0 <= z <= z1:
+                t = (z - z0) / (z1 - z0) if z1 > z0 else 0
+                t = t * t * (3 - 2 * t)
+                return a0 + (a1 - a0) * t, b0 + (b1 - b0) * t
+        return prof[-1][1], prof[-1][2]
+
+    bm = bmesh.new()
+    rings = []
+    for z in zs:
+        rx, ry = radius(z)
+        rings.append([bm.verts.new((cx + rx * rx_scale * math.cos(2 * math.pi * k / segs), cy + ry * math.sin(2 * math.pi * k / segs), z)) for k in range(segs)])
+    for a, b in zip(rings, rings[1:]):
+        for k in range(segs):
+            bm.faces.new((a[k], a[(k + 1) % segs], b[(k + 1) % segs], b[k]))
+    bottom = bm.verts.new((cx, cy, zs[0] - 0.002))
+    top = bm.verts.new((cx, cy, zs[-1] + 0.002))
+    for k in range(segs):
+        bm.faces.new((rings[0][(k + 1) % segs], rings[0][k], bottom))
+        bm.faces.new((rings[-1][k], rings[-1][(k + 1) % segs], top))
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    me = bpy.data.meshes.new(name)
+    bm.to_mesh(me)
+    bm.free()
+    ob = bpy.data.objects.new(name, me)
+    bpy.context.scene.collection.objects.link(ob)
+    for m in materials:
+        me.materials.append(m)
+    for poly in me.polygons:
+        poly.material_index = material_of(sum(me.vertices[i].co.z for i in poly.vertices) / len(poly.vertices))
+        poly.use_smooth = True
+    groups = {}
+    for v in me.vertices:
+        for bone, w in weights(v.co.z).items():
+            if w <= 0:
+                continue
+            if bone not in groups:
+                groups[bone] = ob.vertex_groups.new(name=bone)
+            groups[bone].add([v.index], w, "REPLACE")
+    mod = ob.modifiers.new("Armature", "ARMATURE")
+    mod.object = armature
+    ob.parent = armature
+    return ob
+
+
 def build_character():
     reset()
     sc = bpy.context.scene
@@ -133,6 +192,56 @@ def build_character():
         bone("shin." + s, (x * 0.45, 0, 0.5), (x * 0.45, 0, 0.08), "thigh." + s)
     bpy.ops.object.mode_set(mode="OBJECT")
 
+    def blend_chain(z, chain, top_down=False):
+        """Weights along a vertical chain. chain = [(bone, z_from, z_to[, max_parent_share]), ...] ordered
+        bottom-up (or top-down); inside [z_from, z_to] the weight moves smoothly to the next bone."""
+        if top_down:
+            # chain from the top: [(parent, z_lo, z_hi, share), (bone, lo, hi), (child, None, None)]
+            parent, lo, hi, share = chain[0]
+            upper, klo, khi = chain[1]
+            lower = chain[2][0]
+            w = {}
+            if z >= lo:  # hip region: part of the weight stays with the pelvis
+                t = min(1.0, (z - lo) / (hi - lo))
+                t = t * t * (3 - 2 * t)
+                w[parent] = share * t
+                w[upper] = 1 - share * t
+                return w
+            if z > khi:
+                return {upper: 1.0}
+            if z < klo:
+                return {lower: 1.0}
+            t = (khi - z) / (khi - klo)
+            t = t * t * (3 - 2 * t)
+            return {upper: 1 - t, lower: t}
+        for i, (bone, lo, hi) in enumerate(chain):
+            if lo is None or z < lo:
+                return {bone: 1.0}
+            if z <= hi:
+                t = (z - lo) / (hi - lo)
+                t = t * t * (3 - 2 * t)
+                return {bone: 1 - t, chain[i + 1][0]: t}
+        return {chain[-1][0]: 1.0}
+
+    def shoulder_blend(z, s):
+        if z > 1.36:  # shoulder: shared with the torso so the armpit stretches instead of opening
+            t = min(1.0, (z - 1.36) / 0.10)
+            t = t * t * (3 - 2 * t)
+            return {"spine": 0.5 * t, "upper_arm." + s: 1 - 0.5 * t}
+        if z > 1.20:
+            return {"upper_arm." + s: 1.0}
+        if z > 1.08:  # elbow (wide band: less volume loss when bent)
+            t = (1.20 - z) / 0.12
+            t = t * t * (3 - 2 * t)
+            return {"upper_arm." + s: 1 - t, "forearm." + s: t}
+        if z > 0.93:
+            return {"forearm." + s: 1.0}
+        if z > 0.87:  # wrist
+            t = (0.93 - z) / 0.06
+            t = t * t * (3 - 2 * t)
+            return {"forearm." + s: 1 - t, "hand." + s: t}
+        return {"hand." + s: 1.0}
+
     def skin(o, bone_name):
         vg = o.vertex_groups.new(name=bone_name)
         vg.add(list(range(len(o.data.vertices))), 1.0, "REPLACE")
@@ -142,9 +251,15 @@ def build_character():
         return o
 
     m_skin, m_shirt, m_pants = mat("skin", SKIN), mat("shirt", SHIRT), mat("pants", PANTS)
-    skin(cube("torso", (0.42, 0.24, 0.5), (0, 0, 1.18), m_shirt, 0.04), "spine")
-    skin(cube("pelvis", (0.38, 0.22, 0.2), (0, 0, 0.95), m_pants, 0.03), "hips")
-    skin(cylinder("neckmesh", 0.05, 0.1, (0, 0, 1.47), m_skin), "neck")
+    # continuous body: pelvis -> torso -> neck, skinned with blended weights across every joint
+    body = skinned_tube(
+        "body", 0.0, 0.0,
+        [(0.80, 0.02, 0.02), (0.815, 0.11, 0.07), (0.84, 0.155, 0.10), (0.92, 0.185, 0.115), (1.00, 0.19, 0.115),
+         (1.10, 0.18, 0.11), (1.22, 0.195, 0.115), (1.32, 0.21, 0.12), (1.38, 0.20, 0.115), (1.415, 0.14, 0.09),
+         (1.44, 0.058, 0.052), (1.50, 0.05, 0.05), (1.57, 0.05, 0.05), (1.585, 0.02, 0.02)],
+        lambda z: blend_chain(z, [("hips", 0.98, 1.12), ("spine", 1.38, 1.46), ("neck", 1.47, 1.53), ("head", None, None)]),
+        lambda z: 0 if z < 1.0 else (1 if z < 1.425 else 2),
+        [m_pants, m_shirt, m_skin], arm, rx_scale=1.0)
     skin(sphere("headmesh", 0.17, (0, 0, 1.65), m_skin, (1, 0.95, 1.08)), "head")
     skin(sphere("hair", 0.178, (0, 0.02, 1.69), mat("hair", HAIR), (1.02, 1.0, 0.95)), "head")
     # cut the hair cap: delete the front/lower vertices so the face shows
@@ -196,11 +311,25 @@ def build_character():
     skin(mouth, "head")
 
     for s, x in (("L", 0.23), ("R", -0.23)):
-        skin(cube("uarm" + s, (0.11, 0.11, 0.28), (x, 0, 1.28), m_shirt, 0.02), "upper_arm." + s)
-        skin(cube("farm" + s, (0.09, 0.09, 0.25), (x, 0, 1.02), m_skin, 0.02), "forearm." + s)
-        skin(sphere("hand" + s, 0.055, (x, 0, 0.85), m_skin, (0.9, 0.7, 1.1), 16), "hand." + s)
-        skin(cube("thigh" + s, (0.14, 0.14, 0.4), (x * 0.45, 0, 0.7), m_pants, 0.02), "thigh." + s)
-        skin(cube("shin" + s, (0.12, 0.12, 0.38), (x * 0.45, 0, 0.3), m_pants, 0.02), "shin." + s)
+        # arm: one tube shoulder -> elbow -> wrist -> hand; the top blends into the torso (spine)
+        skinned_tube(
+            "arm" + s, x, 0.0,
+            [(1.475, 0.02, 0.02), (1.46, 0.045, 0.045), (1.44, 0.058, 0.058), (1.40, 0.06, 0.06), (1.30, 0.058, 0.058),
+             (1.20, 0.054, 0.054), (1.14, 0.049, 0.049), (1.08, 0.046, 0.046), (1.00, 0.043, 0.043), (0.93, 0.038, 0.038),
+             (0.905, 0.036, 0.036), (0.88, 0.045, 0.04), (0.85, 0.052, 0.042), (0.815, 0.048, 0.038), (0.79, 0.035, 0.03),
+             (0.772, 0.012, 0.012)],
+            lambda z, s=s: shoulder_blend(z, s),
+            lambda z: 0 if z > 1.215 else 1,
+            [m_shirt, m_skin], arm)
+        # leg: one tube hip -> knee -> ankle; the top blends into the pelvis (hips)
+        skinned_tube(
+            "leg" + s, x * 0.45, 0.0,
+            [(0.99, 0.02, 0.02), (0.98, 0.055, 0.055), (0.96, 0.072, 0.072), (0.90, 0.077, 0.077), (0.70, 0.069, 0.069),
+             (0.55, 0.063, 0.063), (0.50, 0.061, 0.061), (0.45, 0.058, 0.058), (0.30, 0.055, 0.055), (0.12, 0.05, 0.05),
+             (0.085, 0.047, 0.047), (0.065, 0.03, 0.03), (0.055, 0.01, 0.01)],
+            lambda z, s=s: blend_chain(z, [("hips", 0.86, 0.97, 0.6), ("thigh." + s, 0.43, 0.57), ("shin." + s, None, None)], top_down=True),
+            lambda z: 0,
+            [m_pants], arm)
         skin(cube("shoe" + s, (0.13, 0.22, 0.08), (x * 0.45, -0.04, 0.04), mat("shoe", SHOE), 0.02), "shin." + s)
 
     # ---- clips: rotations given about WORLD axes at rest, converted to each bone's local frame

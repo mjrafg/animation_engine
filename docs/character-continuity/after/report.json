@@ -1,0 +1,740 @@
+{
+  "label": "after",
+  "pip2d": {
+    "analysis": {
+      "method": "layered parts: joint-disk coverage",
+      "threshold": 0.985,
+      "joints": [
+        {
+          "part": "upper_arm_l",
+          "parent": "torso",
+          "angles": [
+            -40,
+            40
+          ],
+          "radius": 10,
+          "coverage": 1,
+          "worstAngle": 0,
+          "status": "continuous"
+        },
+        {
+          "part": "forearm_l",
+          "parent": "upper_arm_l",
+          "angles": [
+            -75,
+            0
+          ],
+          "radius": 7.5,
+          "coverage": 1,
+          "worstAngle": 0,
+          "status": "continuous"
+        },
+        {
+          "part": "hand_l",
+          "parent": "forearm_l",
+          "angles": [
+            0,
+            0
+          ],
+          "radius": 8,
+          "coverage": 0.9624,
+          "worstAngle": 0,
+          "status": "static"
+        },
+        {
+          "part": "thigh_l",
+          "parent": "hips",
+          "angles": [
+            -42,
+            34
+          ],
+          "radius": 11.5,
+          "coverage": 1,
+          "worstAngle": 0,
+          "status": "continuous"
+        },
+        {
+          "part": "shin_l",
+          "parent": "thigh_l",
+          "angles": [
+            0,
+            80
+          ],
+          "radius": 8.5,
+          "coverage": 1,
+          "worstAngle": 0,
+          "status": "continuous"
+        },
+        {
+          "part": "foot_l",
+          "parent": "shin_l",
+          "angles": [
+            -8,
+            10
+          ],
+          "radius": 8,
+          "coverage": 0.9962,
+          "worstAngle": 8.5,
+          "status": "continuous"
+        },
+        {
+          "part": "thigh_r",
+          "parent": "hips",
+          "angles": [
+            -42,
+            34
+          ],
+          "radius": 11.5,
+          "coverage": 1,
+          "worstAngle": 0,
+          "status": "continuous"
+        },
+        {
+          "part": "shin_r",
+          "parent": "thigh_r",
+          "angles": [
+            0,
+            80
+          ],
+          "radius": 8.5,
+          "coverage": 1,
+          "worstAngle": 0,
+          "status": "continuous"
+        },
+        {
+          "part": "foot_r",
+          "parent": "shin_r",
+          "angles": [
+            -8,
+            10
+          ],
+          "radius": 8,
+          "coverage": 0.9962,
+          "worstAngle": 8.5,
+          "status": "continuous"
+        },
+        {
+          "part": "torso",
+          "parent": "hips",
+          "angles": [
+            0,
+            11
+          ],
+          "radius": 14,
+          "coverage": 1,
+          "worstAngle": 0,
+          "status": "continuous"
+        },
+        {
+          "part": "head",
+          "parent": "torso",
+          "angles": [
+            -13,
+            11
+          ],
+          "radius": 8.5,
+          "coverage": 1,
+          "worstAngle": 0,
+          "status": "continuous"
+        },
+        {
+          "part": "brows",
+          "parent": "head",
+          "angles": [
+            0,
+            0
+          ],
+          "radius": 2,
+          "coverage": 1,
+          "worstAngle": 0,
+          "status": "static"
+        },
+        {
+          "part": "eyes",
+          "parent": "head",
+          "angles": [
+            0,
+            0
+          ],
+          "radius": 2,
+          "coverage": 1,
+          "worstAngle": 0,
+          "status": "static"
+        },
+        {
+          "part": "mouth",
+          "parent": "head",
+          "angles": [
+            0,
+            0
+          ],
+          "radius": 9.5,
+          "coverage": 1,
+          "worstAngle": 0,
+          "status": "static"
+        },
+        {
+          "part": "upper_arm_r",
+          "parent": "torso",
+          "angles": [
+            -118,
+            40
+          ],
+          "radius": 10,
+          "coverage": 1,
+          "worstAngle": 0,
+          "status": "continuous"
+        },
+        {
+          "part": "forearm_r",
+          "parent": "upper_arm_r",
+          "angles": [
+            -75,
+            0
+          ],
+          "radius": 7.5,
+          "coverage": 1,
+          "worstAngle": 0,
+          "status": "continuous"
+        },
+        {
+          "part": "hand_r",
+          "parent": "forearm_r",
+          "angles": [
+            0,
+            0
+          ],
+          "radius": 8,
+          "coverage": 0.9624,
+          "worstAngle": 0,
+          "status": "static"
+        }
+      ],
+      "gaps": [],
+      "continuous": true,
+      "productionReady": true
+    },
+    "pixelChecks": [
+      {
+        "stress": "walk",
+        "frame": 30,
+        "worstRing": 1,
+        "worstBone": 1,
+        "joints": {
+          "upper_arm_l": {
+            "ring": 1,
+            "bone": 1
+          },
+          "forearm_l": {
+            "ring": 1,
+            "bone": 1
+          },
+          "thigh_l": {
+            "ring": 1,
+            "bone": 1
+          },
+          "shin_l": {
+            "ring": 1,
+            "bone": 1
+          },
+          "foot_l": {
+            "ring": 1,
+            "bone": 1
+          },
+          "thigh_r": {
+            "ring": 1,
+            "bone": 1
+          },
+          "shin_r": {
+            "ring": 1,
+            "bone": 1
+          },
+          "foot_r": {
+            "ring": 1,
+            "bone": 1
+          },
+          "torso": {
+            "ring": 1,
+            "bone": 1
+          },
+          "head": {
+            "ring": 1,
+            "bone": 1
+          },
+          "upper_arm_r": {
+            "ring": 1,
+            "bone": 1
+          },
+          "forearm_r": {
+            "ring": 1,
+            "bone": 1
+          }
+        }
+      },
+      {
+        "stress": "run",
+        "frame": 68,
+        "worstRing": 1,
+        "worstBone": 1,
+        "joints": {
+          "upper_arm_l": {
+            "ring": 1,
+            "bone": 1
+          },
+          "forearm_l": {
+            "ring": 1,
+            "bone": 1
+          },
+          "thigh_l": {
+            "ring": 1,
+            "bone": 1
+          },
+          "shin_l": {
+            "ring": 1,
+            "bone": 1
+          },
+          "foot_l": {
+            "ring": 1,
+            "bone": 1
+          },
+          "thigh_r": {
+            "ring": 1,
+            "bone": 1
+          },
+          "shin_r": {
+            "ring": 1,
+            "bone": 1
+          },
+          "foot_r": {
+            "ring": 1,
+            "bone": 1
+          },
+          "torso": {
+            "ring": 1,
+            "bone": 1
+          },
+          "head": {
+            "ring": 1,
+            "bone": 1
+          },
+          "upper_arm_r": {
+            "ring": 1,
+            "bone": 1
+          },
+          "forearm_r": {
+            "ring": 1,
+            "bone": 1
+          }
+        }
+      },
+      {
+        "stress": "wave",
+        "frame": 130,
+        "worstRing": 1,
+        "worstBone": 1,
+        "joints": {
+          "upper_arm_l": {
+            "ring": 1,
+            "bone": 1
+          },
+          "forearm_l": {
+            "ring": 1,
+            "bone": 1
+          },
+          "thigh_l": {
+            "ring": 1,
+            "bone": 1
+          },
+          "shin_l": {
+            "ring": 1,
+            "bone": 1
+          },
+          "foot_l": {
+            "ring": 1,
+            "bone": 1
+          },
+          "thigh_r": {
+            "ring": 1,
+            "bone": 1
+          },
+          "shin_r": {
+            "ring": 1,
+            "bone": 1
+          },
+          "foot_r": {
+            "ring": 1,
+            "bone": 1
+          },
+          "torso": {
+            "ring": 1,
+            "bone": 1
+          },
+          "head": {
+            "ring": 1,
+            "bone": 1
+          },
+          "upper_arm_r": {
+            "ring": 1,
+            "bone": 1
+          },
+          "forearm_r": {
+            "ring": 1,
+            "bone": 1
+          }
+        }
+      },
+      {
+        "stress": "point",
+        "frame": 168,
+        "worstRing": 1,
+        "worstBone": 1,
+        "joints": {
+          "upper_arm_l": {
+            "ring": 1,
+            "bone": 1
+          },
+          "forearm_l": {
+            "ring": 1,
+            "bone": 1
+          },
+          "thigh_l": {
+            "ring": 1,
+            "bone": 1
+          },
+          "shin_l": {
+            "ring": 1,
+            "bone": 1
+          },
+          "foot_l": {
+            "ring": 1,
+            "bone": 1
+          },
+          "thigh_r": {
+            "ring": 1,
+            "bone": 1
+          },
+          "shin_r": {
+            "ring": 1,
+            "bone": 1
+          },
+          "foot_r": {
+            "ring": 1,
+            "bone": 1
+          },
+          "torso": {
+            "ring": 1,
+            "bone": 1
+          },
+          "head": {
+            "ring": 1,
+            "bone": 1
+          },
+          "upper_arm_r": {
+            "ring": 1,
+            "bone": 1
+          },
+          "forearm_r": {
+            "ring": 1,
+            "bone": 1
+          }
+        }
+      }
+    ]
+  },
+  "mika3d": {
+    "analysis": {
+      "method": "3d skinning: joint weights",
+      "continuous": true,
+      "productionReady": true,
+      "rigidJoints": [],
+      "maxInfluences": 2,
+      "joints": [
+        {
+          "joint": "head",
+          "parent": "neck",
+          "status": "blended",
+          "blendedVertices": 80,
+          "sharedEdges": 80
+        },
+        {
+          "joint": "neck",
+          "parent": "spine",
+          "status": "blended",
+          "blendedVertices": 140,
+          "sharedEdges": 80
+        },
+        {
+          "joint": "hand.L",
+          "parent": "forearm.L",
+          "status": "blended",
+          "blendedVertices": 120,
+          "sharedEdges": 80
+        },
+        {
+          "joint": "forearm.L",
+          "parent": "upper_arm.L",
+          "status": "blended",
+          "blendedVertices": 160,
+          "sharedEdges": 80
+        },
+        {
+          "joint": "upper_arm.L",
+          "parent": "spine",
+          "status": "blended",
+          "blendedVertices": 201,
+          "sharedEdges": 80
+        },
+        {
+          "joint": "hand.R",
+          "parent": "forearm.R",
+          "status": "blended",
+          "blendedVertices": 120,
+          "sharedEdges": 80
+        },
+        {
+          "joint": "forearm.R",
+          "parent": "upper_arm.R",
+          "status": "blended",
+          "blendedVertices": 160,
+          "sharedEdges": 80
+        },
+        {
+          "joint": "upper_arm.R",
+          "parent": "spine",
+          "status": "blended",
+          "blendedVertices": 201,
+          "sharedEdges": 80
+        },
+        {
+          "joint": "spine",
+          "parent": "hips",
+          "status": "blended",
+          "blendedVertices": 220,
+          "sharedEdges": 80
+        },
+        {
+          "joint": "shin.L",
+          "parent": "thigh.L",
+          "status": "blended",
+          "blendedVertices": 220,
+          "sharedEdges": 80
+        },
+        {
+          "joint": "thigh.L",
+          "parent": "hips",
+          "status": "blended",
+          "blendedVertices": 201,
+          "sharedEdges": 80
+        },
+        {
+          "joint": "shin.R",
+          "parent": "thigh.R",
+          "status": "blended",
+          "blendedVertices": 220,
+          "sharedEdges": 80
+        },
+        {
+          "joint": "thigh.R",
+          "parent": "hips",
+          "status": "blended",
+          "blendedVertices": 201,
+          "sharedEdges": 80
+        }
+      ]
+    },
+    "pixelChecks": [
+      {
+        "stress": "walk",
+        "frame": 31,
+        "worstBone": 1,
+        "minNotchDepth": 0.667,
+        "bones": {
+          "neck->head": 1,
+          "spine->neck": 1,
+          "forearm.L->hand.L": 1,
+          "upper_arm.L->forearm.L": 1,
+          "spine->upper_arm.L": 1,
+          "forearm.R->hand.R": 1,
+          "upper_arm.R->forearm.R": 1,
+          "spine->upper_arm.R": 1,
+          "hips->spine": 1,
+          "thigh.L->shin.L": 1,
+          "hips->thigh.L": 1,
+          "thigh.R->shin.R": 1,
+          "hips->thigh.R": 1
+        },
+        "notchDepth": {
+          "hand.L": 0.667,
+          "forearm.L": 0.722,
+          "hand.R": 0.833,
+          "forearm.R": 6.375,
+          "shin.L": 0.889,
+          "shin.R": 0.842
+        }
+      },
+      {
+        "stress": "run",
+        "frame": 74,
+        "worstBone": 1,
+        "minNotchDepth": 0.643,
+        "bones": {
+          "neck->head": 1,
+          "spine->neck": 1,
+          "forearm.L->hand.L": 1,
+          "upper_arm.L->forearm.L": 1,
+          "spine->upper_arm.L": 1,
+          "forearm.R->hand.R": 1,
+          "upper_arm.R->forearm.R": 1,
+          "spine->upper_arm.R": 1,
+          "hips->spine": 1,
+          "thigh.L->shin.L": 1,
+          "hips->thigh.L": 1,
+          "thigh.R->shin.R": 1,
+          "hips->thigh.R": 1
+        },
+        "notchDepth": {
+          "hand.L": 0.8,
+          "forearm.L": 0.643,
+          "hand.R": 1.769,
+          "forearm.R": 0.647,
+          "shin.L": 0.833,
+          "shin.R": 0.842
+        }
+      },
+      {
+        "stress": "wave",
+        "frame": 120,
+        "worstBone": 0.983,
+        "minNotchDepth": 0.818,
+        "bones": {
+          "neck->head": 1,
+          "spine->neck": 1,
+          "forearm.L->hand.L": 1,
+          "upper_arm.L->forearm.L": 1,
+          "spine->upper_arm.L": 1,
+          "forearm.R->hand.R": 1,
+          "upper_arm.R->forearm.R": 1,
+          "spine->upper_arm.R": 0.983,
+          "hips->spine": 1,
+          "thigh.L->shin.L": 1,
+          "hips->thigh.L": 1,
+          "thigh.R->shin.R": 1,
+          "hips->thigh.R": 1
+        },
+        "notchDepth": {
+          "hand.L": 0.833,
+          "forearm.L": 0.875,
+          "hand.R": 0.818,
+          "forearm.R": 0.867,
+          "shin.L": 0.895,
+          "shin.R": 0.889
+        }
+      },
+      {
+        "stress": "point",
+        "frame": 173,
+        "worstBone": 1,
+        "minNotchDepth": 0.882,
+        "bones": {
+          "neck->head": 1,
+          "spine->neck": 1,
+          "forearm.L->hand.L": 1,
+          "upper_arm.L->forearm.L": 1,
+          "spine->upper_arm.L": 1,
+          "forearm.R->hand.R": 1,
+          "upper_arm.R->forearm.R": 1,
+          "spine->upper_arm.R": 1,
+          "hips->spine": 1,
+          "thigh.L->shin.L": 1,
+          "hips->thigh.L": 1,
+          "thigh.R->shin.R": 1,
+          "hips->thigh.R": 1
+        },
+        "notchDepth": {
+          "hand.L": 0.909,
+          "forearm.L": 0.929,
+          "hand.R": 1.071,
+          "forearm.R": 0.938,
+          "shin.L": 0.889,
+          "shin.R": 0.882
+        }
+      }
+    ]
+  },
+  "checks": [
+    {
+      "name": "2D engine analysis: every moving joint continuous",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "name": "2D walk (frame 30): joint rings and bone lines fully covered in the render",
+      "ok": true,
+      "detail": {
+        "worstRing": 1,
+        "worstBone": 1
+      }
+    },
+    {
+      "name": "2D run (frame 68): joint rings and bone lines fully covered in the render",
+      "ok": true,
+      "detail": {
+        "worstRing": 1,
+        "worstBone": 1
+      }
+    },
+    {
+      "name": "2D wave (frame 130): joint rings and bone lines fully covered in the render",
+      "ok": true,
+      "detail": {
+        "worstRing": 1,
+        "worstBone": 1
+      }
+    },
+    {
+      "name": "2D point (frame 168): joint rings and bone lines fully covered in the render",
+      "ok": true,
+      "detail": {
+        "worstRing": 1,
+        "worstBone": 1
+      }
+    },
+    {
+      "name": "3D engine analysis: skin weights keep every joint continuous",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "name": "3D walk (frame 31): bone lines covered, no joint notch (outer depth >= 0.5 of limb half-width)",
+      "ok": true,
+      "detail": {
+        "worstBone": 1,
+        "minNotchDepth": 0.667
+      }
+    },
+    {
+      "name": "3D run (frame 74): bone lines covered, no joint notch (outer depth >= 0.5 of limb half-width)",
+      "ok": true,
+      "detail": {
+        "worstBone": 1,
+        "minNotchDepth": 0.643
+      }
+    },
+    {
+      "name": "3D wave (frame 120): bone lines covered, no joint notch (outer depth >= 0.5 of limb half-width)",
+      "ok": true,
+      "detail": {
+        "worstBone": 0.983,
+        "minNotchDepth": 0.818
+      }
+    },
+    {
+      "name": "3D point (frame 173): bone lines covered, no joint notch (outer depth >= 0.5 of limb half-width)",
+      "ok": true,
+      "detail": {
+        "worstBone": 1,
+        "minNotchDepth": 0.882
+      }
+    }
+  ]
+}

@@ -627,11 +627,14 @@ class Scene3D:
                         continue
                     w = arm.matrix_world @ pb.head
                     x, y, z = self.project(w)
+                    tw = arm.matrix_world @ pb.tail
+                    tx, ty, _ = self.project(tw)
                     bones[label] = {
                         "bone": bone,
                         "world": xyz(CI @ w),
                         "screen": {"x": round(x, 1), "y": round(y, 1), "onScreen": bool(z > 0 and 0 <= x <= W and 0 <= y <= H)},
                         "depth": round(z, 4),
+                        "tail": {"world": xyz(CI @ tw), "screen": {"x": round(tx, 1), "y": round(ty, 1)}},
                     }
                 rec["bones"] = bones
             out.append(rec)

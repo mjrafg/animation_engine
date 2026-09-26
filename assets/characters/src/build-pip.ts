@@ -118,43 +118,106 @@ part("head", 104, 108, (ctx) => {
   ctx.ellipse(74, 76, 9, 5.5, 0, 0, Math.PI * 2);
   ctx.fill();
 });
-part("upper_arm", 20, 48, (ctx) => {
-  rr(ctx, 3, 2, 14, 44, 7, C.skin);
-  rr(ctx, 1, 0, 18, 20, 8, C.shirt);
-});
-part("forearm", 18, 44, (ctx) => rr(ctx, 2, 1, 14, 42, 7, C.skin));
-part("hand", 20, 20, (ctx) => circle(ctx, 10, 10, 8, C.skin));
-part("hand_open", 24, 28, (ctx) => {
-  circle(ctx, 12, 10, 8, C.skin);
-  for (const dx of [-6, -2, 2, 6]) stroke(ctx, INK, 2, () => (ctx.moveTo(12 + dx, 14), ctx.lineTo(12 + dx * 1.4, 25)));
-  for (const dx of [-6, -2, 2, 6]) stroke(ctx, C.skin, 3, () => (ctx.moveTo(12 + dx, 13), ctx.lineTo(12 + dx * 1.4, 24)));
-});
-part("hand_point", 20, 34, (ctx) => {
-  circle(ctx, 10, 10, 8, C.skin);
-  rr(ctx, 7, 12, 6, 20, 3, C.skin);
-});
-part("thigh", 22, 64, (ctx) => {
-  rr(ctx, 3, 2, 16, 60, 8, C.skin);
-  rr(ctx, 1, 0, 20, 28, 8, C.shorts);
-});
-part("shin", 20, 62, (ctx) => {
-  rr(ctx, 3, 1, 14, 58, 7, C.skin);
-  rr(ctx, 3, 46, 14, 9, 3, "#ffffff", INK, 1.6);
-});
-part("foot", 38, 16, (ctx) => {
+// Limbs are CAPSULE segments whose rounded ends are centred exactly on the joint pivots: the
+// parent's end cap and the child's start cap are the same disk, so the joint stays closed at
+// any bend angle (the engine checks this: character_inspect -> continuity). The child's start
+// cap is filled but not outlined and the child draws above the parent, so no seam line shows
+// inside the overlap; the parent's outlined end cap forms the outer silhouette of the bend.
+const MARGIN = 3;
+const joints: Record<string, { pivot: { x: number; y: number }; len: number }> = {};
+
+/** Tapered capsule from (cx, y0) radius r0 to (cx, y0 + len) radius r1; outline optional per end. */
+function capsule(ctx: SKRSContext2D, cx: number, y0: number, len: number, r0: number, r1: number, fill: string, outlineStart: boolean, outlineEnd = true) {
+  const y1 = y0 + len;
   ctx.beginPath();
-  ctx.moveTo(2, 2);
-  ctx.lineTo(22, 2);
-  ctx.quadraticCurveTo(36, 3, 36, 12);
-  ctx.lineTo(36, 14);
-  ctx.lineTo(2, 14);
+  ctx.arc(cx, y0, r0, Math.PI, 0);
+  ctx.lineTo(cx + r1, y1);
+  ctx.arc(cx, y1, r1, 0, Math.PI);
   ctx.closePath();
-  ctx.fillStyle = C.shoe;
+  ctx.fillStyle = fill;
   ctx.fill();
   ctx.strokeStyle = INK;
   ctx.lineWidth = 2.2;
+  ctx.beginPath();
+  if (outlineStart) {
+    ctx.arc(cx, y0, r0, Math.PI, 0);
+    ctx.lineTo(cx + r1, y1);
+  } else {
+    ctx.moveTo(cx + r0, y0);
+    ctx.lineTo(cx + r1, y1);
+  }
+  if (outlineEnd) ctx.arc(cx, y1, r1, 0, Math.PI);
+  else ctx.moveTo(cx - r1, y1);
+  ctx.lineTo(cx - r0, y0);
   ctx.stroke();
+}
+
+/** A limb segment image: pivot at the start-cap centre, next joint `len` below it. */
+function segment(name: string, len: number, rMax: number, draw: (ctx: SKRSContext2D, cx: number, y0: number) => void, below = 0) {
+  const w = 2 * rMax + 2 * MARGIN;
+  const h = MARGIN + rMax + len + rMax + below + MARGIN;
+  const cx = w / 2;
+  const y0 = MARGIN + rMax;
+  part(name, w, h, (ctx) => draw(ctx, cx, y0));
+  joints[name] = { pivot: { x: cx, y: y0 }, len };
+}
+
+const ARM = 36;
+const LEG = 54;
+segment("upper_arm", ARM, 9.5, (ctx, cx, y0) => {
+  capsule(ctx, cx, y0, ARM, 7, 7, C.skin, true);
+  // sleeve: shirt cap around the shoulder
+  capsule(ctx, cx, y0, 12, 9.5, 8.5, C.shirt, true);
 });
+segment("forearm", ARM, 7, (ctx, cx, y0) => capsule(ctx, cx, y0, ARM, 7, 6, C.skin, false));
+// hands: wrist disk (unoutlined, joins the forearm end) + palm
+const HAND_R = 8;
+segment("hand", 7, HAND_R, (ctx, cx, y0) => {
+  circle(ctx, cx, y0 + 7, HAND_R, C.skin);
+  circle(ctx, cx, y0, 6, C.skin, null);
+});
+segment("hand_open", 7, 12, (ctx, cx, y0) => {
+  for (const dx of [-6, -2, 2, 6]) stroke(ctx, INK, 4.6, () => (ctx.moveTo(cx + dx, y0 + 10), ctx.lineTo(cx + dx * 1.45, y0 + 21)));
+  for (const dx of [-6, -2, 2, 6]) stroke(ctx, C.skin, 2.4, () => (ctx.moveTo(cx + dx, y0 + 10), ctx.lineTo(cx + dx * 1.45, y0 + 21)));
+  circle(ctx, cx, y0 + 7, HAND_R, C.skin);
+  circle(ctx, cx, y0, 6, C.skin, null);
+}, 8);
+segment("hand_point", 7, HAND_R, (ctx, cx, y0) => {
+  rr(ctx, cx - 3, y0 + 9, 6, 20, 3, C.skin);
+  circle(ctx, cx, y0 + 7, HAND_R, C.skin);
+  circle(ctx, cx, y0, 6, C.skin, null);
+}, 14);
+segment("thigh", LEG, 11, (ctx, cx, y0) => {
+  capsule(ctx, cx, y0, LEG, 8.5, 8, C.skin, true);
+  capsule(ctx, cx, y0, 22, 11, 10, C.shorts, true); // shorts leg
+});
+segment("shin", LEG, 8, (ctx, cx, y0) => {
+  capsule(ctx, cx, y0, LEG, 8, 6.8, C.skin, false);
+  rr(ctx, cx - 7.2, y0 + LEG - 12, 14.4, 8, 3, "#ffffff", INK, 1.6); // sock band
+});
+// foot: ankle disk (unoutlined) + shoe pointing forward (+x)
+{
+  const w = 44;
+  const h = 26;
+  part("foot", w, h, (ctx) => {
+    const ax = 10;
+    const ay = 8;
+    circle(ctx, ax, ay, 6.8, C.skin, null); // ankle disk under the shoe: continues the shin end
+    ctx.beginPath();
+    ctx.moveTo(ax - 7, ay + 2);
+    ctx.lineTo(ax + 12, ay + 2);
+    ctx.quadraticCurveTo(ax + 31, ay + 3, ax + 31, ay + 13);
+    ctx.lineTo(ax + 31, ay + 15);
+    ctx.lineTo(ax - 8, ay + 15);
+    ctx.closePath();
+    ctx.fillStyle = C.shoe;
+    ctx.fill();
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 2.2;
+    ctx.stroke();
+  });
+  joints.foot = { pivot: { x: 10, y: 8 }, len: 0 };
+}
 
 // ---- face ---------------------------------------------------------------------------------------
 const EYES = { w: 40, h: 22 };
@@ -308,15 +371,16 @@ png(path.join(HERE, "..", "props"), "mug", 30, 30, (ctx) => {
 const S = (name: string) => ({ width: sizes[name].w, height: sizes[name].h });
 const assets = Object.fromEntries(Object.keys(sizes).filter((n) => n !== "mug").map((n) => [n, `parts/${n}.png`]));
 
+const anchor = (name: string) => ({ anchorX: joints[name].pivot.x / sizes[name].w, anchorY: joints[name].pivot.y / sizes[name].h });
 const arm = (side: "r" | "l", z: number, sx: number) => [
-  { id: `upper_arm_${side}`, asset: "upper_arm", parent: "torso", x: sx, y: -70, ...S("upper_arm"), anchorX: 0.5, anchorY: 0.12, z },
-  { id: `forearm_${side}`, asset: "forearm", parent: `upper_arm_${side}`, x: 0, y: 36, ...S("forearm"), anchorX: 0.5, anchorY: 0.08, z: z + 0.1 },
-  { id: `hand_${side}`, asset: "hand", parent: `forearm_${side}`, x: 0, y: 36, anchorX: 0.5, anchorY: 0.3, z: z + 0.2, attachmentPoints: { grip: { x: 0.5, y: 0.5 } } },
+  { id: `upper_arm_${side}`, asset: "upper_arm", parent: "torso", x: sx, y: -70, ...S("upper_arm"), ...anchor("upper_arm"), z },
+  { id: `forearm_${side}`, asset: "forearm", parent: `upper_arm_${side}`, x: 0, y: ARM, ...S("forearm"), ...anchor("forearm"), z: z + 0.1 },
+  { id: `hand_${side}`, asset: "hand", parent: `forearm_${side}`, x: 0, y: ARM, ...S("hand"), ...anchor("hand"), z: z + 0.2, attachmentPoints: { grip: { x: 0.5, y: (joints.hand.pivot.y + 7) / sizes.hand.h } } },
 ];
 const leg = (side: "r" | "l", z: number, sx: number) => [
-  { id: `thigh_${side}`, asset: "thigh", parent: "hips", x: sx, y: 4, ...S("thigh"), anchorX: 0.5, anchorY: 0.08, z },
-  { id: `shin_${side}`, asset: "shin", parent: `thigh_${side}`, x: 0, y: 54, ...S("shin"), anchorX: 0.5, anchorY: 0.06, z: z + 0.1 },
-  { id: `foot_${side}`, asset: "foot", parent: `shin_${side}`, x: 2, y: 54, ...S("foot"), anchorX: 0.25, anchorY: 0.3, z: z + 0.2 },
+  { id: `thigh_${side}`, asset: "thigh", parent: "hips", x: sx, y: 4, ...S("thigh"), ...anchor("thigh"), z },
+  { id: `shin_${side}`, asset: "shin", parent: `thigh_${side}`, x: 0, y: LEG, ...S("shin"), ...anchor("shin"), z: z + 0.1 },
+  { id: `foot_${side}`, asset: "foot", parent: `shin_${side}`, x: 0, y: LEG, ...S("foot"), ...anchor("foot"), z: z + 0.2 },
 ];
 
 const def = {

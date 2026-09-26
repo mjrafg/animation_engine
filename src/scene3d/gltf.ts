@@ -8,6 +8,7 @@
  * Units and axes are glTF's: metres, right-handed, +Y up, a model's front faces +Z.
  */
 import { EngineError } from "../errors.js";
+import { analyzeSkinning, type SkinningReport } from "./skinning.js";
 
 export interface GltfClip {
   name: string;
@@ -52,6 +53,8 @@ export interface ModelInfo {
   nodes: number;
   cameras: number;
   lights: number;
+  /** Rigged models: skin weights per joint (blended / connected / rigid) and overall continuity. */
+  skinning?: SkinningReport | null;
 }
 
 type Json = Record<string, any>;
@@ -287,5 +290,14 @@ export function inspectGltf(data: Buffer, filename = ""): ModelInfo {
     nodes: nodes.length,
     cameras: (json.cameras ?? []).length,
     lights: (json.extensions?.KHR_lights_punctual?.lights ?? []).length,
+    skinning: (json.skins ?? []).length ? safeSkinning(data, json, joints) : null,
   };
+}
+
+function safeSkinning(data: Buffer, json: Json, joints: GltfJoint[]): SkinningReport | null {
+  try {
+    return analyzeSkinning(data, json, joints);
+  } catch {
+    return null; // unusual encodings (sparse accessors): no report rather than a failed import
+  }
 }

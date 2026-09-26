@@ -37,6 +37,7 @@ import { measure3D, modelThumbnail, renderFrames3D, type Measure3DOptions, type 
 import type { Scene3D } from "../scene3d/schema.js";
 import { validateScene3D, type AssetLookup3D } from "../scene3d/validate.js";
 import { describeCharacter } from "../characters/capabilities.js";
+import { analyzeJoints2D, type AlphaImage } from "../characters/continuity.js";
 import type { CharacterContext } from "../characters/operations.js";
 import { CharacterDefinitionSchema, SpeechTimingSchema, type CharacterDefinition, type SpeechTiming } from "../characters/schema.js";
 import { checkEntityId, checkWorkspaceId, readJson, resolveInside, toPosix, writeFileAtomic } from "./paths.js";
@@ -1001,9 +1002,31 @@ export class VideoWorkspace {
     }
     const stored: CharacterDefinition = def.kind === "2d" ? { ...def, assets: mapped } : { ...def, model: mapped.model };
     const sha = crypto.createHash("sha256").update(JSON.stringify(stored)).digest("hex");
+    const continuity = await this.characterContinuity(stored);
     writeFileAtomic(path.join(this.characterDir(def.id), "character.json"), JSON.stringify(stored, null, 2));
-    writeFileAtomic(path.join(this.characterDir(def.id), "meta.json"), JSON.stringify({ characterId: def.id, sha, packageSha, importedAt: now(), origin: opts.origin ?? {} }, null, 2));
+    writeFileAtomic(path.join(this.characterDir(def.id), "meta.json"), JSON.stringify({ characterId: def.id, sha, packageSha, importedAt: now(), origin: opts.origin ?? {}, continuity }, null, 2));
     return { character: this.getCharacter(def.id), reused: false };
+  }
+
+  /**
+   * Whether the character stays visually connected when its skeleton moves (checked once, at
+   * preparation). 2D: joint-disk coverage of the real part art over the motions' angle ranges.
+   * 3D: skin weights (every moving joint blended or connected, none rigid).
+   */
+  private async characterContinuity(def: CharacterDefinition) {
+    if (def.kind === "3d") {
+      const sk = this.getAsset(def.model).model?.skinning;
+      return sk
+        ? { method: "3d skinning: joint weights", continuous: sk.continuous, productionReady: sk.continuous, rigidJoints: sk.rigidJoints, maxInfluences: sk.maxInfluences, joints: sk.joints }
+        : { method: "3d skinning: joint weights", continuous: false, productionReady: false, note: "model has no readable skin weights" };
+    }
+    const images: Record<string, AlphaImage> = {};
+    for (const [name, assetId] of Object.entries(def.assets)) {
+      const { data, info } = await sharp(this.assetFile(assetId)).ensureAlpha().extractChannel(3).raw().toBuffer({ resolveWithObject: true });
+      images[name] = { width: info.width, height: info.height, alpha: new Uint8Array(data) };
+    }
+    const r = analyzeJoints2D(def, (n) => images[n]);
+    return { ...r, productionReady: r.continuous };
   }
 
   getCharacter(id: string): { def: CharacterDefinition; sha: string; meta: Record<string, unknown> } {
@@ -1034,8 +1057,8 @@ export class VideoWorkspace {
   }
 
   describeCharacter(id: string) {
-    const { def, sha } = this.getCharacter(id);
-    return describeCharacter(def, sha);
+    const { def, sha, meta } = this.getCharacter(id);
+    return { ...describeCharacter(def, sha), continuity: (meta.continuity as Record<string, unknown> | undefined) ?? null };
   }
 
   saveSpeechTiming(id: string, timing: unknown) {
@@ -1064,7 +1087,11 @@ export class VideoWorkspace {
   /** Lookups the character runtime needs (definitions, speech timings, audio files). */
   characterContext(): CharacterContext {
     return {
-      definition: (id) => (this.hasCharacter(id) ? this.getCharacter(id) : undefined),
+      definition: (id) => {
+        if (!this.hasCharacter(id)) return undefined;
+        const c = this.getCharacter(id);
+        return { ...c, continuity: c.meta.continuity as { continuous: boolean } | undefined };
+      },
       speech: (id) => this.getSpeechTiming(id),
       audioSrc: (assetId) => (/^[A-Za-z_][A-Za-z0-9_\-.]*$/.test(assetId) && this.hasAsset(assetId) && this.getAsset(assetId).kind === "audio" ? this.getAsset(assetId).file : undefined),
     };
