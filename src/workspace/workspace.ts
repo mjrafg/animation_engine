@@ -40,7 +40,7 @@ import { describeCharacter } from "../characters/capabilities.js";
 import { analyzeJoints2D, type AlphaImage } from "../characters/continuity.js";
 import type { CharacterContext } from "../characters/operations.js";
 import { BUILTIN_INTERACTIONS, InteractionDefinitionSchema, interactionSha, type InteractionDefinition } from "../characters/interaction-defs.js";
-import { describeInteraction } from "../characters/interactions.js";
+import { describeInteraction, interactionTimeline } from "../characters/interactions.js";
 import { CharacterDefinitionSchema, SpeechTimingSchema, type CharacterDefinition, type SpeechTiming } from "../characters/schema.js";
 import { checkEntityId, checkWorkspaceId, readJson, resolveInside, toPosix, writeFileAtomic } from "./paths.js";
 
@@ -1171,6 +1171,68 @@ export class VideoWorkspace {
     }
     writeFileAtomic(this.interactionFile(def.id), JSON.stringify(def, null, 2));
     return { interaction: describeInteraction(def, sha, false), reused: false };
+  }
+
+  /**
+   * The interaction schedule of a scene (interactionTimeline). With `frame`, also the state at that
+   * frame and MEASURED contacts from the renderer: each active hand's grip point (2D: the socket
+   * point of the rendered layout; 3D: the posed hand bone from the Blender backend) and its
+   * distance to the partner hand sharing the same target (or to its body target).
+   */
+  async inspectInteractions(sceneId: string, frame?: number) {
+    const doc = this.getSceneDoc(sceneId);
+    const tl = interactionTimeline(doc, this.characterContext(), frame);
+    const { plan, ...out } = tl;
+    if (frame === undefined || !plan.ok) return out;
+    if (!Number.isInteger(frame) || frame < 0 || frame >= doc.duration) {
+      throw new EngineError("INVALID_FRAME", `Frame ${frame} is outside the scene (0..${doc.duration - 1})`, { frame, duration: doc.duration });
+    }
+    const active = Object.values(plan.reaches)
+      .flat()
+      .filter((r) => r.weights[frame] > 0);
+    const grip = new Map<(typeof active)[number], { x: number; y: number; z: number }>();
+    if (active.length) {
+      if (ops.is3D(doc)) {
+        const m = await this.measure3D(sceneId, frame, { objects: [...new Set(active.map((r) => r.actor))], bones: [...new Set(active.map((r) => r.end))] });
+        for (const r of active) {
+          const o: any = m.objects.find((x: any) => x.id === r.actor);
+          const b = o?.bones?.[r.end];
+          if (!b) continue;
+          const t = b.tail?.world ?? b.world;
+          const len = Math.hypot(t.x - b.world.x, t.y - b.world.y, t.z - b.world.z) || 1;
+          const g = r.grip ?? 0;
+          grip.set(r, { x: b.world.x + ((t.x - b.world.x) / len) * g, y: b.world.y + ((t.y - b.world.y) / len) * g, z: b.world.z + ((t.z - b.world.z) / len) * g });
+        }
+      } else {
+        const l = await this.measureLayout(sceneId, frame, active.map((r) => `${r.actor}.${r.end}`));
+        for (const r of active) {
+          const layer = l.layers.find((x) => x.id === `${r.actor}.${r.end}`);
+          if (!layer) continue;
+          const p = r.point ? layer.attachmentPoints[r.point]?.world : layer.worldPivot;
+          if (p) grip.set(r, { x: p.x, y: p.y, z: 0 });
+        }
+      }
+    }
+    const round = (v: number) => Math.round(v * 1e4) / 1e4;
+    const unit = ops.is3D(doc) ? "m" : "px";
+    const hands = active.map((r) => {
+      const g = grip.get(r);
+      const t = r.targets[frame];
+      const partners = active.filter((x) => x !== r && x.ix === r.ix && x.target === r.target && x.actor !== r.actor);
+      const pg = partners.map((x) => grip.get(x)).find(Boolean);
+      return {
+        ix: r.ix,
+        actor: r.actor,
+        hand: r.hand,
+        target: r.target,
+        weight: round(r.weights[frame]),
+        inContact: frame >= r.contactF0 && frame < r.contactF1,
+        grip: g ? { x: round(g.x), y: round(g.y), ...(unit === "m" ? { z: round(g.z) } : {}) } : null,
+        distanceToTarget: g ? round(Math.hypot(g.x - t.x, g.y - t.y, g.z - t.z)) : null,
+        ...(partners.length ? { partner: partners[0].actor, distanceToPartnerHand: g && pg ? round(Math.hypot(g.x - pg.x, g.y - pg.y, g.z - pg.z)) : null } : {}),
+      };
+    });
+    return { ...out, measured: { frame, unit, hands } };
   }
 
   private modelCache = new Map<string, ModelInfo>();

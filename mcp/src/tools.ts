@@ -19,6 +19,7 @@ import { CameraSchema, CanvasSchema, ColorSchema, IdSchema, LayerSchema } from "
 import { blenderInfo, engineWorks } from "../../src/scene3d/blender.js";
 import * as ops3d from "../../src/scene3d/operations.js";
 import * as chars from "../../src/characters/operations.js";
+import { checkInteraction } from "../../src/characters/interactions.js";
 import { CharacterInstanceSchema, SpeechTimingSchema } from "../../src/characters/schema.js";
 import type { Measurement3D } from "../../src/scene3d/render.js";
 import { AttachSchema, Camera3DSchema, Light3DSchema, Object3DSchema, PrimitiveSchema, Render3DSchema, Vec3Schema, World3DSchema } from "../../src/scene3d/schema.js";
@@ -1132,12 +1133,15 @@ def({
 
 def({
   name: "character_remove",
-  description: "Remove a character instance and everything the runtime generated for it. Your own layers/objects attached to its parts are kept (detached).",
-  args: z.object({ workspaceId: WorkspaceId, sceneId: SceneId, id: InstanceId }).strict(),
+  description:
+    "Remove a character instance and everything the runtime generated for it. Your own layers/objects attached to its parts are kept (detached). If interactions involve it: CHARACTER_IN_INTERACTION, unless removeInteractions:true (those interactions are removed too and the other characters recompiled).",
+  args: z.object({ workspaceId: WorkspaceId, sceneId: SceneId, id: InstanceId, removeInteractions: z.boolean().optional() }).strict(),
   mutates: true,
   handler: async (ctx, a) => {
-    await ctx.workspace(a.workspaceId).mutateScene(a.sceneId, (doc) => chars.removeCharacter(doc, a.id));
-    return { summary: `Removed ${a.id}`, removed: a.id };
+    const ws = ctx.workspace(a.workspaceId);
+    const r = await ws.mutateScene(a.sceneId, (doc) => chars.removeCharacter(doc, a.id, { removeInteractions: a.removeInteractions }, ws.characterContext()));
+    const removedInteractions = (r.result as { removedInteractions?: string[] } | undefined)?.removedInteractions ?? [];
+    return { summary: `Removed ${a.id}${removedInteractions.length ? ` and interaction(s) ${removedInteractions.join(", ")}` : ""}`, removed: a.id, removedInteractions };
   },
 });
 
@@ -1176,6 +1180,125 @@ def({
     const t = ctx.workspace(a.workspaceId).saveSpeechTiming(a.timingId, raw?.timing ?? a.timing);
     const kind = t.visemes ? "visemes" : t.characters ? "characters" : t.words ? "words" : "no timing (generic talk)";
     return { summary: `Speech timing ${a.timingId} saved (${kind})`, timingId: a.timingId, kind };
+  },
+});
+
+// ---------------------------------------------------------------------------------------------
+// multi-character interactions
+
+def({
+  name: "interaction_list",
+  description:
+    "Interactions available in the workspace: built-ins (handshake, high_five, hug, give_object, receive_object, push) and custom ones defined with interaction_define. Per interaction: actor count, roles, default duration, parameters. With interactionId: the full description (roles and what each needs, parameters, phases, alignment, contact targets, which channels it owns and what keeps working alongside). With library: also the interaction definition files in that library.",
+  args: z
+    .object({
+      workspaceId: WorkspaceId,
+      interactionId: IdSchema.optional().describe("Describe this interaction in full."),
+      library: z.string().optional().describe("Also list interaction definition files in this library."),
+    })
+    .strict(),
+  handler: async (ctx, a) => {
+    const ws = ctx.workspace(a.workspaceId);
+    if (a.interactionId) {
+      const d = ws.describeInteraction(a.interactionId);
+      return { summary: `${d.name}: ${d.actors} actors (${d.roles.map((r) => r.name).join(", ")}), ${d.duration.default}s`, interaction: d };
+    }
+    const list = ws.listInteractions();
+    const packages = a.library ? ctx.manager.listInteractionPackages(a.library) : undefined;
+    return { summary: `${list.length} interaction(s): ${list.map((x) => x.id).join(", ")}`, interactions: list, ...(packages ? { library: a.library, packages } : {}) };
+  },
+});
+
+const CheckActor = z.union([
+  InstanceId.describe("Character instance id in sceneId."),
+  z.object({ character: IdSchema.describe("Prepared character id."), scale: z.number().gt(0).optional() }).strict(),
+]);
+
+def({
+  name: "interaction_check",
+  description:
+    "Before applying: can these characters play this interaction, and how would they fit? actors = one per role in role order, either instance ids of sceneId or {character, scale}. Returns compatible, per-role requirements (actions, hand sockets / arm chains) with what is missing, the face-to-face distance and contact height the runtime would use for these sizes, whether each arm reaches (limits are reported, not errors) and the channels the interaction owns.",
+  args: z
+    .object({
+      workspaceId: WorkspaceId,
+      interaction: IdSchema,
+      actors: z.array(CheckActor).min(1).max(8),
+      sceneId: SceneId.optional().describe("Needed when actors are instance ids."),
+      params: z.object({ object: IdSchema.optional(), hand: z.enum(["right", "left"]).optional(), anchor: z.enum(["first", "second", "midpoint"]).optional() }).strict().optional(),
+    })
+    .strict(),
+  handler: async (ctx, a) => {
+    const ws = ctx.workspace(a.workspaceId);
+    const def = ws.requireInteraction(a.interaction).def;
+    const doc = a.sceneId ? ws.getSceneDoc(a.sceneId) : null;
+    const actors = a.actors.map((x: string | { character: string; scale?: number }) => {
+      if (typeof x === "string") {
+        if (!doc) throw new EngineError("INVALID_ARGUMENT", "Instance ids need sceneId", { actor: x });
+        const inst = (doc.characters ?? []).find((c: any) => c.id === x);
+        if (!inst) throw new EngineError("CHARACTER_NOT_FOUND", `No character instance "${x}" in ${a.sceneId}`, { instances: (doc.characters ?? []).map((c: any) => c.id) });
+        return { id: x, def: ws.getCharacter(inst.character).def, scale: inst.scale, props: inst.props };
+      }
+      return { id: x.character, def: ws.getCharacter(x.character).def, scale: x.scale };
+    });
+    const r = checkInteraction(def, actors, { model: (id) => ws.modelInfo(id) }, a.params);
+    return { summary: `${a.interaction}: ${r.compatible ? "compatible" : "NOT compatible"}${r.issues.length ? ` (${r.issues.map((i) => `${i.actor}: ${i.problem}`).join("; ")})` : ""}`, interaction: a.interaction, ...r };
+  },
+});
+
+def({
+  name: "interaction_define",
+  description:
+    "Register a custom reusable interaction in the workspace WITHOUT code changes (e.g. a Channel's professor_greeting): pass the definition JSON (same schema as the built-ins: roles with requirements, duration, params, alignment, phases as fractions, targets 'between' actors or on a 'partner' body, effectors role+hand+target+from/until phases, optional moves and object transfer) or a {library, path} definition file (interaction_list library). Same content again is a no-op; a changed definition needs replace:true. Built-in ids cannot be redefined. See interaction_list interactionId:'handshake' for a complete example.",
+  args: z
+    .object({
+      workspaceId: WorkspaceId,
+      definition: z.record(z.string(), z.unknown()).optional().describe("Interaction definition JSON."),
+      source: z.object({ library: z.string(), path: z.string() }).strict().optional(),
+      replace: z.boolean().optional(),
+    })
+    .strict(),
+  mutates: true,
+  handler: async (ctx, a) => {
+    const ws = ctx.workspace(a.workspaceId);
+    if (!a.definition === !a.source) throw new EngineError("INVALID_ARGUMENT", "Give either definition or source");
+    let raw: unknown = a.definition;
+    if (a.source) {
+      const file = ctx.manager.resolveLibraryFile(a.source.library, a.source.path);
+      try {
+        raw = JSON.parse(fs.readFileSync(file, "utf8"));
+      } catch (e) {
+        throw new EngineError("INTERACTION_INVALID", `Unreadable interaction file: ${e instanceof Error ? e.message : e}`);
+      }
+    }
+    const r = ws.defineInteraction(raw, { replace: a.replace, origin: a.source });
+    return { summary: `${r.reused ? "Reused" : "Defined"} interaction ${r.interaction.id} (${r.interaction.actors} actors)`, reused: r.reused, interaction: r.interaction };
+  },
+});
+
+const InteractionOp = chars.InteractionOpSchema;
+
+def({
+  name: "interaction_apply",
+  description:
+    "Add/edit/remove interactions between placed characters in one atomic batch (all or nothing). Ops: add {interaction:{interaction, actors:[instance ids in role order], start, duration?, params?:{object?, anchor?, hand?}}}, update {id, patch} (start, duration, actors, params; null removes), replace {id, interaction}, remove {id}, shift {by, after?|ids?}, clear {interactions?}. The runtime aligns the actors (the anchor stays, the other walks up during the approach phase), turns them to face each other, holds them in place, moves the arms to the contact targets and hands objects over; nothing is keyframed by hand. The actors keep talking/smiling/blinking; their own walks/turns/gestures that overlap an interaction's locomotion, facing or arms are rejected with ACTION_CONFLICT naming the interaction. Returns the resolved interaction timeline.",
+  args: z.object({ workspaceId: WorkspaceId, sceneId: SceneId, operations: z.array(InteractionOp).min(1).max(200) }).strict(),
+  mutates: true,
+  handler: async (ctx, a, raw?: any) => {
+    const ws = ctx.workspace(a.workspaceId);
+    const r = await ws.mutateScene(a.sceneId, (doc) => chars.applyInteractionOps(doc, raw?.operations ?? a.operations, ws.characterContext()));
+    const tl = await ws.inspectInteractions(a.sceneId);
+    return { summary: `${a.operations.length} interaction operation(s) applied: ${(tl.interactions as any[]).map((x) => `${x.id} ${x.interaction} ${x.start}-${x.end}s`).join(", ") || "none"}`, warnings: r.warnings, ...tl };
+  },
+});
+
+def({
+  name: "interaction_inspect",
+  description:
+    "Inspect a scene's interactions: per interaction the actors and roles, phases with seconds/frames, alignment (where each actor started, where it stands, facing, distance), the actions it scheduled for each actor, contact targets and windows, predicted reach misses, the object transfer and the ownership history of every object. With frame: the active phase, actor positions/facing, which hands reach where, who holds each object, and MEASURED contact distances from the renderer (grip point to partner hand / target; 2D px, 3D m, 3D needs Blender).",
+  args: z.object({ workspaceId: WorkspaceId, sceneId: SceneId, frame: z.number().int().min(0).optional() }).strict(),
+  handler: async (ctx, a) => {
+    const tl: any = await ctx.workspace(a.workspaceId).inspectInteractions(a.sceneId, a.frame);
+    return { summary: `${tl.interactions.length} interaction(s)${a.frame !== undefined ? ` at frame ${a.frame}: ${tl.atFrame?.interactions.map((x: any) => `${x.id} ${x.phase.name}`).join(", ") || "none active"}` : ""}`, ...tl };
   },
 });
 

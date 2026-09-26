@@ -18,6 +18,7 @@ import { blenderInfo } from "./scene3d/blender.js";
 import { COMPOSITION_RULES } from "./characters/capabilities.js";
 import { KIND_CHANNEL } from "./characters/plan.js";
 import { VISEMES } from "./characters/schema.js";
+import { BUILTIN_INTERACTIONS, PHASES } from "./characters/interaction-defs.js";
 import {
   CAMERA3D_PROPERTIES,
   LIGHT3D_PROPERTIES,
@@ -142,6 +143,18 @@ export function engineCapabilities() {
       visemes: [...VISEMES],
       speechInput: "provider-neutral: visemes | character alignment | word alignment | none (deterministic generic talking)",
       tools: ["character_list", "character_import", "character_inspect", "character_add", "character_update", "character_remove", "character_actions", "character_timeline", "speech_timing_save"],
+    },
+    interactions: {
+      runtime: true,
+      summary:
+        "Multi-character interactions (handshake, high_five, hug, give_object, receive_object, push, or custom definitions) between placed characters: the runtime aligns the actors, schedules approach/turn/hold, drives the arms to the contact targets (2D and 3D two-bone IK) and switches object ownership, all compiled into the actors' timeline content.",
+      builtin: Object.keys(BUILTIN_INTERACTIONS),
+      phases: [...PHASES],
+      ownsChannels: "locomotion, facing and the arms it uses, for its actors, during the interaction",
+      concurrent: "talk (mouth), expressions, blinks keep working; each character's speech, mouth, expression and audio are independent",
+      custom: "interaction_define: same JSON schema as the built-ins (roles, duration, alignment, phases, targets, effectors, moves, transfer), stored per workspace",
+      limits: "no physics, collisions, motion planning or full-body IK; arms only reach as far as they are long (INTERACTION_OUT_OF_REACH warning)",
+      tools: ["interaction_list", "interaction_check", "interaction_define", "interaction_apply", "interaction_inspect"],
     },
   };
 }

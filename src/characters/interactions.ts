@@ -1187,7 +1187,12 @@ export function interactionTimeline(doc: SceneDoc, ctx: InteractionLookups, fram
     const key = `${root.actor}.${root.object}`;
     (objects[key] ??= []).push({ actor: h.actor, layer: h.layer, from: s(h.from), until: h.until === Infinity ? null : s(h.until) });
   }
-  const result: Record<string, unknown> = {
+  const result: {
+    interactions: typeof interactions;
+    objects: { object: string; owners: { actor: string; layer: string; from: number; until: number | null }[] }[];
+    issues: Record<string, unknown>[];
+    atFrame?: Record<string, unknown>;
+  } = {
     interactions,
     objects: Object.entries(objects).map(([object, holders]) => ({ object, owners: holders.sort((a, b) => a.from - b.from) })),
     issues: [...sp.errors, ...sp.warnings].map(({ severity, code, message, details }) => ({ severity, code, message, ...(details ? { details } : {}) })),
