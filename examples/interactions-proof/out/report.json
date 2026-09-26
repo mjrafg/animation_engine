@@ -1,7 +1,7 @@
 {
-  "seconds": 84.3,
-  "passed": 37,
-  "total": 37,
+  "seconds": 1628,
+  "passed": 40,
+  "total": 40,
   "checks": [
     {
       "group": "conversation_3d",
@@ -108,6 +108,14 @@
       }
     },
     {
+      "group": "conversation_3d",
+      "name": "conversation_3d: video rendered",
+      "ok": true,
+      "detail": {
+        "seconds": 647.01
+      }
+    },
+    {
       "group": "interactions_3d",
       "name": "no interaction warnings (different sizes adapt)",
       "ok": true,
@@ -186,6 +194,14 @@
       "group": "interactions_3d",
       "name": "save/reload: the transferred mug is in the same place after reload",
       "ok": true
+    },
+    {
+      "group": "interactions_3d",
+      "name": "interactions_3d: video rendered",
+      "ok": true,
+      "detail": {
+        "seconds": 891.29
+      }
     },
     {
       "group": "sizes_3d",
@@ -301,6 +317,14 @@
       }
     },
     {
+      "group": "interactions_2d",
+      "name": "interactions_2d: video rendered",
+      "ok": true,
+      "detail": {
+        "seconds": 5.73
+      }
+    },
+    {
       "group": "sizes_2d",
       "name": "handshake with partner scale 0.5: contact < 1 px",
       "ok": true,
@@ -404,7 +428,10 @@
       ],
       "worst": 0.0004
     },
-    "video": null,
+    "video": {
+      "bytes": 583308,
+      "durationSeconds": 16
+    },
     "interactions": [
       {
         "id": "shake",
@@ -709,7 +736,10 @@
         0.1175
       ]
     },
-    "video": null,
+    "video": {
+      "bytes": 753403,
+      "durationSeconds": 22
+    },
     "interactions": [
       {
         "id": "shake",
@@ -1520,7 +1550,10 @@
       "receiverHand": "right",
       "jumpPx": 0.1723
     },
-    "video": null,
+    "video": {
+      "bytes": 1170807,
+      "durationSeconds": 20
+    },
     "interactions": [
       {
         "id": "shake",
