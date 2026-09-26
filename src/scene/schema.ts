@@ -15,7 +15,7 @@
  *    (further multiplied by ancestor and camera scale).
  */
 import { z } from "zod";
-import { CharacterInstanceSchema } from "../characters/schema.js";
+import { CharacterInstanceSchema, InteractionInstanceSchema } from "../characters/schema.js";
 
 /** Finite number. Zod 4 `z.number()` already rejects NaN and ±Infinity. */
 const num = () => z.number();
@@ -186,6 +186,7 @@ export const SceneSchema = z
     layers: z.array(LayerSchema).default([]),
     animations: z.array(AnimationSchema).default([]),
     audio: z.array(AudioSchema).default([]),
+    interactions: z.array(InteractionInstanceSchema).optional().describe("Multi-character interactions (handshake, hug, give_object, ...) between character instances; compiled into the actors' generated content."),
     characters: z
       .array(CharacterInstanceSchema)
       .optional()

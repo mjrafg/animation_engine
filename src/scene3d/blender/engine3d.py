@@ -456,6 +456,10 @@ class Scene3D:
             o.data.color = rgb
             o.data.energy = l["intensity"]
         bpy.context.view_layer.update()
+        # reach IK (after clips, before attachments so held props follow the corrected hand)
+        for inst in self.instances.values():
+            for chain in objs[inst.id].get("ik") or []:
+                self._apply_ik(inst, chain)
         # attachments (in dependency order) follow the evaluated pose
         for i in self.order:
             inst = self.instances[i]
@@ -517,6 +521,70 @@ class Scene3D:
                     arr[i] = x
             else:
                 setattr(g["struct"], g["attr"], rest if a is None else a + rest * (1 - total))
+
+    def _apply_ik(self, inst, chain):
+        """Analytic two-bone IK: rotates the upper and lower bones (minimal twist) so the end bone's
+        head (wrist) reaches the target, blended with the clip pose by weight. The target is where
+        the grip point should be; the wrist aims `grip` metres short of it. The elbow bends toward a
+        pole behind, below and outside the shoulder in the character's own frame."""
+        arm = inst.armature
+        if arm is None:
+            return
+        bones = arm.pose.bones
+        names = (chain["upper"], chain["lower"], chain["end"])
+        if any(n not in bones for n in names):
+            raise JobError("BONE_NOT_FOUND", "IK bones %s not found on %s" % (list(names), inst.id))
+        up, fo, ha = (bones[n] for n in names)
+        w = max(0.0, min(1.0, chain["weight"]))
+        Ainv = arm.matrix_world.inverted()
+        world_target = C @ vec(chain["target"])
+        R = inst.root.matrix_world.to_3x3()
+        side = -1.0 if chain.get("side", "right") == "right" else 1.0
+        S = up.head.copy()
+        T = Ainv @ world_target
+        shoulder_w = arm.matrix_world @ S
+        pole_w = shoulder_w + R @ Vector((0.3 * side, -0.3, -0.3))
+        P = Ainv @ pole_w
+        u = T - S
+        if u.length < 1e-6:
+            return
+        grip = chain.get("grip", 0.0)
+        T_grip = T.copy()
+        if grip > 0:
+            # grip given in world metres -> armature units
+            sc = arm.matrix_world.to_scale()
+            T = T - u.normalized() * grip * 3.0 / ((abs(sc[0]) + abs(sc[1]) + abs(sc[2])) or 3.0)
+            u = T - S
+        L1 = (fo.head - up.head).length
+        L2 = (ha.head - fo.head).length
+        d = max(abs(L1 - L2) + 1e-4, min(L1 + L2 - 1e-4, u.length))
+        u = u.normalized()
+        a = (L1 * L1 - L2 * L2 + d * d) / (2 * d)
+        h = math.sqrt(max(0.0, L1 * L1 - a * a))
+        v = (P - S) - (P - S).dot(u) * u
+        if v.length < 1e-6:
+            down = Ainv.to_3x3() @ Vector((0, 0, -1))
+            v = down - down.dot(u) * u
+            if v.length < 1e-6:
+                v = u.orthogonal()
+        v.normalize()
+        E = S + a * u + h * v
+
+        def aim(pb, target_dir):
+            m = pb.matrix.copy()
+            loc = m.to_translation()
+            rot = m.to_quaternion()
+            y = (rot @ Vector((0, 1, 0))).normalized()
+            q = y.rotation_difference(target_dir.normalized()) @ rot
+            q = rot.slerp(q, w)
+            pb.matrix = Matrix.Translation(loc) @ q.to_matrix().to_4x4()
+            bpy.context.view_layer.update()
+
+        aim(up, E - S)
+        aim(fo, S + u * d - fo.head)
+        if grip > 0 and (T_grip - ha.head).length > 1e-6:
+            # the palm (grip point along the hand) lands on the target
+            aim(ha, T_grip - ha.head)
 
     def _place_attached(self, inst, st):
         """Offsets are expressed in the target's own engine space at its rest pose; the object then

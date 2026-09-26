@@ -1,0 +1,27 @@
+{
+  "id": "professor_greeting",
+  "name": "Professor greeting",
+  "description": "Example custom interaction (a Channel-specific preset, defined as data with no code changes): the student walks up to the waiting professor, they shake hands slowly and hold the grip a little longer, then let go.",
+  "version": 1,
+  "roles": [
+    { "name": "professor", "description": "Waits in place and greets.", "requires": { "actions": [], "sockets": ["rightHand"] } },
+    { "name": "student", "description": "Walks up to the professor.", "requires": { "actions": ["walk"], "sockets": ["rightHand"] } }
+  ],
+  "duration": { "default": 4, "min": 2 },
+  "alignment": { "mode": "face_to_face", "distance": { "reach": 0.92 }, "anchor": "first" },
+  "phases": [
+    { "name": "approach", "end": 0.3 },
+    { "name": "reach", "end": 0.42 },
+    { "name": "contact", "end": 0.5 },
+    { "name": "motion", "end": 0.8 },
+    { "name": "release", "end": 0.9 },
+    { "name": "return", "end": 1 }
+  ],
+  "targets": {
+    "grip": { "kind": "between", "height": { "shoulder": 1, "reach": -0.5 }, "along": "reach", "shake": { "phase": "motion", "amplitude": 0.012, "frequency": 1.5 } }
+  },
+  "effectors": [
+    { "role": "professor", "hand": "right", "target": "grip", "from": "reach", "until": "release" },
+    { "role": "student", "hand": "right", "target": "grip", "from": "reach", "until": "release" }
+  ]
+}

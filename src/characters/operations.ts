@@ -7,12 +7,17 @@
  */
 import { issue, is3D, transact, zodIssues, type OpResult, type SceneDoc } from "../api/operations.js";
 import type { ValidationIssue } from "../scene/validate.js";
-import { compile2D, compile3D } from "./compile.js";
+import { compile2D, compile3D, type CompileExtras, type CompiledCharacter } from "./compile.js";
+import type { InteractionDefinition } from "./interaction-defs.js";
+import { interactionIdOf, interactionList, planScene, transferCopies } from "./interactions.js";
+import type { ModelInfo } from "../scene3d/gltf.js";
 import { characterActions, planCharacter, type Plan } from "./plan.js";
 import {
   CharacterActionSchema,
   CharacterInstanceSchema,
   CharacterPropSchema,
+  InteractionInstanceSchema,
+  type InteractionInstance,
   type CharacterAction,
   type CharacterDefinition,
   type CharacterInstance,
@@ -27,6 +32,10 @@ export interface CharacterContext {
   speech?(id: string): SpeechTiming | undefined;
   /** Workspace-relative file of an audio asset (2D/3D scene audio entries use files). */
   audioSrc?(assetId: string): string | undefined;
+  /** Interaction definition (built-in or workspace custom). */
+  interaction?(id: string): { def: InteractionDefinition; sha: string; builtin: boolean } | undefined;
+  /** 3D: model facts of a model asset (joints, rest positions, bounds). */
+  model?(assetId: string): ModelInfo | undefined;
 }
 
 const clone = <T>(v: T): T => structuredClone(v);
@@ -48,8 +57,13 @@ export interface CompileInfo {
   warnings: ValidationIssue[];
 }
 
-/** Recompiles one instance inside `d` (mutates). Returns issues on failure. */
-function compileInstance(d: SceneDoc, index: number, ctx: CharacterContext): { errors: ValidationIssue[]; warnings: ValidationIssue[]; plan?: Plan } {
+/** Recompiles one instance inside `d` (mutates). Returns issues on failure. `pre`: a plan made by the scene planner (interactions). */
+function compileInstance(
+  d: SceneDoc,
+  index: number,
+  ctx: CharacterContext,
+  pre?: { plan: Plan; extras: CompileExtras },
+): { errors: ValidationIssue[]; warnings: ValidationIssue[]; plan?: Plan; compiled?: CompiledCharacter } {
   const inst = d.characters[index] as CharacterInstance;
   const p: (string | number)[] = ["characters", index];
   const entry = ctx.definition(inst.character);
@@ -59,7 +73,7 @@ function compileInstance(d: SceneDoc, index: number, ctx: CharacterContext): { e
   if (def.kind !== kind) {
     return { errors: [issue("INVALID_ACTION", [...p, "character"], `"${inst.character}" is a ${def.kind.toUpperCase()} character; this is a ${kind.toUpperCase()} scene`)], warnings: [] };
   }
-  const r = planCharacter(inst, def, { fps: d.canvas.fps, frames: d.duration, speech: ctx.speech?.bind(ctx) }, p);
+  const r = pre ? { ok: true, plan: pre.plan, errors: [], warnings: [] } : planCharacter(inst, def, { fps: d.canvas.fps, frames: d.duration, speech: ctx.speech?.bind(ctx) }, p);
   if (!r.ok) return { errors: r.errors, warnings: r.warnings };
   const plan = r.plan!;
   const errors: ValidationIssue[] = [];
@@ -72,8 +86,8 @@ function compileInstance(d: SceneDoc, index: number, ctx: CharacterContext): { e
   removeGenerated(d, inst.id);
   const compiled =
     def.kind === "2d"
-      ? compile2D(plan, def, inst, { assetId: (name) => def.assets[name] ?? name })
-      : compile3D(plan, def, inst, { modelAsset: def.model, idleClip: characterActions(def).idle?.clip ?? null });
+      ? compile2D(plan, def, inst, { assetId: (name) => def.assets[name] ?? name }, pre?.extras)
+      : compile3D(plan, def, inst, { modelAsset: def.model, idleClip: characterActions(def).idle?.clip ?? null }, pre?.extras);
   if (def.kind === "2d") d.layers = [...(d.layers ?? []), ...compiled.layers!];
   else d.objects = [...(d.objects ?? []), ...compiled.objects!];
   d.animations = [...(d.animations ?? []), ...compiled.tracks];
@@ -86,7 +100,49 @@ function compileInstance(d: SceneDoc, index: number, ctx: CharacterContext): { e
     d.audio = [...(d.audio ?? []), { src, startFrame: a.startFrame, volume: a.volume ?? 1, owner: inst.id }];
   }
   (d.characters[index] as CharacterInstance).definitionSha = sha;
-  return { errors, warnings: r.warnings, plan };
+  return { errors, warnings: r.warnings, plan, compiled };
+}
+
+/**
+ * Recompiles characters inside `d`. Without interactions each instance is independent (`ids` or
+ * all). With interactions the actors are coupled (positions, facing, contact targets, objects), so
+ * the whole scene is planned together and every instance is recompiled.
+ */
+function compileCharacters(d: SceneDoc, ctx: CharacterContext, ids?: string[]): { errors: ValidationIssue[]; warnings: ValidationIssue[]; plans: Record<string, Plan> } {
+  const plans: Record<string, Plan> = {};
+  let warnings: ValidationIssue[] = [];
+  if (!interactionList(d).length) {
+    if (d.interactions) delete d.interactions;
+    for (const id of ids ?? instances(d).map((x) => x.id)) {
+      const idx = instances(d).findIndex((x) => x.id === id);
+      if (idx < 0) continue;
+      const c = compileInstance(d, idx, ctx);
+      if (c.errors.length) return { errors: c.errors, warnings, plans };
+      warnings = [...warnings, ...c.warnings];
+      if (c.plan) plans[id] = c.plan;
+    }
+    return { errors: [], warnings, plans };
+  }
+  const sp = planScene(d, ctx);
+  if (!sp.ok) return { errors: sp.errors, warnings: sp.warnings, plans };
+  warnings = [...sp.warnings];
+  const compiled: Record<string, CompiledCharacter> = {};
+  for (const [idx, inst] of instances(d).entries()) {
+    const c = compileInstance(d, idx, ctx, { plan: sp.plans[inst.id], extras: { reaches: sp.reaches[inst.id], hideProps: sp.hideProps[inst.id] } });
+    if (c.errors.length) return { errors: c.errors, warnings, plans };
+    warnings = [...warnings, ...c.warnings];
+    plans[inst.id] = c.plan!;
+    compiled[inst.id] = c.compiled!;
+  }
+  const copies = transferCopies(d, sp, compiled);
+  warnings = [...warnings, ...copies.warnings];
+  for (const it of copies.items) {
+    if (is3D(d)) d.objects = [...(d.objects ?? []), it.entity];
+    else d.layers = [...(d.layers ?? []), it.entity];
+    d.animations = [...(d.animations ?? []), it.track];
+  }
+  for (const ip of sp.interactions) d.interactions[ip.index].definitionSha = ip.sha;
+  return { errors: [], warnings, plans };
 }
 
 /** Runs `mutate`, then recompiles `ids` (all when omitted), all inside one validated transaction. */
@@ -99,20 +155,13 @@ function withCompile<T>(doc: SceneDoc, ctx: CharacterContext, mutate: (d: SceneD
       failure = (out as any).errors;
       return undefined as any;
     }
-    const plans: Record<string, Plan> = {};
-    const want = ids ? ids() : instances(d).map((x) => x.id);
-    for (const id of want) {
-      const idx = instances(d).findIndex((x) => x.id === id);
-      if (idx < 0) continue;
-      const c = compileInstance(d, idx, ctx);
-      if (c.errors.length) {
-        failure = c.errors;
-        return undefined as any;
-      }
-      warnings = [...warnings, ...c.warnings];
-      if (c.plan) plans[id] = c.plan;
+    const c = compileCharacters(d, ctx, ids ? ids() : undefined);
+    if (c.errors.length) {
+      failure = c.errors;
+      return undefined as any;
     }
-    return { ...(out as object), plans } as any;
+    warnings = [...warnings, ...c.warnings];
+    return { ...(out as object), plans: c.plans } as any;
   });
   if (failure) return { ok: false, errors: failure };
   if (!r.ok) return r as OpResult<any>;
@@ -169,21 +218,51 @@ export function updateCharacter(doc: SceneDoc, id: string, patch: Record<string,
   }, () => [id]);
 }
 
-export function removeCharacter(doc: SceneDoc, id: string): OpResult<{ removed: string }> {
+/**
+ * Removes a character instance. If interactions involve it the call fails with
+ * CHARACTER_IN_INTERACTION unless `removeInteractions` is set: then those interactions are removed
+ * too and the remaining characters are recompiled (objects they received from it disappear).
+ */
+export function removeCharacter(doc: SceneDoc, id: string, opts: { removeInteractions?: boolean } = {}, ctx?: CharacterContext): OpResult<{ removed: string; removedInteractions?: string[] }> {
   const idx = instances(doc).findIndex((c) => c.id === id);
   if (idx < 0) return { ok: false, errors: [issue("CHARACTER_NOT_FOUND", ["id"], `No character instance "${id}" in this scene`, { instances: instances(doc).map((c) => c.id) })] };
+  const deps = interactionList(doc)
+    .map((ix, k) => ({ id: interactionIdOf(ix, k), actors: ix.actors }))
+    .filter((x) => x.actors.includes(id));
+  if (deps.length && !opts.removeInteractions) {
+    return {
+      ok: false,
+      errors: [issue("CHARACTER_IN_INTERACTION", ["id"], `"${id}" takes part in interaction(s) ${deps.map((x) => x.id).join(", ")}; remove them first or pass removeInteractions: true`, { interactions: deps.map((x) => x.id) })],
+    };
+  }
+  if (interactionList(doc).length) {
+    if (!ctx) return { ok: false, errors: [issue("INVALID_ARGUMENT", ["id"], "Removing a character from a scene with interactions needs the character context")] };
+    const gone = new Set(deps.map((x) => x.id));
+    return withCompile(doc, ctx, (d) => {
+      d.interactions = interactionList(d).filter((ix, k) => !gone.has(interactionIdOf(ix, k)));
+      removeGenerated(d, id);
+      d.characters = instances(d).filter((c) => c.id !== id);
+      if (!d.characters.length) delete d.characters;
+      detachFrom(d, id);
+      return { removed: id, ...(deps.length ? { removedInteractions: [...gone] } : {}) };
+    });
+  }
   return transact(doc, (d) => {
     removeGenerated(d, id);
     d.characters = instances(d).filter((c) => c.id !== id);
     if (!d.characters.length) delete d.characters;
-    // hand-made layers/objects attached to the character's parts lose that parent
-    const gone = (x: string | undefined | null) => !!x && (x === id || x.startsWith(id + "."));
-    for (const l of is3D(d) ? d.objects ?? [] : d.layers ?? []) {
-      if (gone(l.parent)) delete l.parent, delete l.parentPoint;
-      if (l.attach && gone(l.attach.object)) delete l.attach;
-    }
+    detachFrom(d, id);
     return { removed: id };
   });
+}
+
+/** Hand-made layers/objects attached to a removed character's parts lose that parent. */
+function detachFrom(d: SceneDoc, id: string) {
+  const gone = (x: string | undefined | null) => !!x && (x === id || x.startsWith(id + "."));
+  for (const l of is3D(d) ? d.objects ?? [] : d.layers ?? []) {
+    if (gone(l.parent)) delete l.parent, delete l.parentPoint;
+    if (l.attach && gone(l.attach.object)) delete l.attach;
+  }
 }
 
 // ---- action batches ------------------------------------------------------------------------------
@@ -295,6 +374,96 @@ export function applyCharacterActions(doc: SceneDoc, instanceId: string, ops: un
   }, () => [instanceId]);
 }
 
+// ---- interactions --------------------------------------------------------------------------------
+
+const InteractionFields = InteractionInstanceSchema.omit({ id: true, definitionSha: true });
+
+export const InteractionOpSchema = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("add"), interaction: InteractionInstanceSchema.omit({ definitionSha: true }) }).strict(),
+  z
+    .object({
+      type: z.literal("update"),
+      id: z.string(),
+      patch: z.record(z.string(), z.unknown()).describe("Fields to change: start, duration, actors, params, interaction; null removes duration/params."),
+    })
+    .strict(),
+  z.object({ type: z.literal("replace"), id: z.string(), interaction: InteractionFields }).strict(),
+  z.object({ type: z.literal("remove"), id: z.string() }).strict(),
+  z.object({ type: z.literal("shift"), by: z.number(), after: z.number().min(0).optional().describe("Only interactions starting at/after this second (default all)."), ids: z.array(z.string()).optional() }).strict(),
+  z.object({ type: z.literal("clear"), interactions: z.array(z.string()).optional().describe("Only interactions of these definitions (e.g. ['hug']); default all.") }).strict(),
+]);
+export type InteractionOp = z.infer<typeof InteractionOpSchema>;
+
+/**
+ * Applies interaction operations atomically (all or nothing) and recompiles every character of the
+ * scene. A failing operation names operations[i]; planning problems (conflicts with the actors' own
+ * actions, incompatible characters, objects not held) name the interaction.
+ */
+export function applyInteractionOps(doc: SceneDoc, ops: unknown[], ctx: CharacterContext): OpResult<{ interactions: InteractionInstance[]; plans?: Record<string, Plan> }> {
+  let list: InteractionInstance[] = clone(interactionList(doc)).map((ix, k) => ({ ...ix, id: interactionIdOf(ix, k) }));
+  const nextId = () => `ix${Math.max(0, ...list.map((x) => Number(/^ix(\d+)$/.exec(x.id ?? "")?.[1] ?? 0))) + 1}`;
+  for (let i = 0; i < ops.length; i++) {
+    const fail = (errors: ValidationIssue[]) => ({ ok: false as const, errors: errors.map((e) => ({ ...e, path: ["operations", i, ...e.path], details: { ...e.details, opIndex: i } })) });
+    const parsed = InteractionOpSchema.safeParse(ops[i]);
+    if (!parsed.success) return fail(zodIssues(parsed.error, []));
+    const op = parsed.data;
+    const find = (id: string) => list.findIndex((x) => x.id === id);
+    const notFound = (id: string) => fail([issue("INTERACTION_NOT_FOUND", ["id"], `No interaction "${id}" in this scene`, { interactions: list.map((x) => `${x.id}:${x.interaction}`) })]);
+    switch (op.type) {
+      case "add": {
+        if (op.interaction.id && find(op.interaction.id) >= 0) return fail([issue("INTERACTION_INVALID", ["interaction", "id"], `Interaction id "${op.interaction.id}" already exists`)]);
+        list.push({ ...clone(op.interaction), id: op.interaction.id ?? nextId() });
+        break;
+      }
+      case "update": {
+        const k = find(op.id);
+        if (k < 0) return notFound(op.id);
+        const merged: Record<string, unknown> = { ...list[k] };
+        for (const [key, v] of Object.entries(op.patch)) {
+          if (key === "id" || key === "definitionSha") return fail([issue("INTERACTION_INVALID", ["patch", key], `"${key}" cannot be changed`)]);
+          if (v === null) delete merged[key];
+          else if (key === "params" && typeof v === "object") merged.params = { ...(merged.params as object), ...clone(v as object) };
+          else merged[key] = clone(v);
+        }
+        const p = InteractionInstanceSchema.safeParse(merged);
+        if (!p.success) return fail(zodIssues(p.error, ["patch"]));
+        list[k] = merged as InteractionInstance;
+        break;
+      }
+      case "replace": {
+        const k = find(op.id);
+        if (k < 0) return notFound(op.id);
+        list[k] = { ...clone(op.interaction), id: op.id };
+        break;
+      }
+      case "remove": {
+        const k = find(op.id);
+        if (k < 0) return notFound(op.id);
+        list.splice(k, 1);
+        break;
+      }
+      case "shift": {
+        for (const x of list) {
+          if (op.ids ? !op.ids.includes(x.id!) : x.start < (op.after ?? 0)) continue;
+          x.start = Math.round((x.start + op.by) * 1000) / 1000;
+          if (x.start < 0) return fail([issue("INTERACTION_INVALID", ["by"], `Shifting moves "${x.id}" before 0 s`)]);
+        }
+        break;
+      }
+      case "clear":
+        list = op.interactions ? list.filter((x) => !op.interactions!.includes(x.interaction)) : [];
+        break;
+    }
+  }
+  list.sort((a, b) => a.start - b.start);
+  for (const x of list) delete x.definitionSha;
+  return withCompile(doc, ctx, (d) => {
+    if (list.length) d.interactions = list;
+    else delete d.interactions;
+    return { interactions: list };
+  });
+}
+
 /** Recompiles every instance (e.g. after the scene duration/fps changed or a character was re-prepared). */
 export function recompileCharacters(doc: SceneDoc, ctx: CharacterContext, ids?: string[]): OpResult<{ plans?: Record<string, Plan> }> {
   return withCompile(doc, ctx, () => ({}), ids ? () => ids : undefined);
@@ -315,6 +484,7 @@ export function characterTimeline(doc: SceneDoc, ctx: CharacterContext, only?: s
   if (only && !list.length) {
     throw new EngineError("CHARACTER_NOT_FOUND", `No character instance "${only}" in this scene`, { instances: instances(doc).map((c) => c.id) });
   }
+  const sp = interactionList(doc).length ? planScene(doc, ctx) : null;
   return list.map((inst) => {
     const entry = ctx.definition(inst.character);
     const generatedTracks = (doc.animations ?? []).filter((a: any) => a.owner === inst.id);
@@ -325,8 +495,14 @@ export function characterTimeline(doc: SceneDoc, ctx: CharacterContext, only?: s
       audio: (doc.audio ?? []).filter((a: any) => a.owner === inst.id).length,
     };
     if (!entry) return { id: inst.id, character: inst.character, error: "CHARACTER_NOT_FOUND", actions: inst.actions ?? [], generated };
-    const r = planCharacter(inst, entry.def, { fps: doc.canvas.fps, frames: doc.duration, speech: ctx.speech?.bind(ctx) });
+    const r: { plan?: Plan; errors: ValidationIssue[]; warnings: ValidationIssue[] } = sp
+      ? { plan: sp.plans[inst.id], errors: sp.errors, warnings: sp.warnings }
+      : planCharacter(inst, entry.def, { fps: doc.canvas.fps, frames: doc.duration, speech: ctx.speech?.bind(ctx) });
     const resolved = r.plan?.resolved ?? {};
+    const injected = Object.entries(resolved)
+      .filter(([, v]) => v.source)
+      .map(([id, v]) => ({ id, ...v }) as Record<string, unknown>)
+      .sort((a, b) => (a.startFrame as number) - (b.startFrame as number));
     return {
       id: inst.id,
       character: inst.character,
@@ -341,7 +517,8 @@ export function characterTimeline(doc: SceneDoc, ctx: CharacterContext, only?: s
       blinks: r.plan
         ? r.plan.blinks.map((b) => ({ at: +(b.f0 / doc.canvas.fps).toFixed(2), source: b.actionId ? `action ${b.actionId}` : "autoBlink" })).sort((x, y) => x.at - y.at)
         : [],
-      note: "actions are listed in start order; blinks: autoBlink keeps >= 1 s away from scheduled blinks",
+      interactionActions: injected,
+      note: "actions are listed in start order; blinks: autoBlink keeps >= 1 s away from scheduled blinks" + (injected.length ? "; interactionActions are scheduled by interactions (interaction_inspect)" : ""),
       generated,
       issues: [...r.errors, ...r.warnings].map(({ severity, code, message }) => ({ severity, code, message })),
     };

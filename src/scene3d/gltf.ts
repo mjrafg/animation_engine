@@ -53,6 +53,8 @@ export interface ModelInfo {
   nodes: number;
   cameras: number;
   lights: number;
+  /** Bind-pose (rest) position of every joint in model space (glTF axes, model units). */
+  jointRest?: Record<string, [number, number, number]>;
   /** Rigged models: skin weights per joint (blended / connected / rigid) and overall continuity. */
   skinning?: SkinningReport | null;
 }
@@ -283,6 +285,7 @@ export function inspectGltf(data: Buffer, filename = ""): ModelInfo {
     clips,
     rigged: (json.skins ?? []).length > 0,
     joints,
+    jointRest: Object.fromEntries([...jointIdx].map((j) => [nodeName(j), apply(world(j), [0, 0, 0]).map((v) => Math.round(v * 1e5) / 1e5) as [number, number, number]])),
     sockets: detectSockets(joints),
     morphTargets: [...new Set<string>(morphs.flatMap((m: GltfMorph) => m.targets))],
     morphs,

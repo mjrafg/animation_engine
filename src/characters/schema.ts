@@ -238,3 +238,31 @@ export const CharacterDefinitionSchema = z.discriminatedUnion("kind", [Character
 export type CharacterDefinition = z.output<typeof CharacterDefinitionSchema>;
 export type Character2D = z.output<typeof Character2DSchema>;
 export type Character3D = z.output<typeof Character3DSchema>;
+
+// ---- multi-character interactions ----------------------------------------------------------------
+
+/**
+ * An interaction placed in a scene: a reusable definition (handshake, hug, give_object, ...) applied
+ * to specific character instances at a time. The runtime aligns the actors, schedules their
+ * approach/turn/hold, drives the arms to the contact targets and switches object ownership, and
+ * compiles it all into the actors' generated layers/objects and tracks.
+ */
+export const InteractionInstanceSchema = z
+  .object({
+    id: Id.optional().describe("Stable interaction id (auto-assigned: ix1, ix2, ...)."),
+    interaction: Id.describe("Interaction definition id (interaction_list): handshake, hug, high_five, give_object, receive_object, push, or a custom one."),
+    actors: z.array(Id).min(1).max(8).describe("Character instance ids, one per role, in the definition's role order."),
+    start: num().min(0).describe("Start time in seconds (the approach phase starts here)."),
+    duration: num().gt(0).optional().describe("Total length in seconds (default: the definition's)."),
+    params: z
+      .object({
+        object: Id.optional().describe("give_object/receive_object: prop id held by the giver (its own prop, or one it received earlier)."),
+        anchor: z.enum(["first", "second", "midpoint"]).optional().describe("Who stays in place while the other approaches (default: the definition's, usually the second actor)."),
+        hand: z.enum(["right", "left"]).optional().describe("Hand used by one-hand roles (default: the definition's, usually right; a giver always uses the hand holding the object)."),
+      })
+      .strict()
+      .optional(),
+    definitionSha: z.string().optional().describe("(set by the runtime) hash of the interaction definition used."),
+  })
+  .strict();
+export type InteractionInstance = z.output<typeof InteractionInstanceSchema>;

@@ -135,6 +135,22 @@ export function facingValue(def: CharacterDefinition, f: string): number | null 
   return null;
 }
 
+/**
+ * An action as the planner sees it. Interactions add internal actions (approach walk, turn toward
+ * the partner, hold, step back) with `source` = the interaction id; they follow the same channel
+ * and conflict rules as the character's own actions.
+ */
+export type PlanAction = CharacterAction & {
+  /** Interaction id that generated this action. */
+  source?: string;
+  /** turn: exact facing value (2D +1/-1, 3D yaw degrees) instead of a direction name. */
+  face?: number;
+  /** walk/run: move without turning toward the direction of travel (e.g. pushed back). */
+  keepFacing?: boolean;
+  /** Error path of the generating item (default ["actions", i]). */
+  path?: (string | number)[];
+};
+
 export interface PlanContext {
   fps: number;
   frames: number;
@@ -142,12 +158,14 @@ export interface PlanContext {
   speech?: (id: string) => SpeechTiming | undefined;
 }
 
-export function planCharacter(inst: CharacterInstance, def: CharacterDefinition, ctx: PlanContext, instPath: (string | number)[] = []): PlanResult {
+export function planCharacter(inst: CharacterInstance, def: CharacterDefinition, ctx: PlanContext, instPath: (string | number)[] = [], extra: PlanAction[] = []): PlanResult {
   const errors: ValidationIssue[] = [];
   const warnings: ValidationIssue[] = [];
+  // paths starting with "interactions" are scene-level (not under the instance)
+  const full = (p: (string | number)[]) => (p[0] === "interactions" ? p : [...instPath, ...p]);
   const err = (code: string, p: (string | number)[], message: string, details?: Record<string, unknown>) =>
-    errors.push({ severity: "error", code, path: [...instPath, ...p], message, ...(details ? { details } : {}) });
-  const warn = (code: string, p: (string | number)[], message: string) => warnings.push({ severity: "warning", code, path: [...instPath, ...p], message });
+    errors.push({ severity: "error", code, path: full(p), message, ...(details ? { details } : {}) });
+  const warn = (code: string, p: (string | number)[], message: string) => warnings.push({ severity: "warning", code, path: full(p), message });
 
   const { fps, frames } = ctx;
   const toF = (s: number) => Math.round(s * fps);
@@ -179,8 +197,9 @@ export function planCharacter(inst: CharacterInstance, def: CharacterDefinition,
 
   // --- 1. resolve every action ---------------------------------------------------------------
   interface Item {
-    a: CharacterAction;
+    a: PlanAction;
     i: number;
+    p: (string | number)[];
     id: string;
     def: ActionDef;
     f0: number;
@@ -188,10 +207,10 @@ export function planCharacter(inst: CharacterInstance, def: CharacterDefinition,
     durationSec: number;
   }
   const items: Item[] = [];
-  const actions = inst.actions ?? [];
+  const actions: PlanAction[] = [...(inst.actions ?? []), ...extra];
   const seen = new Set<string>();
   actions.forEach((a, i) => {
-    const p = ["actions", i];
+    const p = a.path ?? ["actions", i];
     const id = a.id ?? `a${i + 1}`;
     if (seen.has(id)) err("INVALID_ACTION", [...p, "id"], `Duplicate action id "${id}"`);
     seen.add(id);
@@ -224,7 +243,7 @@ export function planCharacter(inst: CharacterInstance, def: CharacterDefinition,
       err("ACTION_OUT_OF_RANGE", [...p, "start"], `"${a.action}" starts at ${a.start}s, after the scene end (${(frames / fps).toFixed(2)}s)`, { sceneSeconds: frames / fps });
       return;
     }
-    items.push({ a, i, id, def: ad, f0, f1: dur !== undefined ? Math.max(f0 + 1, toF(a.start + dur)) : -1, durationSec: dur ?? -1 });
+    items.push({ a, i, p, id, def: ad, f0, f1: dur !== undefined ? Math.max(f0 + 1, toF(a.start + dur)) : -1, durationSec: dur ?? -1 });
   });
 
   // --- 2. locomotion: path, derived durations, facing ------------------------------------------
@@ -232,7 +251,7 @@ export function planCharacter(inst: CharacterInstance, def: CharacterDefinition,
   let pos = { ...start };
   for (const it of loco) {
     const a = it.a;
-    const p = ["actions", it.i];
+    const p = it.p;
     if (it.def.kind === "idle") {
       if (a.to || a.direction || a.distance) err("INVALID_ACTION", p, "idle takes no direction/to/distance");
       plan.locomotion.push({ actionId: it.id, name: a.action, type: "idle", f0: it.f0, f1: it.f1, motion: it.def.motion, clip: it.def.clip, from: { ...pos }, to: { ...pos } });
@@ -263,7 +282,9 @@ export function planCharacter(inst: CharacterInstance, def: CharacterDefinition,
     const dist = Math.hypot(target.x - pos.x, target.y - pos.y, target.z - pos.z);
     if (it.f1 < 0) it.f1 = Math.max(it.f0 + 1, toF(a.start + dist / speed));
     // facing follows the direction of travel
-    if (def.kind === "2d") {
+    if (a.keepFacing) {
+      // moves without turning (e.g. a push reaction)
+    } else if (def.kind === "2d") {
       if (Math.abs(target.x - pos.x) > 1e-6) plan.facing.push({ f0: it.f0, frames: turnFrames, value: target.x > pos.x ? 1 : -1, actionId: it.id });
     } else if (Math.hypot(target.x - pos.x, target.z - pos.z) > 1e-6) {
       plan.facing.push({ f0: it.f0, frames: turnFrames, value: (Math.atan2(target.x - pos.x, target.z - pos.z) * 180) / Math.PI, actionId: it.id });
@@ -282,7 +303,7 @@ export function planCharacter(inst: CharacterInstance, def: CharacterDefinition,
   const autoSeed = (extra: number | undefined) => (hashSeed(inst.id) ^ (extra ?? 0)) >>> 0;
   for (const it of items) {
     const a = it.a;
-    const p = ["actions", it.i];
+    const p = it.p;
     switch (it.def.kind) {
       case "gesture":
       case "look": {
@@ -353,7 +374,7 @@ export function planCharacter(inst: CharacterInstance, def: CharacterDefinition,
       }
       case "turn": {
         const d = a.direction;
-        const v = d ? facingValue(def, d) : null;
+        const v = a.face ?? (d ? facingValue(def, d) : null);
         if (v === null) {
           err("INVALID_ACTION", [...p, "direction"], `turn needs direction ${def.kind === "2d" ? "left|right" : "left|right|camera|away"}`, {
             supported: def.kind === "2d" ? ["left", "right"] : ["left", "right", "camera", "away"],
@@ -366,7 +387,7 @@ export function planCharacter(inst: CharacterInstance, def: CharacterDefinition,
       default:
         break;
     }
-    plan.resolved[it.id] = { ...plan.resolved[it.id], action: a.action, kind: it.def.kind, channel: KIND_CHANNEL[it.def.kind], startFrame: it.f0, endFrame: it.f1, start: +(it.f0 / fps).toFixed(3), end: +(it.f1 / fps).toFixed(3) };
+    plan.resolved[it.id] = { ...plan.resolved[it.id], ...(a.source ? { source: a.source } : {}), action: a.action, kind: it.def.kind, channel: KIND_CHANNEL[it.def.kind], startFrame: it.f0, endFrame: it.f1, start: +(it.f0 / fps).toFixed(3), end: +(it.f1 / fps).toFixed(3) };
     if (it.f1 > frames) warn("ACTION_PAST_END", p, `"${a.action}" runs past the scene end (${(frames / fps).toFixed(2)}s); it is cut there`);
   }
 
@@ -388,8 +409,16 @@ export function planCharacter(inst: CharacterInstance, def: CharacterDefinition,
 
   // --- 4. conflicts ------------------------------------------------------------------------------
   const overlap = (x: { f0: number; f1: number }, y: { f0: number; f1: number }) => x.f0 < y.f1 && y.f0 < x.f1;
-  const conflict = (x: { actionId: string }, y: { actionId: string }, channel: string, extra: Record<string, unknown> = {}) =>
-    err("ACTION_CONFLICT", ["actions"], `Actions "${x.actionId}" and "${y.actionId}" overlap on the ${channel} channel`, { actions: [x.actionId, y.actionId], channel, ...extra });
+  const sourceOf = (id: string) => items.find((x) => x.id === id)?.a.source;
+  const conflict = (x: { actionId: string }, y: { actionId: string }, channel: string, more: Record<string, unknown> = {}) => {
+    const ix = [...new Set([sourceOf(x.actionId), sourceOf(y.actionId)].filter(Boolean))];
+    err("ACTION_CONFLICT", ["actions"], `Actions "${x.actionId}" and "${y.actionId}" overlap on the ${channel} channel${ix.length ? ` (interaction ${ix.join(", ")})` : ""}`, {
+      actions: [x.actionId, y.actionId],
+      channel,
+      ...(ix.length ? { interactions: ix, instance: inst.id } : {}),
+      ...more,
+    });
+  };
   const pairs = <T extends { f0: number; f1: number; actionId: string }>(list: T[], channel: string, same: (a: T, b: T) => string[] | boolean = () => true) => {
     for (let i = 0; i < list.length; i++)
       for (let j = i + 1; j < list.length; j++) {

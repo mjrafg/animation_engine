@@ -80,6 +80,20 @@ export function validateScene3D(input: unknown, assets: AssetLookup3D): Validati
     for (const m of Object.keys(o.morphs ?? {})) {
       if (!model?.morphTargets.includes(m)) err("MORPH_NOT_FOUND", [...p, "morphs", m], `Object "${o.id}" has no morph target "${m}"`, { available: model?.morphTargets ?? [] });
     }
+    for (const [chain, c] of Object.entries(o.ik ?? {})) {
+      if (!model?.rigged) {
+        err("BONE_NOT_FOUND", [...p, "ik", chain], `Object "${o.id}" has IK chain "${chain}" but no rigged model`);
+        continue;
+      }
+      for (const key of ["upper", "lower", "end"] as const) {
+        if (!resolveBone(model, c[key])) {
+          err("BONE_NOT_FOUND", [...p, "ik", chain, key], `Model of "${o.id}" has no bone or socket "${c[key]}" (IK chain "${chain}")`, {
+            sockets: model.sockets,
+            joints: model.joints.map((j) => j.name).slice(0, 80),
+          });
+        }
+      }
+    }
     if (o.parent != null) {
       if (o.parent === o.id) err("PARENT_CYCLE", [...p, "parent"], `Object "${o.id}" is its own parent`);
       else if (kindOf.get(o.parent) !== "object") err("MISSING_PARENT", [...p, "parent"], `Object "${o.id}" references unknown parent "${o.parent}"`);
@@ -147,6 +161,11 @@ export function validateScene3D(input: unknown, assets: AssetLookup3D): Validati
       return;
     }
     const model = kind === "object" ? modelOf(anim.target) : undefined;
+    if (anim.property.startsWith("ik.")) {
+      const chain = anim.property.split(".")[1];
+      const obj = s.objects[objIndex.get(anim.target) ?? -1];
+      if (!obj?.ik?.[chain]) err("MISSING_TARGET", [...base, "property"], `"${anim.target}" has no ik chain "${chain}"`, { chains: Object.keys(obj?.ik ?? {}) });
+    }
     if (anim.property.startsWith("morph.") && !model?.morphTargets.includes(anim.property.slice(6))) {
       err("MORPH_NOT_FOUND", [...base, "property"], `"${anim.target}" has no morph target "${anim.property.slice(6)}"`, { available: model?.morphTargets ?? [] });
     }

@@ -34,6 +34,8 @@ export interface Object3DState {
   /** Active clips (usually one; two while crossfading). Empty = rest pose. */
   clips: ClipWeight[];
   morphs: Record<string, number>;
+  /** Active reach IK chains (weight > 0), with target in world metres. */
+  ik?: { chain: string; upper: string; lower: string; end: string; target: Vec3; weight: number; grip: number; side: "right" | "left" }[];
 }
 
 export interface Light3DState extends Omit<Light3D, "position" | "rotation"> {
@@ -172,6 +174,18 @@ export function evaluateScene3D(scene: Scene3D, frame: number, models: ModelLook
     const v = getter(o.id);
     const model = o.asset ? models(o.asset) : undefined;
     const morphs: Record<string, number> = { ...o.morphs };
+    const ik = Object.entries(o.ik ?? {})
+      .map(([chain, c]) => ({
+        chain,
+        upper: c.upper,
+        lower: c.lower,
+        end: c.end,
+        grip: c.grip,
+        side: c.side,
+        target: vec3(v, `ik.${chain}.target`, c.target),
+        weight: v(`ik.${chain}.weight`, c.weight),
+      }))
+      .filter((c) => c.weight > 0);
     for (const prop of tracks.get(o.id)?.keys() ?? []) {
       if (prop.startsWith("morph.")) morphs[prop.slice(6)] = v(prop, 0);
     }
@@ -181,6 +195,7 @@ export function evaluateScene3D(scene: Scene3D, frame: number, models: ModelLook
       rotation: vec3(v, "rotation", o.rotation),
       scale: vec3(v, "scale", o.scale),
       visible: v("visible", o.visible),
+      ...(ik.length ? { ik } : {}),
       clips: evaluateClips(o, tracks, model, frame, fps),
       morphs,
     };

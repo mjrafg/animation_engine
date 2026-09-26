@@ -39,6 +39,8 @@ import { validateScene3D, type AssetLookup3D } from "../scene3d/validate.js";
 import { describeCharacter } from "../characters/capabilities.js";
 import { analyzeJoints2D, type AlphaImage } from "../characters/continuity.js";
 import type { CharacterContext } from "../characters/operations.js";
+import { BUILTIN_INTERACTIONS, InteractionDefinitionSchema, interactionSha, type InteractionDefinition } from "../characters/interaction-defs.js";
+import { describeInteraction } from "../characters/interactions.js";
 import { CharacterDefinitionSchema, SpeechTimingSchema, type CharacterDefinition, type SpeechTiming } from "../characters/schema.js";
 import { checkEntityId, checkWorkspaceId, readJson, resolveInside, toPosix, writeFileAtomic } from "./paths.js";
 
@@ -289,6 +291,31 @@ export class WorkspaceManager {
       }
       if (depth <= 0) return;
       for (const e of fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) if (e.isDirectory()) walk(path.join(dir, e.name), depth - 1);
+    };
+    walk(root, 3);
+    return out;
+  }
+
+  /** Interaction definition files (*.json with roles and phases) inside a library. */
+  listInteractionPackages(name: string) {
+    const root = fs.realpathSync(this.libraryRoot(name));
+    const out: { path: string; interactionId: string; name: string; description?: string }[] = [];
+    const walk = (dir: string, depth: number) => {
+      for (const e of fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+        const full = path.join(dir, e.name);
+        if (e.isDirectory()) {
+          if (depth > 0) walk(full, depth - 1);
+        } else if (e.name.endsWith(".json") && e.name !== "character.json") {
+          try {
+            const j = JSON.parse(fs.readFileSync(full, "utf8"));
+            if (j && typeof j.id === "string" && Array.isArray(j.roles) && Array.isArray(j.phases)) {
+              out.push({ path: toPosix(path.relative(root, full)), interactionId: j.id, name: j.name ?? j.id, ...(j.description ? { description: j.description } : {}) });
+            }
+          } catch {
+            /* not an interaction definition */
+          }
+        }
+      }
     };
     walk(root, 3);
     return out;
@@ -1084,9 +1111,88 @@ export class VideoWorkspace {
     return fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5)).sort() : [];
   }
 
-  /** Lookups the character runtime needs (definitions, speech timings, audio files). */
+  // ---- interaction definitions -----------------------------------------------------------------
+
+  private interactionFile(id: string) {
+    return path.join(this.dir, "interactions", `${id}.json`);
+  }
+
+  /** Built-in or workspace-defined interaction (undefined if unknown). */
+  getInteraction(id: string): { def: InteractionDefinition; sha: string; builtin: boolean } | undefined {
+    if (!/^[A-Za-z_][A-Za-z0-9_\-.]*$/.test(id)) return undefined;
+    const b = BUILTIN_INTERACTIONS[id];
+    if (b) return { def: b, sha: interactionSha(b), builtin: true };
+    const f = this.interactionFile(id);
+    if (!fs.existsSync(f)) return undefined;
+    const def = InteractionDefinitionSchema.parse(readJson(f));
+    return { def, sha: interactionSha(def), builtin: false };
+  }
+
+  requireInteraction(id: string) {
+    const r = this.getInteraction(id);
+    if (!r) throw new EngineError("INTERACTION_NOT_FOUND", `No interaction definition "${id}"`, { interactionId: id, available: this.listInteractions().map((x) => x.id) });
+    return r;
+  }
+
+  listInteractions() {
+    const dir = path.join(this.dir, "interactions");
+    const custom = fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5)) : [];
+    return [...Object.keys(BUILTIN_INTERACTIONS), ...custom.sort()]
+      .map((id) => this.getInteraction(id)!)
+      .filter(Boolean)
+      .map(({ def, sha, builtin }) => ({ id: def.id, name: def.name ?? def.id, description: def.description ?? "", builtin, actors: def.roles.length, roles: def.roles.map((r) => r.name), duration: def.duration.default, params: Object.keys(def.params), sha256: sha }));
+  }
+
+  describeInteraction(id: string) {
+    const r = this.requireInteraction(id);
+    return describeInteraction(r.def, r.sha, r.builtin);
+  }
+
+  /**
+   * Registers a custom interaction definition in this workspace (no code changes): same schema as
+   * the built-ins. Defining the same content again is a no-op; a different definition under an
+   * existing id needs replace: true. Built-in ids cannot be overridden (use a new id).
+   */
+  defineInteraction(raw: unknown, opts: { replace?: boolean; origin?: Record<string, unknown> } = {}) {
+    const p = InteractionDefinitionSchema.safeParse(raw);
+    if (!p.success) {
+      throw new EngineError("INTERACTION_INVALID", `Invalid interaction definition: ${p.error.issues[0]?.path.join(".")}: ${p.error.issues[0]?.message}`, {
+        issues: p.error.issues.slice(0, 20).map((i) => ({ path: i.path.map(String), message: i.message })),
+      });
+    }
+    const def = p.data;
+    checkEntityId("interaction", def.id);
+    if (BUILTIN_INTERACTIONS[def.id]) throw new EngineError("INTERACTION_EXISTS", `"${def.id}" is a built-in interaction; define yours under another id`, { interactionId: def.id });
+    const existing = this.getInteraction(def.id);
+    const sha = interactionSha(def);
+    if (existing) {
+      if (existing.sha === sha) return { interaction: describeInteraction(def, sha, false), reused: true };
+      if (!opts.replace) throw new EngineError("INTERACTION_EXISTS", `Interaction "${def.id}" is already defined differently in this workspace; pass replace: true to update it (scenes using it are marked stale until recompiled)`, { interactionId: def.id });
+    }
+    writeFileAtomic(this.interactionFile(def.id), JSON.stringify(def, null, 2));
+    return { interaction: describeInteraction(def, sha, false), reused: false };
+  }
+
+  private modelCache = new Map<string, ModelInfo>();
+
+  /** Model facts of a model asset, including rest joint positions (re-read from the file for older imports). */
+  modelInfo(assetId: string): ModelInfo | undefined {
+    if (!/^[A-Za-z_][A-Za-z0-9_\-.]*$/.test(assetId) || !this.hasAsset(assetId)) return undefined;
+    const rec = this.getAsset(assetId);
+    if (!rec.model) return undefined;
+    if (rec.model.jointRest || !rec.model.rigged) return rec.model;
+    const hit = this.modelCache.get(rec.sha256);
+    if (hit) return hit;
+    const m = inspectGltf(fs.readFileSync(this.assetFile(assetId)), path.basename(this.assetFile(assetId)));
+    this.modelCache.set(rec.sha256, m);
+    return m;
+  }
+
+  /** Lookups the character runtime needs (definitions, speech timings, audio files, interactions, models). */
   characterContext(): CharacterContext {
     return {
+      interaction: (id) => this.getInteraction(id),
+      model: (assetId) => this.modelInfo(assetId),
       definition: (id) => {
         if (!this.hasCharacter(id)) return undefined;
         const c = this.getCharacter(id);

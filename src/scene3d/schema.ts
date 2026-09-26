@@ -11,7 +11,7 @@
 import { z } from "zod";
 import { AnimationSchema, AudioSchema, CanvasSchema, ColorSchema, IdSchema } from "../scene/schema.js";
 import type { PropertySpec } from "../scene/schema.js";
-import { CharacterInstanceSchema } from "../characters/schema.js";
+import { CharacterInstanceSchema, InteractionInstanceSchema } from "../characters/schema.js";
 
 const num = () => z.number();
 
@@ -45,6 +45,18 @@ export const AttachSchema = z
   .strict()
   .describe("Attach this object to a bone of another object; it follows the bone through animation. Its position/rotation/scale become OFFSETS anchored at the joint (bone head: for a hand, the wrist) and expressed in the TARGET CHARACTER's own axes at its rest pose (+y up, +z the character's front, +x the character's left) — not the bone's axes. Zero offset puts the object's origin at the joint, usually inside the hand mesh: offset a held prop slightly (e.g. y -0.1, z 0.05) and check with measure_layout / a preview.");
 
+export const IkChainSchema = z
+  .object({
+    upper: z.string().min(1).describe("Upper bone (e.g. upper arm), joint name or socket."),
+    lower: z.string().min(1).describe("Lower bone (e.g. forearm); its tail is the wrist."),
+    end: z.string().min(1).describe("End bone (e.g. hand), carried along."),
+    target: Vec3Schema.default({ x: 0, y: 0, z: 0 }).describe("World position (metres) the grip point should reach."),
+    weight: num().min(0).max(1).default(0).describe("0 = clip pose, 1 = full IK."),
+    grip: num().min(0).default(0).describe("Distance (metres) from the wrist to the grip point along the hand; the wrist stops that far short of the target."),
+    side: z.enum(["right", "left"]).default("right").describe("Which side the chain is on (elbow bends outward/backward on that side)."),
+  })
+  .strict();
+
 export const Object3DSchema = z
   .object({
     id: IdSchema,
@@ -62,6 +74,10 @@ export const Object3DSchema = z
     clipOffset: num().min(0).default(0).describe("Seconds into the clip at its start."),
     clipBlend: z.number().int().min(0).max(120).default(8).describe("Frames of crossfade when the clip changes."),
     morphs: z.record(z.string(), num().min(0).max(1)).optional().describe("Morph target (blend shape) weights 0..1 by name, e.g. {mouth_open: 0.5}."),
+    ik: z
+      .record(IdSchema, IkChainSchema)
+      .optional()
+      .describe("Two-bone reach IK chains by name (e.g. {right: {upper:'upper_arm.R', lower:'forearm.R', end:'hand.R', target, weight}}): the end joint reaches target (world metres) blended with the clip pose by weight. Animate with 'ik.<chain>.target.x|y|z' and 'ik.<chain>.weight'."),
     meta: z.record(z.string(), z.unknown()).optional(),
   })
   .strict();
@@ -130,6 +146,7 @@ export const Scene3DSchema = z
     objects: z.array(Object3DSchema).default([]),
     animations: z.array(AnimationSchema).default([]),
     audio: z.array(AudioSchema).default([]),
+    interactions: z.array(InteractionInstanceSchema).optional().describe("Multi-character interactions (handshake, hug, give_object, ...) between character instances; compiled into the actors' generated content."),
     characters: z.array(CharacterInstanceSchema).optional().describe("Prepared characters with high-level actions; compiled into objects and tracks owned by each instance."),
     overlay: z
       .object({ scene: IdSchema.describe("Id of a 2D scene in the same workspace (same canvas size and fps) drawn on top of every frame.") })
@@ -179,6 +196,8 @@ export type Target3DKind = "object" | "light" | "camera" | "world";
 export function propertySpec3D(kind: Target3DKind, property: string): PropertySpec | undefined {
   if (kind === "object") {
     if (property.startsWith("morph.") && property.length > 6) return cont({ min: 0, max: 1 });
+    const ik = /^ik\.[A-Za-z_][\w\-.]*?\.(target\.[xyz]|weight)$/.exec(property);
+    if (ik) return ik[1] === "weight" ? cont({ min: 0, max: 1 }) : cont();
     return OBJECT3D_PROPERTIES[property];
   }
   if (kind === "camera") return CAMERA3D_PROPERTIES[property];
@@ -188,5 +207,5 @@ export function propertySpec3D(kind: Target3DKind, property: string): PropertySp
 
 export function propertyList3D(kind: Target3DKind): string[] {
   const t = { object: OBJECT3D_PROPERTIES, camera: CAMERA3D_PROPERTIES, light: LIGHT3D_PROPERTIES, world: WORLD3D_PROPERTIES }[kind];
-  return [...Object.keys(t), ...(kind === "object" ? ["morph.<name>"] : [])];
+  return [...Object.keys(t), ...(kind === "object" ? ["morph.<name>", "ik.<chain>.target.x|y|z", "ik.<chain>.weight"] : [])];
 }

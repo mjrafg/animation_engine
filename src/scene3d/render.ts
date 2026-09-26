@@ -70,6 +70,12 @@ export function frameState(ctx: Scene3DContext, frame: number): Frame3DState {
     const bone = resolveBone(obj?.asset ? ctx.model(obj.asset) : undefined, la.bone);
     st.camera.lookAt = { object: la.object, ...(bone ? { bone } : {}) };
   }
+  for (const o of st.objects) {
+    if (!o.ik) continue;
+    const spec = ctx.scene.objects.find((x) => x.id === o.id);
+    const model = spec?.asset ? ctx.model(spec.asset) : undefined;
+    o.ik = o.ik.map((c) => ({ ...c, upper: resolveBone(model, c.upper) ?? c.upper, lower: resolveBone(model, c.lower) ?? c.lower, end: resolveBone(model, c.end) ?? c.end }));
+  }
   return st;
 }
 
