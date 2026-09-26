@@ -15,12 +15,14 @@
  *   5.8-7.6  Crag answers with a two-handed shove; Volt is pushed back
  *   7.8-10   both square up in guard; Crag roars again as the camera closes in
  */
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import * as ops from "../../src/api/operations.js";
 import * as ch from "../../src/characters/operations.js";
 import * as ops3d from "../../src/scene3d/operations.js";
+import { ffmpegPath } from "../../src/render/video.js";
 import { RenderJobs } from "../../src/workspace/jobs.js";
 import { WorkspaceManager } from "../../src/workspace/workspace.js";
 
@@ -120,16 +122,35 @@ async function main() {
     }
     return;
   }
+  // render in chunks kept on disk (out/parts), so an interrupted run resumes where it stopped;
+  // the chunks share one encoding and are joined without re-encoding
   const jobs = new RenderJobs(ws);
   const t0 = Date.now();
-  const j0 = await jobs.start(s, {});
-  let j = j0;
-  while (!["completed", "failed", "cancelled", "interrupted"].includes(j.status)) {
-    j = await jobs.wait(j0.renderId, 30_000);
-    console.log(`render ${j.status} ${JSON.stringify(j.progress ?? {})}`);
+  const parts = path.join(OUT, "parts");
+  fs.mkdirSync(parts, { recursive: true });
+  const CHUNK = 40;
+  const total = 10 * FPS;
+  const files: string[] = [];
+  for (let a = 0; a < total; a += CHUNK) {
+    const b = Math.min(total, a + CHUNK);
+    const file = path.join(parts, `frames_${String(a).padStart(3, "0")}_${String(b).padStart(3, "0")}.mp4`);
+    files.push(file);
+    if (fs.existsSync(file)) {
+      console.log(`chunk ${a}-${b}: done earlier`);
+      continue;
+    }
+    const j0 = await jobs.start(s, { startFrame: a, endFrame: b });
+    let j = j0;
+    while (!["completed", "failed", "cancelled", "interrupted"].includes(j.status)) j = await jobs.wait(j0.renderId, 30_000);
+    if (j.status !== "completed") throw new Error(`render ${j.status}: ${JSON.stringify(j.error)}`);
+    fs.copyFileSync(ws.abs(j.artifact!.relativePath), file + ".tmp");
+    fs.renameSync(file + ".tmp", file);
+    console.log(`chunk ${a}-${b}: rendered (${((Date.now() - t0) / 60000).toFixed(1)} min)`);
   }
-  if (j.status !== "completed") throw new Error(`render ${j.status}: ${JSON.stringify(j.error)}`);
-  fs.copyFileSync(ws.abs(j.artifact!.relativePath), path.join(OUT, "city_clash.mp4"));
+  const list = path.join(parts, "list.txt");
+  fs.writeFileSync(list, files.map((f) => `file '${f}'`).join("\n"));
+  const cat = spawnSync(ffmpegPath(), ["-y", "-f", "concat", "-safe", "0", "-i", list, "-c", "copy", "-movflags", "+faststart", path.join(OUT, "city_clash.mp4")], { encoding: "utf8" });
+  if (cat.status !== 0) throw new Error(`ffmpeg concat failed: ${cat.stderr.slice(-800)}`);
   console.log(`done: out/city_clash.mp4 (${((Date.now() - t0) / 60000).toFixed(1)} min)`);
 }
 
