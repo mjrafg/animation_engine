@@ -1,0 +1,5 @@
+v22.23.2
+8
+AMD EPYC 9354P 32-Core Processor
+Engine FFmpeg: /usr/bin/ffmpeg
+ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers

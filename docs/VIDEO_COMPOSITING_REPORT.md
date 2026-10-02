@@ -4,6 +4,10 @@ Date: 2026-10-02. Package version: 1.1.0. Scene version: 1.
 
 **Implementation delivered for independent review; the full Definition of done is not yet met.** Two 1080p proof videos were produced with real ElevenLabs narration. Exact provider alignment, automated acceptance results, regression hashes, subtitle reference-image comparisons, and a published Git tag/PR remain outstanding. No test, lint, standalone typecheck, or regression suite was run by the Builder.
 
+## Performance fixes
+
+The subsequent [media performance report](MEDIA_PERF_REPORT.md) records configurable preparation threads, exact keyframe seeking, formatting cleanup, and executed verification. On the reference host, preparation fell from 199.18 s to 64.09 s and frame 3590 rendering from 22.99 s to 0.35 s; all 12 requested example pixel hashes matched `main`. Its dated measurements supersede the original from-zero seeking description below; the rest of this document preserves the original delivery record.
+
 ## Starting point and compatibility assumptions
 
 Work started from `main` at `b5d3b67cc70159e1600381aa59180c2c4787c17a` in the original repository. The current application workflow requires `tandem/1c98b557`, no merge into `feature/video-compositing`, and no push. That supersedes the brief's branch/PR instructions. No remote branch, tag, or PR was published. Changes and fixtures are left for the application's checkpoint workflow; per-feature commits were not created.

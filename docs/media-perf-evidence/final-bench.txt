@@ -1,0 +1,5 @@
+Engine: /srv/tandem/projects/animation_engine/repo
+Preparation: 64089.02 ms (fresh)
+renderFrame(10): 568.46 ms
+renderFrame(1800): 330.00 ms
+renderFrame(3590): 348.51 ms

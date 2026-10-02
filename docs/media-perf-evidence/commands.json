@@ -1,0 +1,74 @@
+[
+  {
+    "name": "before-format-typecheck",
+    "cwd": "/tmp/animation-engine-media-before-format",
+    "command": "npx tsc --noEmit",
+    "exitCode": 0
+  },
+  {
+    "name": "before-format-unit",
+    "cwd": "/tmp/animation-engine-media-before-format",
+    "command": "npm test",
+    "exitCode": 0
+  },
+  {
+    "name": "before-format-mcp",
+    "cwd": "/tmp/animation-engine-media-before-format",
+    "command": "npm run test:mcp",
+    "exitCode": 0
+  },
+  {
+    "name": "before-format-hashes",
+    "cwd": "/srv/tandem/projects/animation_engine/repo",
+    "command": "npx tsx scripts/media-regression-hashes.ts /tmp/animation-engine-media-before-format",
+    "exitCode": 0
+  },
+  {
+    "name": "final-typecheck",
+    "cwd": "/srv/tandem/projects/animation_engine/repo",
+    "command": "npx tsc --noEmit",
+    "exitCode": 0
+  },
+  {
+    "name": "final-unit",
+    "cwd": "/srv/tandem/projects/animation_engine/repo",
+    "command": "npm test",
+    "exitCode": 0
+  },
+  {
+    "name": "final-mcp",
+    "cwd": "/srv/tandem/projects/animation_engine/repo",
+    "command": "npm run test:mcp",
+    "exitCode": 0
+  },
+  {
+    "name": "final-hashes",
+    "cwd": "/srv/tandem/projects/animation_engine/repo",
+    "command": "npx tsx scripts/media-regression-hashes.ts /srv/tandem/projects/animation_engine/repo",
+    "exitCode": 0
+  },
+  {
+    "name": "main-hashes",
+    "cwd": "/srv/tandem/projects/animation_engine/repo",
+    "command": "npx tsx scripts/media-regression-hashes.ts /tmp/animation-engine-media-main",
+    "exitCode": 0
+  },
+  {
+    "name": "final-bench",
+    "cwd": "/srv/tandem/projects/animation_engine/repo",
+    "command": "npx tsx scripts/bench-seek.ts --label fix",
+    "exitCode": 0
+  },
+  {
+    "name": "final-seek",
+    "cwd": "/srv/tandem/projects/animation_engine/repo",
+    "command": "npx vitest run tests/media-seek.test.ts --reporter=verbose",
+    "exitCode": 0
+  },
+  {
+    "name": "main-bench",
+    "cwd": "/srv/tandem/projects/animation_engine/repo",
+    "command": "npx tsx scripts/bench-seek.ts --engine-root /tmp/animation-engine-media-main --label main",
+    "exitCode": 0
+  }
+]

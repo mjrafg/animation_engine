@@ -1,0 +1,13 @@
+
+> animation-engine@1.1.0 test
+> vitest run --exclude "tests/mcp/**"
+
+
+ RUN  v5.0.1 /tmp/animation-engine-media-before-format
+
+
+ Test Files  12 passed (12)
+      Tests  156 passed | 7 skipped (163)
+   Start at  09:51:46
+   Duration  13.15s (tests 78%, transform 12%, import 10%)
+
