@@ -441,6 +441,10 @@ Preparation writes `prepared.mp4` and `video-metadata.json`, uses CFR H.264/yuv4
 removes audio, and records the FFmpeg build and prepared-file hash. `fps` defaults
 to the session/scene fps (30 in the standalone function). Optional `width`, `height`,
 `fit: "contain" | "cover"` and `gop` control scaling/cropping and keyframe interval.
+Optional `threads` (1–256) limits preparation encoding threads; omitted, FFmpeg
+chooses automatically. Prepared bytes may differ between machines or thread
+settings. Given the same prepared file and engine build, rendering remains
+deterministic; its SHA-256 identifies the exact prepared bytes.
 Odd target dimensions are rejected; requested upscaling produces `VIDEO_UPSCALED`.
 Existing outputs and overwriting the input are refused. `FFPROBE_PATH` overrides
 `ffprobe-static`; `FFMPEG_PATH` overrides `ffmpeg-static`.

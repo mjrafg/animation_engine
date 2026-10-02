@@ -6,7 +6,7 @@ import { AnimationEngine } from '../src/api/engine.js';
 import { SceneSchema } from '../src/scene/schema.js';
 import { validateScene } from '../src/scene/validate.js';
 import { evaluateScene } from '../src/timeline/evaluate.js';
-import { prepareVideoAsset } from '../src/media/prepare.js';
+import { prepareVideoAsset, PrepareVideoOptionsSchema } from '../src/media/prepare.js';
 import { FFmpegFrameSource } from '../src/media/frames.js';
 import { runFFmpeg } from '../src/media/process.js';
 import { startEncoder } from '../src/render/video.js';
@@ -32,7 +32,7 @@ async function videoFixture() {
     }
     await encoder.finish();
   } catch (e) { await encoder.abort(); throw e; }
-  return prepareVideoAsset(input, path.join(dir, 'prepared'), { fps: 30 });
+  return prepareVideoAsset(input, path.join(dir, 'prepared'), { fps: 30, threads: 2 });
 }
 let prepared: ReturnType<typeof videoFixture> | undefined;
 const fixture = () => prepared ??= videoFixture();
@@ -44,6 +44,11 @@ function videoScene(asset: unknown) {
   ] }] };
 }
 describe('prepared video frame accuracy', () => {
+  it('lets FFmpeg choose preparation threads unless an explicit positive limit is supplied', () => {
+    expect(PrepareVideoOptionsSchema.parse({}).threads).toBeUndefined();
+    expect(PrepareVideoOptionsSchema.parse({ threads: 2 }).threads).toBe(2);
+    for (const threads of [0, -1, 1.5, 257]) expect(PrepareVideoOptionsSchema.safeParse({ threads }).success).toBe(false);
+  });
   it('preserves source, validates metadata and rejects changed bytes', async () => {
     const p = await fixture();
     expect(p.video.frameCount).toBe(80);

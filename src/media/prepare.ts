@@ -5,6 +5,7 @@ import { EngineError } from '../errors.js';
 import type { Asset, VideoMetadata } from '../scene/schema.js';
 import { ffmpegBuild, hashFile, probeMedia, runFFmpeg } from './process.js';
 export const PrepareVideoOptionsSchema = z.object({
+  threads: z.number().int().min(1).max(256).optional(),
   fps: z.number().positive().max(240).optional(),
   width: z.number().int().positive().max(8192).optional(),
   height: z.number().int().positive().max(8192).optional(),
@@ -39,7 +40,7 @@ export async function prepareVideoAsset(input: string, outDir: string, options: 
   const temp = await fs.mkdtemp(path.join(outDir, '.prepare-'));
   try {
     const prepared = path.join(temp, 'prepared.mp4');
-    await runFFmpeg(['-nostdin', '-v', 'error', '-i', input, '-map', '0:v:0', '-an', '-vf', filters.join(','), '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-g', String(o.gop ?? 15), '-keyint_min', String(o.gop ?? 15), '-sc_threshold', '0', '-crf', '18', '-threads', '1', '-map_metadata', '-1', '-y', prepared], signal);
+    await runFFmpeg(['-nostdin', '-v', 'error', '-i', input, '-map', '0:v:0', '-an', '-vf', filters.join(','), '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-g', String(o.gop ?? 15), '-keyint_min', String(o.gop ?? 15), '-sc_threshold', '0', '-crf', '18', ...(o.threads === undefined ? [] : ['-threads', String(o.threads)]), '-map_metadata', '-1', '-y', prepared], signal);
     const outputProbe = probeMedia(prepared, true);
     const v = outputProbe.streams.find((s: any) => s.codec_type === 'video');
     const frameCount = Number(v.nb_read_frames);
