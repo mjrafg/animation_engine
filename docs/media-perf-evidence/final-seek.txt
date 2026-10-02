@@ -1,0 +1,28 @@
+
+ RUN  v5.0.1 /srv/tandem/projects/animation_engine/repo
+
+stdout | tests/media-seek.test.ts > long CFR barcode: exact keyframe boundaries, endpoints and restarts in random mode
+long CFR random: 26 indices, zero mismatches
+
+ ✓ tests/media-seek.test.ts > long CFR barcode: exact keyframe boundaries, endpoints and restarts in random mode 4771ms
+stdout | tests/media-seek.test.ts > long CFR barcode: exact keyframe boundaries, endpoints and restarts in sequential mode
+long CFR sequential: 26 indices, zero mismatches
+
+ ✓ tests/media-seek.test.ts > long CFR barcode: exact keyframe boundaries, endpoints and restarts in sequential mode 1061ms
+stdout | tests/media-seek.test.ts > fractional CFR barcode: exact frame selection with a non-default GOP
+fractional CFR random: 13 indices, zero mismatches
+
+stdout | tests/media-seek.test.ts > fractional CFR barcode: exact frame selection with a non-default GOP
+fractional CFR sequential: 13 indices, zero mismatches
+
+ ✓ tests/media-seek.test.ts > fractional CFR barcode: exact frame selection with a non-default GOP 2078ms
+stdout | tests/media-seek.test.ts > random seek near the end stays within 3x the start plus 100ms scheduling tolerance
+seek medians: start=75.22ms end=77.94ms; 10 indices, zero mismatches
+
+ ✓ tests/media-seek.test.ts > random seek near the end stays within 3x the start plus 100ms scheduling tolerance 1025ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  09:57:49
+   Duration  9.49s (tests 96%, import 2%, transform 2%)
+

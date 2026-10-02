@@ -1,28 +1,47 @@
-import { parentPort, workerData } from 'node:worker_threads';
-import { AnimationEngine } from '../api/engine.js';
-import { startEncoder } from './video.js';
+import { parentPort, workerData } from "node:worker_threads";
+import { AnimationEngine } from "../api/engine.js";
+import { startEncoder } from "./video.js";
 const ctrl = new AbortController();
-parentPort!.on('message', message => { if (message === 'abort') ctrl.abort(); });
+parentPort!.on("message", (message) => {
+  if (message === "abort") ctrl.abort();
+});
 async function run() {
   const { document, baseDir, start, end, out, videoCacheBytes } = workerData;
   const engine = new AnimationEngine(document, baseDir);
   let enc: ReturnType<typeof startEncoder> | undefined;
   try {
     await engine.prepare();
-    await engine.configureVideoSources('sequential', ctrl.signal, videoCacheBytes);
+    await engine.configureVideoSources("sequential", ctrl.signal, videoCacheBytes);
     const c = engine.scene.canvas;
     enc = startEncoder({ out, width: c.width, height: c.height, fps: c.fps, frameCount: end - start, lossless: true });
-    const cancel = () => { void enc?.abort(); };
-    ctrl.signal.addEventListener('abort', cancel, { once: true });
+    const cancel = () => {
+      void enc?.abort();
+    };
+    ctrl.signal.addEventListener("abort", cancel, { once: true });
     try {
       for (let frame = start; frame < end; frame++) {
-        if (ctrl.signal.aborted) throw new Error('Chunk cancelled');
+        if (ctrl.signal.aborted) throw new Error("Chunk cancelled");
         await enc.write((await engine.renderFrame(frame)).rgba());
         parentPort!.postMessage({ progress: frame - start + 1 });
       }
       await enc.finish();
-    } finally { ctrl.signal.removeEventListener('abort', cancel); }
-  } catch (e) { await enc?.abort(); throw e; }
-  finally { await engine.closeVideoSources(); }
+    } finally {
+      ctrl.signal.removeEventListener("abort", cancel);
+    }
+  } catch (e) {
+    await enc?.abort();
+    throw e;
+  } finally {
+    await engine.closeVideoSources();
+  }
 }
-run().then(() => { parentPort!.postMessage({ done: true }); parentPort!.close(); }, e => { parentPort!.postMessage({ error: String(e) }); parentPort!.close(); });
+run().then(
+  () => {
+    parentPort!.postMessage({ done: true });
+    parentPort!.close();
+  },
+  (e) => {
+    parentPort!.postMessage({ error: String(e) });
+    parentPort!.close();
+  },
+);

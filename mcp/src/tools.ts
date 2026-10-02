@@ -27,7 +27,16 @@ import * as chars from "../../src/characters/operations.js";
 import { checkInteraction } from "../../src/characters/interactions.js";
 import { CharacterInstanceSchema, SpeechTimingSchema } from "../../src/characters/schema.js";
 import type { Measurement3D } from "../../src/scene3d/render.js";
-import { AttachSchema, Camera3DSchema, Light3DSchema, Object3DSchema, PrimitiveSchema, Render3DSchema, Vec3Schema, World3DSchema } from "../../src/scene3d/schema.js";
+import {
+  AttachSchema,
+  Camera3DSchema,
+  Light3DSchema,
+  Object3DSchema,
+  PrimitiveSchema,
+  Render3DSchema,
+  Vec3Schema,
+  World3DSchema,
+} from "../../src/scene3d/schema.js";
 import { RenderJobs } from "../../src/workspace/jobs.js";
 import { WorkspaceManager, type ArtifactRecord, type VideoWorkspace } from "../../src/workspace/workspace.js";
 import type { ServerContext } from "./context.js";
@@ -81,7 +90,12 @@ const CanvasPatch = z
   .describe("Output canvas. Defaults: 1920x1080, 30 fps, black.");
 
 const CameraPatch = z
-  .object({ x: CameraSchema.shape.x.unwrap().optional(), y: CameraSchema.shape.y.unwrap().optional(), scale: CameraSchema.shape.scale.unwrap().optional(), rotation: CameraSchema.shape.rotation.unwrap().optional() })
+  .object({
+    x: CameraSchema.shape.x.unwrap().optional(),
+    y: CameraSchema.shape.y.unwrap().optional(),
+    scale: CameraSchema.shape.scale.unwrap().optional(),
+    rotation: CameraSchema.shape.rotation.unwrap().optional(),
+  })
   .strict()
   .describe("Static camera. Animate it with timeline_apply target 'camera' (properties x, y, scale, rotation).");
 
@@ -103,7 +117,12 @@ const AudioArg = z
 
 const r2 = (n: number) => Math.round(n * 100) / 100;
 const rp = (p: { x: number; y: number }) => ({ x: r2(p.x), y: r2(p.y) });
-const rb = (b: { left: number; top: number; right: number; bottom: number }) => ({ left: r2(b.left), top: r2(b.top), right: r2(b.right), bottom: r2(b.bottom) });
+const rb = (b: { left: number; top: number; right: number; bottom: number }) => ({
+  left: r2(b.left),
+  top: r2(b.top),
+  right: r2(b.right),
+  bottom: r2(b.bottom),
+});
 
 function presentArtifact(ws: VideoWorkspace, a: ArtifactRecord) {
   const { view, ...rest } = a;
@@ -139,7 +158,11 @@ function compactLayout(l: FrameLayout, detail: "compact" | "full") {
       screenBounds: rb(x.screenBounds),
       onScreen: x.onScreen,
       ...(Object.keys(x.attachmentPoints).length
-        ? { attachmentPoints: Object.fromEntries(Object.entries(x.attachmentPoints).map(([k, v]) => [k, { world: rp(v.world), screen: rp(v.screen) }])) }
+        ? {
+            attachmentPoints: Object.fromEntries(
+              Object.entries(x.attachmentPoints).map(([k, v]) => [k, { world: rp(v.world), screen: rp(v.screen) }]),
+            ),
+          }
         : {}),
     })),
   };
@@ -177,14 +200,19 @@ def({
   name: "engine_version",
   description: "Engine and MCP server versions.",
   args: z.object({}).strict(),
-  handler: async () => ({ summary: `${engineVersion().name} ${engineVersion().version}`, engine: engineVersion(), server: { name: SERVER_NAME, version: SERVER_VERSION } }),
+  handler: async () => ({
+    summary: `${engineVersion().name} ${engineVersion().version}`,
+    engine: engineVersion(),
+    server: { name: SERVER_NAME, version: SERVER_VERSION },
+  }),
 });
 
 export async function healthCheck(ctx: { config: { root: string } }, deep: boolean) {
   const checks: Record<string, { ok: boolean; detail: string }> = {};
   const ff = ffmpegPath();
   const v = spawnSync(ff, ["-version"], { encoding: "utf8", timeout: 15_000 });
-  checks.ffmpeg = v.status === 0 ? { ok: true, detail: v.stdout.split("\n")[0] } : { ok: false, detail: `${ff}: ${v.error?.message ?? v.stderr}` };
+  checks.ffmpeg =
+    v.status === 0 ? { ok: true, detail: v.stdout.split("\n")[0] } : { ok: false, detail: `${ff}: ${v.error?.message ?? v.stderr}` };
   try {
     const c = createCanvas(4, 4);
     c.getContext("2d").fillRect(0, 0, 2, 2);
@@ -203,8 +231,14 @@ export async function healthCheck(ctx: { config: { root: string } }, deep: boole
   }
   const b = blenderInfo();
   const threeD = b.available
-    ? { ok: true, detail: `Blender ${b.version} (${b.path}); renderer: ${(await engineWorks("eevee")) ? "eevee (EGL)" : "cycles (CPU; EEVEE/EGL unavailable)"}` }
-    : { ok: false, detail: `3D backend unavailable: ${b.error}. 2D is unaffected. Install: apt install blender python3-numpy libegl1 libegl-mesa0 libgl1-mesa-dri` };
+    ? {
+        ok: true,
+        detail: `Blender ${b.version} (${b.path}); renderer: ${(await engineWorks("eevee")) ? "eevee (EGL)" : "cycles (CPU; EEVEE/EGL unavailable)"}`,
+      }
+    : {
+        ok: false,
+        detail: `3D backend unavailable: ${b.error}. 2D is unaffected. Install: apt install blender python3-numpy libegl1 libegl-mesa0 libgl1-mesa-dri`,
+      };
   if (deep) {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "vem-health-"));
     try {
@@ -214,10 +248,18 @@ export async function healthCheck(ctx: { config: { root: string } }, deep: boole
       await ws.renderPreview("s", 0);
       const jobs = new RenderJobs(ws);
       const j = await jobs.wait((await jobs.start("s")).renderId, 30_000);
-      checks.endToEndRender = j.status === "completed" ? { ok: true, detail: `rendered ${j.totalFrames} frames to MP4` } : { ok: false, detail: JSON.stringify(j.error) };
+      checks.endToEndRender =
+        j.status === "completed"
+          ? { ok: true, detail: `rendered ${j.totalFrames} frames to MP4` }
+          : { ok: false, detail: JSON.stringify(j.error) };
       if (b.available) {
         await ws.createScene({ sceneId: "s3", kind: "3d", canvas: { width: 64, height: 36, fps: 12 }, duration: 2 });
-        await ws.mutateScene("s3", (d) => ops3d.addEntities3D(d, { objects: [{ id: "box", primitive: { shape: "box", color: "#ff8800" } }], lights: [{ id: "sun", type: "sun", intensity: 3 }] }));
+        await ws.mutateScene("s3", (d) =>
+          ops3d.addEntities3D(d, {
+            objects: [{ id: "box", primitive: { shape: "box", color: "#ff8800" } }],
+            lights: [{ id: "sun", type: "sun", intensity: 3 }],
+          }),
+        );
         await ws.mutateScene("s3", (d) => ops3d.setSettings3D(d, { render: { quality: "draft" }, camera: { lookAt: { object: "box" } } }));
         const t = Date.now();
         await ws.renderPreview("s3", 0);
@@ -232,12 +274,19 @@ export async function healthCheck(ctx: { config: { root: string } }, deep: boole
   const ok = Object.values(checks).every((c) => c.ok);
   // 3D is optional: its absence does not make the (2D) server unhealthy
   checks.threeD = threeD;
-  return { summary: ok ? (threeD.ok ? "healthy (2D + 3D)" : "healthy (2D only; 3D unavailable)") : "UNHEALTHY", ok, checks, node: process.version, platform: `${process.platform}-${process.arch}` };
+  return {
+    summary: ok ? (threeD.ok ? "healthy (2D + 3D)" : "healthy (2D only; 3D unavailable)") : "UNHEALTHY",
+    ok,
+    checks,
+    node: process.version,
+    platform: `${process.platform}-${process.arch}`,
+  };
 }
 
 def({
   name: "engine_health",
-  description: "Check that FFmpeg, the Skia renderer, image I/O, the workspace root and the optional 3D backend (Blender) work. deep=true also renders and encodes a tiny test video and, when 3D is available, a tiny 3D frame.",
+  description:
+    "Check that FFmpeg, the Skia renderer, image I/O, the workspace root and the optional 3D backend (Blender) work. deep=true also renders and encodes a tiny test video and, when 3D is available, a tiny 3D frame.",
   args: z.object({ deep: z.boolean().optional().describe("Also run a real render + MP4 encode.") }).strict(),
   handler: async (ctx, a) => healthCheck(ctx, !!a.deep),
 });
@@ -255,14 +304,23 @@ def({
     "Create an isolated video workspace (assets, scenes, renders). Every other tool takes its workspaceId. Returns inboxPath: a directory where files you generate can be placed and then imported with asset_import {source:{inbox:'<file name>'}}.",
   args: z.object({ workspaceId: WorkspaceId, name: z.string().max(200).optional().describe("Display name.") }).strict(),
   mutates: true,
-  handler: async (ctx, a) => ({ summary: `Workspace ${a.workspaceId} created`, ...workspaceInfo(ctx.manager.create(a.workspaceId, { name: a.name })) }),
+  handler: async (ctx, a) => ({
+    summary: `Workspace ${a.workspaceId} created`,
+    ...workspaceInfo(ctx.manager.create(a.workspaceId, { name: a.name })),
+  }),
 });
 
 def({
   name: "workspace_open",
-  description: "Open an existing workspace (create=true creates it if missing) and return its summary: asset count, scene ids, artifacts, inbox files, available libraries.",
-  args: z.object({ workspaceId: WorkspaceId, create: z.boolean().optional().describe("Create the workspace if it does not exist.") }).strict(),
-  handler: async (ctx, a) => ({ summary: `Workspace ${a.workspaceId}`, ...workspaceInfo(ctx.manager.open(a.workspaceId, { create: a.create })) }),
+  description:
+    "Open an existing workspace (create=true creates it if missing) and return its summary: asset count, scene ids, artifacts, inbox files, available libraries.",
+  args: z
+    .object({ workspaceId: WorkspaceId, create: z.boolean().optional().describe("Create the workspace if it does not exist.") })
+    .strict(),
+  handler: async (ctx, a) => ({
+    summary: `Workspace ${a.workspaceId}`,
+    ...workspaceInfo(ctx.manager.open(a.workspaceId, { create: a.create })),
+  }),
 });
 
 def({
@@ -287,7 +345,8 @@ def({
 
 def({
   name: "library_list",
-  description: "List read-only asset libraries configured on this server, or the image/audio/3D model files inside one (paths are relative to the library; import them with asset_import).",
+  description:
+    "List read-only asset libraries configured on this server, or the image/audio/3D model files inside one (paths are relative to the library; import them with asset_import).",
   args: z
     .object({
       library: z.string().optional().describe("Library name; omit to list library names."),
@@ -321,7 +380,9 @@ def({
       attachmentPoints: z
         .record(IdSchema, z.object({ x: z.number(), y: z.number() }).strict())
         .optional()
-        .describe("Named points in normalised image coordinates (0,0 top-left .. 1,1 bottom-right), usable as parentPoint by child layers."),
+        .describe(
+          "Named points in normalised image coordinates (0,0 top-left .. 1,1 bottom-right), usable as parentPoint by child layers.",
+        ),
     })
     .strict(),
   mutates: true,
@@ -330,30 +391,50 @@ def({
     const s = a.source;
     let r;
     if ("library" in s) {
-      r = await ws.importAsset({ kind: "file", file: ctx.manager.resolveLibraryFile(s.library, s.path), origin: { library: s.library, path: s.path } }, a);
+      r = await ws.importAsset(
+        { kind: "file", file: ctx.manager.resolveLibraryFile(s.library, s.path), origin: { library: s.library, path: s.path } },
+        a,
+      );
     } else if ("inbox" in s) {
       const file = ws.abs(path.posix.join("inbox", s.inbox));
-      if (!file.startsWith(ws.abs("inbox") + path.sep)) throw new EngineError("PATH_OUTSIDE_WORKSPACE", `Inbox path escapes the inbox: ${s.inbox}`);
+      if (!file.startsWith(ws.abs("inbox") + path.sep))
+        throw new EngineError("PATH_OUTSIDE_WORKSPACE", `Inbox path escapes the inbox: ${s.inbox}`);
       if (!fs.existsSync(file)) throw new EngineError("FILE_NOT_FOUND", `No file "${s.inbox}" in the inbox`, { inbox: ws.listInbox() });
       r = await ws.importAsset({ kind: "file", file, origin: { inbox: s.inbox } }, a);
     } else {
-      r = await ws.importAsset({ kind: "bytes", data: Buffer.from(s.base64, "base64"), filename: s.filename, origin: { upload: s.filename } }, a);
+      r = await ws.importAsset(
+        { kind: "bytes", data: Buffer.from(s.base64, "base64"), filename: s.filename, origin: { upload: s.filename } },
+        a,
+      );
     }
-    return { summary: `${r.reused ? "Reused existing" : "Imported"} ${r.asset.kind} asset ${r.asset.assetId}`, reused: r.reused, asset: r.asset.model ? { ...r.asset, model: modelSummary(r.asset.model) } : r.asset };
+    return {
+      summary: `${r.reused ? "Reused existing" : "Imported"} ${r.asset.kind} asset ${r.asset.assetId}`,
+      reused: r.reused,
+      asset: r.asset.model ? { ...r.asset, model: modelSummary(r.asset.model) } : r.asset,
+    };
   },
 });
 
 def({
   name: "asset_list",
   description: "List assets in a workspace (id, kind, size, alpha, tags, provenance operation).",
-  args: z.object({ workspaceId: WorkspaceId, kind: z.enum(["image", "audio", "model", "video"]).optional(), tag: z.string().optional() }).strict(),
+  args: z
+    .object({ workspaceId: WorkspaceId, kind: z.enum(["image", "audio", "model", "video"]).optional(), tag: z.string().optional() })
+    .strict(),
   handler: async (ctx, a) => {
     const list = ctx.workspace(a.workspaceId).listAssets(a);
     return {
       summary: `${list.length} asset(s)`,
       assets: list.map((x) => ({
-        assetId: x.assetId, name: x.name, kind: x.kind, width: x.width, height: x.height, hasAlpha: x.hasAlpha, tags: x.tags,
-        operation: x.provenance.operation, ...(x.provenance.sourceAssetId ? { sourceAssetId: x.provenance.sourceAssetId } : {}),
+        assetId: x.assetId,
+        name: x.name,
+        kind: x.kind,
+        width: x.width,
+        height: x.height,
+        hasAlpha: x.hasAlpha,
+        tags: x.tags,
+        operation: x.provenance.operation,
+        ...(x.provenance.sourceAssetId ? { sourceAssetId: x.provenance.sourceAssetId } : {}),
         ...(x.attachmentPoints ? { attachmentPoints: x.attachmentPoints } : {}),
         ...(x.model ? { clips: x.model.clips.map((c) => c.name), rigged: x.model.rigged, morphTargets: x.model.morphTargets } : {}),
       })),
@@ -370,14 +451,19 @@ def({
 
 def({
   name: "asset_update",
-  description: "Change an asset's name, tags or attachment points (normalised 0..1 image coordinates). The image itself never changes; layers using it pick up new attachment points.",
+  description:
+    "Change an asset's name, tags or attachment points (normalised 0..1 image coordinates). The image itself never changes; layers using it pick up new attachment points.",
   args: z
     .object({
       workspaceId: WorkspaceId,
       assetId: AssetId,
       name: z.string().max(200).optional(),
       tags: z.array(z.string().max(60)).max(20).optional(),
-      attachmentPoints: z.record(IdSchema, z.object({ x: z.number(), y: z.number() }).strict()).nullable().optional().describe("Replaces all points; null removes them."),
+      attachmentPoints: z
+        .record(IdSchema, z.object({ x: z.number(), y: z.number() }).strict())
+        .nullable()
+        .optional()
+        .describe("Replaces all points; null removes them."),
     })
     .strict(),
   mutates: true,
@@ -402,11 +488,25 @@ def({
 
 const ProcessOptions = z
   .object({
-    mode: z.enum(["auto", "transparent", "color-key"]).optional().describe("auto (default): transparent images are only validated+trimmed; solid backgrounds are removed."),
+    mode: z
+      .enum(["auto", "transparent", "color-key"])
+      .optional()
+      .describe("auto (default): transparent images are only validated+trimmed; solid backgrounds are removed."),
     detect: z
       .object({
-        borderSampleSize: z.number().int().min(1).max(200).optional().describe("Border band sampled for the background colour (px, default 12)."),
-        uniformityTolerance: z.number().min(0).max(100).optional().describe("Delta-E for border pixels to count as background (default 12)."),
+        borderSampleSize: z
+          .number()
+          .int()
+          .min(1)
+          .max(200)
+          .optional()
+          .describe("Border band sampled for the background colour (px, default 12)."),
+        uniformityTolerance: z
+          .number()
+          .min(0)
+          .max(100)
+          .optional()
+          .describe("Delta-E for border pixels to count as background (default 12)."),
         minUniformity: z.number().min(0).max(1).optional().describe("Required background share of the border (default 0.9)."),
       })
       .strict()
@@ -416,13 +516,25 @@ const ProcessOptions = z
         colorTolerance: z.number().min(0).max(100).optional().describe("Delta-E flood-fill tolerance (default 18)."),
         edgeSoftness: z.number().int().min(0).max(20).optional().describe("Soft-edge band width in px (default 3; 0 = hard cut)."),
         despill: z.boolean().optional().describe("Remove background colour fringe from edges (default true)."),
-        removeHoles: z.union([z.array(z.number().int()), z.literal("all")]).optional().describe("Enclosed background-coloured regions to remove too (ids from a previous run's diagnostics.holes, or 'all')."),
+        removeHoles: z
+          .union([z.array(z.number().int()), z.literal("all")])
+          .optional()
+          .describe("Enclosed background-coloured regions to remove too (ids from a previous run's diagnostics.holes, or 'all')."),
       })
       .strict()
       .optional(),
-    trim: z.object({ alphaThreshold: z.number().min(0).max(254).optional(), padding: z.number().int().min(0).max(500).optional() }).strict().optional(),
-    removeComponents: z.array(z.number().int()).optional().describe("Disconnected component ids to delete (from a previous run's diagnostics.components)."),
-    attachmentPointsPx: z.record(IdSchema, z.object({ x: z.number(), y: z.number() }).strict()).optional().describe("Named points in SOURCE image pixels; converted to the new asset's normalised coordinates."),
+    trim: z
+      .object({ alphaThreshold: z.number().min(0).max(254).optional(), padding: z.number().int().min(0).max(500).optional() })
+      .strict()
+      .optional(),
+    removeComponents: z
+      .array(z.number().int())
+      .optional()
+      .describe("Disconnected component ids to delete (from a previous run's diagnostics.components)."),
+    attachmentPointsPx: z
+      .record(IdSchema, z.object({ x: z.number(), y: z.number() }).strict())
+      .optional()
+      .describe("Named points in SOURCE image pixels; converted to the new asset's normalised coordinates."),
     force: z.boolean().optional().describe("Process even if the border is not a uniform solid colour."),
   })
   .strict();
@@ -436,13 +548,20 @@ def({
   handler: async (ctx, a) => {
     const ws = ctx.workspace(a.workspaceId);
     const r = await ws.processAsset(a.assetId, a.options ?? {}, { assetId: a.newAssetId });
-    return { summary: `Processed ${a.assetId} -> ${r.asset.assetId} (${r.asset.width}x${r.asset.height})`, asset: r.asset, diagnostics: r.diagnostics, viewPath: ws.abs(r.view.relativePath), view: r.view };
+    return {
+      summary: `Processed ${a.assetId} -> ${r.asset.assetId} (${r.asset.width}x${r.asset.height})`,
+      asset: r.asset,
+      diagnostics: r.diagnostics,
+      viewPath: ws.abs(r.view.relativePath),
+      view: r.view,
+    };
   },
 });
 
 def({
   name: "asset_trim",
-  description: "Crop an image asset to its visible (non-transparent) pixels, keeping optional padding. Creates a NEW asset; attachment points are carried over. Returns trim offsets and viewPath.",
+  description:
+    "Crop an image asset to its visible (non-transparent) pixels, keeping optional padding. Creates a NEW asset; attachment points are carried over. Returns trim offsets and viewPath.",
   args: z
     .object({
       workspaceId: WorkspaceId,
@@ -456,14 +575,23 @@ def({
   handler: async (ctx, a) => {
     const ws = ctx.workspace(a.workspaceId);
     const r = await ws.trimAsset(a.assetId, { alphaThreshold: a.alphaThreshold, padding: a.padding }, { assetId: a.newAssetId });
-    return { summary: `Trimmed ${a.assetId} -> ${r.asset.assetId} (${r.asset.width}x${r.asset.height})`, asset: r.asset, trim: r.trim, viewPath: ws.abs(r.view.relativePath), view: r.view };
+    return {
+      summary: `Trimmed ${a.assetId} -> ${r.asset.assetId} (${r.asset.width}x${r.asset.height})`,
+      asset: r.asset,
+      trim: r.trim,
+      viewPath: ws.abs(r.view.relativePath),
+      view: r.view,
+    };
   },
 });
 
 def({
   name: "asset_components",
-  description: "List disconnected visible regions (8-connected alpha components) of an image asset: id (1 = largest), pixelCount, bounds, centroid, share. Use to find stray specks after background removal.",
-  args: z.object({ workspaceId: WorkspaceId, assetId: AssetId, alphaThreshold: z.number().min(0).max(254).optional().describe("Default 8.") }).strict(),
+  description:
+    "List disconnected visible regions (8-connected alpha components) of an image asset: id (1 = largest), pixelCount, bounds, centroid, share. Use to find stray specks after background removal.",
+  args: z
+    .object({ workspaceId: WorkspaceId, assetId: AssetId, alphaThreshold: z.number().min(0).max(254).optional().describe("Default 8.") })
+    .strict(),
   handler: async (ctx, a) => {
     const c = await ctx.workspace(a.workspaceId).assetComponents(a.assetId, a.alphaThreshold);
     return { summary: `${c.length} component(s)`, components: c };
@@ -486,7 +614,13 @@ def({
   handler: async (ctx, a) => {
     const ws = ctx.workspace(a.workspaceId);
     const r = await ws.removeAssetComponents(a.assetId, a.componentIds, a.alphaThreshold, { assetId: a.newAssetId });
-    return { summary: `Removed ${a.componentIds.length} component(s): ${r.asset.assetId}`, asset: r.asset, removedPixels: r.removedPixels, viewPath: ws.abs(r.view.relativePath), view: r.view };
+    return {
+      summary: `Removed ${a.componentIds.length} component(s): ${r.asset.assetId}`,
+      asset: r.asset,
+      removedPixels: r.removedPixels,
+      viewPath: ws.abs(r.view.relativePath),
+      view: r.view,
+    };
   },
 });
 
@@ -511,20 +645,32 @@ def({
   mutates: true,
   handler: async (ctx, a) => {
     const ws = ctx.workspace(a.workspaceId);
-    if (a.kind === "3d" && a.camera) throw new EngineError("INVALID_ARGUMENT", "camera here is the 2D camera; set the 3D camera with scene_settings_3d");
+    if (a.kind === "3d" && a.camera)
+      throw new EngineError("INVALID_ARGUMENT", "camera here is the 2D camera; set the 3D camera with scene_settings_3d");
     const r = await ws.createScene(a);
     const doc = ws.getSceneDoc(r.sceneId);
-    return { summary: `${r.kind.toUpperCase()} scene ${r.sceneId} created (${doc.canvas.width}x${doc.canvas.height}, ${doc.duration} frames @ ${doc.canvas.fps} fps)`, sceneId: r.sceneId, kind: r.kind, canvas: doc.canvas, duration: doc.duration, warnings: r.warnings };
+    return {
+      summary: `${r.kind.toUpperCase()} scene ${r.sceneId} created (${doc.canvas.width}x${doc.canvas.height}, ${doc.duration} frames @ ${doc.canvas.fps} fps)`,
+      sceneId: r.sceneId,
+      kind: r.kind,
+      canvas: doc.canvas,
+      duration: doc.duration,
+      warnings: r.warnings,
+    };
   },
 });
 
 def({
   name: "scene_get",
-  description: "The full scene: canvas, duration, camera, layers (engine fields), animation tracks, audio (by assetId) and assetsUsed. Layers reference assets by id in their `asset` field.",
+  description:
+    "The full scene: canvas, duration, camera, layers (engine fields), animation tracks, audio (by assetId) and assetsUsed. Layers reference assets by id in their `asset` field.",
   args: z.object({ workspaceId: WorkspaceId, sceneId: SceneId }).strict(),
   handler: async (ctx, a) => {
     const v = ctx.workspace(a.workspaceId).sceneView(a.sceneId);
-    const n = (v as any).kind === "3d" ? `${(v as any).objects?.length ?? 0} objects, ${(v as any).lights?.length ?? 0} lights` : `${(v as any).layers?.length ?? 0} layers`;
+    const n =
+      (v as any).kind === "3d"
+        ? `${(v as any).objects?.length ?? 0} objects, ${(v as any).lights?.length ?? 0} lights`
+        : `${(v as any).layers?.length ?? 0} layers`;
     return { summary: `Scene ${a.sceneId} (${(v as any).kind}): ${n}, ${(v as any).animations?.length ?? 0} tracks`, scene: v };
   },
 });
@@ -541,7 +687,8 @@ def({
 
 def({
   name: "scene_update",
-  description: "Change scene-level settings in one atomic step: name, canvas (size/fps/background), duration (frames), static camera, audio tracks. Layer and animation changes use the layer_* and timeline_apply tools.",
+  description:
+    "Change scene-level settings in one atomic step: name, canvas (size/fps/background), duration (frames), static camera, audio tracks. Layer and animation changes use the layer_* and timeline_apply tools.",
   args: z
     .object({
       workspaceId: WorkspaceId,
@@ -557,10 +704,12 @@ def({
   handler: async (ctx, a) => {
     const ws = ctx.workspace(a.workspaceId);
     const audio = a.audio ? ws.audioEntries(a.audio) : undefined;
-    if (a.camera && ws.sceneKind(a.sceneId) === "3d") throw new EngineError("INVALID_ARGUMENT", "This is a 3D scene: set its camera with scene_settings_3d");
+    if (a.camera && ws.sceneKind(a.sceneId) === "3d")
+      throw new EngineError("INVALID_ARGUMENT", "This is a 3D scene: set its camera with scene_settings_3d");
     const r = await ws.mutateScene(a.sceneId, (doc) => {
       let cur: ops.OpResult = { ok: true, scene: doc, warnings: [] };
-      if (a.name !== undefined || a.canvas || a.duration !== undefined) cur = ops.setSceneProps(doc, { name: a.name, canvas: a.canvas, duration: a.duration });
+      if (a.name !== undefined || a.canvas || a.duration !== undefined)
+        cur = ops.setSceneProps(doc, { name: a.name, canvas: a.canvas, duration: a.duration });
       if (cur.ok && a.camera) cur = ops.setCamera(cur.scene, a.camera);
       if (cur.ok && audio) cur = ops.setAudio(cur.scene, audio);
       return cur;
@@ -613,19 +762,25 @@ def({
       sceneId: SceneId,
       layerId: IdSchema.optional().describe("Single-layer form: the layer to change."),
       patch: LayerPatchSchema.optional(),
-      updates: z.array(z.object({ layerId: IdSchema, patch: LayerPatchSchema }).strict()).max(500).optional().describe("Multi-layer form."),
+      updates: z
+        .array(z.object({ layerId: IdSchema, patch: LayerPatchSchema }).strict())
+        .max(500)
+        .optional()
+        .describe("Multi-layer form."),
     })
     .strict(),
   mutates: true,
   handler: async (ctx, a, raw?: any) => {
-    const updates: { layerId: string; patch: Record<string, unknown> }[] = raw?.updates ?? (raw?.layerId ? [{ layerId: raw.layerId, patch: raw.patch ?? {} }] : []);
+    const updates: { layerId: string; patch: Record<string, unknown> }[] =
+      raw?.updates ?? (raw?.layerId ? [{ layerId: raw.layerId, patch: raw.patch ?? {} }] : []);
     if (!updates.length) throw new EngineError("INVALID_ARGUMENT", "Give either {layerId, patch} or {updates:[{layerId, patch}]}");
     const ws = require2D(ctx.workspace(a.workspaceId), a.sceneId);
     const r = await ws.mutateScene(a.sceneId, (doc) => {
       let cur: ops.OpResult = { ok: true, scene: doc, warnings: [] };
       for (const [i, u] of updates.entries()) {
         cur = ops.updateLayer(cur.scene, u.layerId, u.patch);
-        if (!cur.ok) return { ok: false, errors: cur.errors.map((e) => ({ ...e, details: { ...e.details, layerId: u.layerId, updateIndex: i } })) };
+        if (!cur.ok)
+          return { ok: false, errors: cur.errors.map((e) => ({ ...e, details: { ...e.details, layerId: u.layerId, updateIndex: i } })) };
       }
       return cur;
     });
@@ -637,13 +792,21 @@ def({
 
 def({
   name: "layer_remove",
-  description: "Remove a layer and its animation tracks. If it has children: children='error' (default) refuses, 'cascade' removes descendants too, 'reparent' moves them to the removed layer's parent.",
+  description:
+    "Remove a layer and its animation tracks. If it has children: children='error' (default) refuses, 'cascade' removes descendants too, 'reparent' moves them to the removed layer's parent.",
   args: z
-    .object({ workspaceId: WorkspaceId, sceneId: SceneId, layerId: IdSchema, children: z.enum(["error", "cascade", "reparent"]).optional() })
+    .object({
+      workspaceId: WorkspaceId,
+      sceneId: SceneId,
+      layerId: IdSchema,
+      children: z.enum(["error", "cascade", "reparent"]).optional(),
+    })
     .strict(),
   mutates: true,
   handler: async (ctx, a) => {
-    const r = await require2D(ctx.workspace(a.workspaceId), a.sceneId).mutateScene(a.sceneId, (doc) => ops.removeLayer(doc, { id: a.layerId, children: a.children }));
+    const r = await require2D(ctx.workspace(a.workspaceId), a.sceneId).mutateScene(a.sceneId, (doc) =>
+      ops.removeLayer(doc, { id: a.layerId, children: a.children }),
+    );
     return { summary: `Removed ${(r.result as any)?.removed?.join(", ")}`, removed: (r.result as any)?.removed };
   },
 });
@@ -664,7 +827,8 @@ def({
 
 def({
   name: "timeline_get",
-  description: "Animation tracks of a scene (optionally one target: a layer id or 'camera'). Each track = {target, property, keyframes:[{frame, value, interpolation}]}.",
+  description:
+    "Animation tracks of a scene (optionally one target: a layer id or 'camera'). Each track = {target, property, keyframes:[{frame, value, interpolation}]}.",
   args: z.object({ workspaceId: WorkspaceId, sceneId: SceneId, target: z.string().optional() }).strict(),
   handler: async (ctx, a) => {
     const doc = ctx.workspace(a.workspaceId).getSceneDoc(a.sceneId);
@@ -686,8 +850,14 @@ def({
     .strict(),
   mutates: true,
   handler: async (ctx, a, raw?: any) => {
-    const r = await ctx.workspace(a.workspaceId).mutateScene(a.sceneId, (doc) => ops.applyTimelineOps(doc, raw?.operations ?? a.operations));
-    return { summary: `Applied ${a.operations.length} timeline operation(s) to ${a.sceneId}`, applied: a.operations.length, warnings: r.warnings };
+    const r = await ctx
+      .workspace(a.workspaceId)
+      .mutateScene(a.sceneId, (doc) => ops.applyTimelineOps(doc, raw?.operations ?? a.operations));
+    return {
+      summary: `Applied ${a.operations.length} timeline operation(s) to ${a.sceneId}`,
+      applied: a.operations.length,
+      warnings: r.warnings,
+    };
   },
 });
 
@@ -704,18 +874,31 @@ def({
       sceneId: SceneId,
       frame: FrameArg,
       layers: z.array(IdSchema).optional().describe("Only these layers / 3D objects (default all)."),
-      bones: z.array(z.string()).max(50).optional().describe("3D: extra joints or sockets to report on rigged models (default: hands, head, root, hips)."),
-      detail: z.enum(["compact", "full"]).optional().describe("full adds corners, matrices and local values (2D) / every detected socket (3D)."),
+      bones: z
+        .array(z.string())
+        .max(50)
+        .optional()
+        .describe("3D: extra joints or sockets to report on rigged models (default: hands, head, root, hips)."),
+      detail: z
+        .enum(["compact", "full"])
+        .optional()
+        .describe("full adds corners, matrices and local values (2D) / every detected socket (3D)."),
     })
     .strict(),
   handler: async (ctx, a) => {
     const ws = ctx.workspace(a.workspaceId);
     if (ws.sceneKind(a.sceneId) === "3d") {
       const m = await ws.measure3D(a.sceneId, a.frame, { objects: a.layers, bones: a.bones });
-      return { summary: `3D layout of ${a.sceneId} at frame ${a.frame} (${m.objects.length} objects)`, ...compactMeasure3D(m, a.detail ?? "compact", a.bones ?? []) };
+      return {
+        summary: `3D layout of ${a.sceneId} at frame ${a.frame} (${m.objects.length} objects)`,
+        ...compactMeasure3D(m, a.detail ?? "compact", a.bones ?? []),
+      };
     }
     const layout = await ctx.workspace(a.workspaceId).measureLayout(a.sceneId, a.frame, a.layers);
-    return { summary: `Layout of ${a.sceneId} at frame ${a.frame} (${layout.layers.length} layers)`, ...compactLayout(layout, a.detail ?? "compact") };
+    return {
+      summary: `Layout of ${a.sceneId} at frame ${a.frame} (${layout.layers.length} layers)`,
+      ...compactLayout(layout, a.detail ?? "compact"),
+    };
   },
 });
 
@@ -728,8 +911,14 @@ def({
       workspaceId: WorkspaceId,
       sceneId: SceneId,
       frame: FrameArg,
-      debug: z.boolean().optional().describe("2D: bounds/ids/z/pivots overlay. 3D: screen boxes, ids, clips, depth, hand/head/root sockets."),
-      quality: Render3DSchema.shape.quality.unwrap().optional().describe("3D only: preview quality (default draft; video uses the scene's render.quality)."),
+      debug: z
+        .boolean()
+        .optional()
+        .describe("2D: bounds/ids/z/pivots overlay. 3D: screen boxes, ids, clips, depth, hand/head/root sockets."),
+      quality: Render3DSchema.shape.quality
+        .unwrap()
+        .optional()
+        .describe("3D only: preview quality (default draft; video uses the scene's render.quality)."),
       debugOptions: z
         .object({
           only: z.array(IdSchema).optional(),
@@ -747,7 +936,11 @@ def({
     .strict(),
   handler: async (ctx, a) => {
     const ws = ctx.workspace(a.workspaceId);
-    const r = (await ws.renderPreview(a.sceneId, a.frame, { debug: a.debug, debugOptions: a.debugOptions, quality: a.quality })) as ArtifactRecord & { measurement?: Measurement3D };
+    const r = (await ws.renderPreview(a.sceneId, a.frame, {
+      debug: a.debug,
+      debugOptions: a.debugOptions,
+      quality: a.quality,
+    })) as ArtifactRecord & { measurement?: Measurement3D };
     const { measurement, ...art } = r;
     return {
       summary: `${a.debug ? "Debug preview" : "Preview"} ${art.artifactId}: ${a.sceneId} frame ${a.frame}`,
@@ -760,12 +953,17 @@ def({
 
 def({
   name: "render_frame",
-  description: "Render one frame through the exact deterministic path used for video (PNG artifact + pixel SHA-256 for comparisons). Returns artifactId, relativePath and viewPath.",
+  description:
+    "Render one frame through the exact deterministic path used for video (PNG artifact + pixel SHA-256 for comparisons). Returns artifactId, relativePath and viewPath.",
   args: z.object({ workspaceId: WorkspaceId, sceneId: SceneId, frame: FrameArg }).strict(),
   handler: async (ctx, a) => {
     const ws = ctx.workspace(a.workspaceId);
     const art = await ws.renderFrame(a.sceneId, a.frame);
-    return { summary: `Frame ${art.artifactId}: ${a.sceneId} frame ${a.frame}`, artifact: presentArtifact(ws, art), viewPath: ws.abs(art.view!.relativePath) };
+    return {
+      summary: `Frame ${art.artifactId}: ${a.sceneId} frame ${a.frame}`,
+      artifact: presentArtifact(ws, art),
+      viewPath: ws.abs(art.view!.relativePath),
+    };
   },
 });
 
@@ -778,7 +976,14 @@ function presentJob(ws: VideoWorkspace, j: ReturnType<RenderJobs["get"]>) {
     totalFrames: j.totalFrames,
     progress: j.progress,
     ...(j.elapsedSeconds !== undefined ? { elapsedSeconds: j.elapsedSeconds } : {}),
-    ...(j.artifact ? { artifact: presentArtifact(ws, j.artifact), artifactId: j.artifact.artifactId, relativePath: j.artifact.relativePath, durationSeconds: j.artifact.durationSeconds } : {}),
+    ...(j.artifact
+      ? {
+          artifact: presentArtifact(ws, j.artifact),
+          artifactId: j.artifact.artifactId,
+          relativePath: j.artifact.relativePath,
+          durationSeconds: j.artifact.durationSeconds,
+        }
+      : {}),
     ...(j.error ? { error: j.error } : {}),
     ...(j.result ? { result: j.result } : {}),
   };
@@ -804,16 +1009,31 @@ def({
   mutates: true,
   handler: async (ctx, a) => {
     const ws = ctx.workspace(a.workspaceId);
-    const j = await ctx.jobsFor(ws).start(a.sceneId, { startFrame: a.startFrame, endFrame: a.endFrame, crf: a.crf, audio: a.audio, subtitles: a.subtitles, chunks: a.chunks, videoCacheBytes: a.videoCacheBytes });
+    const j = await ctx
+      .jobsFor(ws)
+      .start(a.sceneId, {
+        startFrame: a.startFrame,
+        endFrame: a.endFrame,
+        crf: a.crf,
+        audio: a.audio,
+        subtitles: a.subtitles,
+        chunks: a.chunks,
+        videoCacheBytes: a.videoCacheBytes,
+      });
     return { summary: `Render ${j.renderId} started (${j.totalFrames} frames)`, ...presentJob(ws, j) };
   },
 });
 
 def({
   name: "render_video_status",
-  description: "Status of a video render: queued | running | completed | failed | cancelled | interrupted, with frame/totalFrames/progress. waitSeconds (max 45) waits for completion first. When completed: artifactId, relativePath, path, durationSeconds and a poster viewPath.",
+  description:
+    "Status of a video render: queued | running | completed | failed | cancelled | interrupted, with frame/totalFrames/progress. waitSeconds (max 45) waits for completion first. When completed: artifactId, relativePath, path, durationSeconds and a poster viewPath.",
   args: z
-    .object({ workspaceId: WorkspaceId, renderId: IdSchema, waitSeconds: z.number().min(0).max(45).optional().describe("Wait up to this long for the render to finish.") })
+    .object({
+      workspaceId: WorkspaceId,
+      renderId: IdSchema,
+      waitSeconds: z.number().min(0).max(45).optional().describe("Wait up to this long for the render to finish."),
+    })
     .strict(),
   handler: async (ctx, a) => {
     const ws = ctx.workspace(a.workspaceId);
@@ -837,7 +1057,13 @@ def({
 def({
   name: "artifact_list",
   description: "List rendered artifacts (preview, debug-preview, frame, video) with their ids, frames and relative paths.",
-  args: z.object({ workspaceId: WorkspaceId, kind: z.enum(["preview", "debug-preview", "frame", "video"]).optional(), sceneId: IdSchema.optional() }).strict(),
+  args: z
+    .object({
+      workspaceId: WorkspaceId,
+      kind: z.enum(["preview", "debug-preview", "frame", "video"]).optional(),
+      sceneId: IdSchema.optional(),
+    })
+    .strict(),
   handler: async (ctx, a) => {
     const ws = ctx.workspace(a.workspaceId);
     const list = ws.listArtifacts(a).map((x) => presentArtifact(ws, x));
@@ -849,12 +1075,22 @@ def({
 // 3D
 
 function require2D(ws: VideoWorkspace, sceneId: string) {
-  if (ws.sceneKind(sceneId) === "3d") throw new EngineError("INVALID_ARGUMENT", `Scene "${sceneId}" is a 3D scene: use object_add / object_update / object_remove / object_list`, { sceneId, kind: "3d" });
+  if (ws.sceneKind(sceneId) === "3d")
+    throw new EngineError(
+      "INVALID_ARGUMENT",
+      `Scene "${sceneId}" is a 3D scene: use object_add / object_update / object_remove / object_list`,
+      { sceneId, kind: "3d" },
+    );
   return ws;
 }
 
 function require3D(ws: VideoWorkspace, sceneId: string) {
-  if (ws.sceneKind(sceneId) !== "3d") throw new EngineError("INVALID_ARGUMENT", `Scene "${sceneId}" is a 2D scene: use the layer_* tools (or create a scene with kind:'3d')`, { sceneId, kind: "2d" });
+  if (ws.sceneKind(sceneId) !== "3d")
+    throw new EngineError(
+      "INVALID_ARGUMENT",
+      `Scene "${sceneId}" is a 2D scene: use the layer_* tools (or create a scene with kind:'3d')`,
+      { sceneId, kind: "2d" },
+    );
   return ws;
 }
 
@@ -939,7 +1175,12 @@ def({
         return [id, { clips: m.clips.map((c) => c.name), sockets: Object.keys(m.sockets), morphTargets: m.morphTargets }];
       }),
     );
-    return { summary: `Added ${[...objects, ...lights].map((o) => o.id).join(", ")} to ${a.sceneId}`, added: (r.result as any)?.added, models, warnings: r.warnings };
+    return {
+      summary: `Added ${[...objects, ...lights].map((o) => o.id).join(", ")} to ${a.sceneId}`,
+      added: (r.result as any)?.added,
+      models,
+      warnings: r.warnings,
+    };
   },
 });
 
@@ -953,12 +1194,17 @@ def({
       sceneId: SceneId,
       id: IdSchema.optional().describe("Single form: object or light id."),
       patch: Entity3DPatch.optional(),
-      updates: z.array(z.object({ id: IdSchema, patch: Entity3DPatch }).strict()).max(200).optional().describe("Multi form."),
+      updates: z
+        .array(z.object({ id: IdSchema, patch: Entity3DPatch }).strict())
+        .max(200)
+        .optional()
+        .describe("Multi form."),
     })
     .strict(),
   mutates: true,
   handler: async (ctx, a, raw?: any) => {
-    const updates: { id: string; patch: Record<string, unknown> }[] = raw?.updates ?? (raw?.id ? [{ id: raw.id, patch: raw.patch ?? {} }] : []);
+    const updates: { id: string; patch: Record<string, unknown> }[] =
+      raw?.updates ?? (raw?.id ? [{ id: raw.id, patch: raw.patch ?? {} }] : []);
     if (!updates.length) throw new EngineError("INVALID_ARGUMENT", "Give either {id, patch} or {updates:[{id, patch}]}");
     const ws = require3D(ctx.workspace(a.workspaceId), a.sceneId);
     const r = await ws.mutateScene(a.sceneId, (doc) => {
@@ -971,14 +1217,21 @@ def({
     });
     const doc = ws.getSceneDoc(a.sceneId);
     const all = [...doc.objects, ...doc.lights];
-    return { summary: `Updated ${updates.map((u) => u.id).join(", ")} in ${a.sceneId}`, updated: updates.map((u) => all.find((o: any) => o.id === u.id)), warnings: r.warnings };
+    return {
+      summary: `Updated ${updates.map((u) => u.id).join(", ")} in ${a.sceneId}`,
+      updated: updates.map((u) => all.find((o: any) => o.id === u.id)),
+      warnings: r.warnings,
+    };
   },
 });
 
 def({
   name: "object_remove",
-  description: "3D scenes: remove an object or light and its animation tracks. Objects parented or attached to it: children='error' (default) refuses, 'cascade' removes them too, 'detach' keeps them at the scene root.",
-  args: z.object({ workspaceId: WorkspaceId, sceneId: SceneId, id: IdSchema, children: z.enum(["error", "cascade", "detach"]).optional() }).strict(),
+  description:
+    "3D scenes: remove an object or light and its animation tracks. Objects parented or attached to it: children='error' (default) refuses, 'cascade' removes them too, 'detach' keeps them at the scene root.",
+  args: z
+    .object({ workspaceId: WorkspaceId, sceneId: SceneId, id: IdSchema, children: z.enum(["error", "cascade", "detach"]).optional() })
+    .strict(),
   mutates: true,
   handler: async (ctx, a) => {
     const ws = require3D(ctx.workspace(a.workspaceId), a.sceneId);
@@ -989,7 +1242,8 @@ def({
 
 def({
   name: "object_list",
-  description: "3D scenes: objects and lights with their static fields, which properties are animated, and for model objects the clips, sockets and morph targets of their asset. Also camera, world, render settings and overlay.",
+  description:
+    "3D scenes: objects and lights with their static fields, which properties are animated, and for model objects the clips, sockets and morph targets of their asset. Also camera, world, render settings and overlay.",
   args: z.object({ workspaceId: WorkspaceId, sceneId: SceneId }).strict(),
   handler: async (ctx, a) => {
     const ws = require3D(ctx.workspace(a.workspaceId), a.sceneId);
@@ -997,7 +1251,11 @@ def({
     const animated = (id: string) => (doc.animations ?? []).filter((t: any) => t.target === id).map((t: any) => t.property);
     const objects = (doc.objects ?? []).map((o: any) => {
       const m = o.asset && ws.hasAsset(o.asset) ? ws.getAsset(o.asset).model : undefined;
-      return { ...o, animated: animated(o.id), ...(m ? { model: { clips: m.clips.map((c) => c.name), sockets: Object.keys(m.sockets), morphTargets: m.morphTargets } } : {}) };
+      return {
+        ...o,
+        animated: animated(o.id),
+        ...(m ? { model: { clips: m.clips.map((c) => c.name), sockets: Object.keys(m.sockets), morphTargets: m.morphTargets } } : {}),
+      };
     });
     const lights = (doc.lights ?? []).map((l: any) => ({ ...l, animated: animated(l.id) }));
     return {
@@ -1031,7 +1289,10 @@ def({
         })
         .strict()
         .optional(),
-      world: z.object({ color: ColorSchema.nullable().optional(), strength: World3DSchema.shape.strength.unwrap().nullable().optional() }).strict().optional(),
+      world: z
+        .object({ color: ColorSchema.nullable().optional(), strength: World3DSchema.shape.strength.unwrap().nullable().optional() })
+        .strict()
+        .optional(),
       render: z
         .object({
           quality: Render3DSchema.shape.quality.unwrap().nullable().optional(),
@@ -1047,9 +1308,17 @@ def({
   mutates: true,
   handler: async (ctx, a, raw?: any) => {
     const ws = require3D(ctx.workspace(a.workspaceId), a.sceneId);
-    await ws.mutateScene(a.sceneId, (doc) => ops3d.setSettings3D(doc, { camera: raw?.camera, world: raw?.world, render: raw?.render, overlay: raw?.overlay }));
+    await ws.mutateScene(a.sceneId, (doc) =>
+      ops3d.setSettings3D(doc, { camera: raw?.camera, world: raw?.world, render: raw?.render, overlay: raw?.overlay }),
+    );
     const doc = ws.getSceneDoc(a.sceneId);
-    return { summary: `3D settings of ${a.sceneId} updated`, camera: doc.camera, world: doc.world, render: doc.render, overlay: doc.overlay ?? null };
+    return {
+      summary: `3D settings of ${a.sceneId} updated`,
+      camera: doc.camera,
+      world: doc.world,
+      render: doc.render,
+      overlay: doc.overlay ?? null,
+    };
   },
 });
 
@@ -1066,12 +1335,19 @@ def({
   name: "character_list",
   description:
     "Prepared characters already imported into the workspace (id, 2D/3D, actions, expressions) and saved speech timings. With library: also the character PACKAGES available in that read-only library (import one with character_import; preparation happens once, then it is reused by any number of scenes).",
-  args: z.object({ workspaceId: WorkspaceId, library: z.string().optional().describe("Also list character packages in this library.") }).strict(),
+  args: z
+    .object({ workspaceId: WorkspaceId, library: z.string().optional().describe("Also list character packages in this library.") })
+    .strict(),
   handler: async (ctx, a) => {
     const ws = ctx.workspace(a.workspaceId);
     const packages = a.library ? ctx.manager.listCharacterPackages(a.library) : undefined;
     const list = ws.listCharacters();
-    return { summary: `${list.length} prepared character(s)${packages ? `, ${packages.length} package(s) in ${a.library}` : ""}`, characters: list, speechTimings: ws.listSpeechTimings(), ...(packages ? { library: a.library, packages } : {}) };
+    return {
+      summary: `${list.length} prepared character(s)${packages ? `, ${packages.length} package(s) in ${a.library}` : ""}`,
+      characters: list,
+      speechTimings: ws.listSpeechTimings(),
+      ...(packages ? { library: a.library, packages } : {}),
+    };
   },
 });
 
@@ -1090,8 +1366,16 @@ def({
   mutates: true,
   handler: async (ctx, a) => {
     const ws = ctx.workspace(a.workspaceId);
-    const r = await ws.importCharacter(ctx.manager.resolveLibraryDir(a.source.library, a.source.path), { characterId: a.characterId, replace: a.replace, origin: a.source });
-    return { summary: `${r.reused ? "Reused prepared" : "Prepared"} character ${r.character.def.id} (${r.character.def.kind})`, reused: r.reused, capabilities: describeCharacterFor(ws, r.character.def.id) };
+    const r = await ws.importCharacter(ctx.manager.resolveLibraryDir(a.source.library, a.source.path), {
+      characterId: a.characterId,
+      replace: a.replace,
+      origin: a.source,
+    });
+    return {
+      summary: `${r.reused ? "Reused prepared" : "Prepared"} character ${r.character.def.id} (${r.character.def.kind})`,
+      reused: r.reused,
+      capabilities: describeCharacterFor(ws, r.character.def.id),
+    };
   },
 });
 
@@ -1119,7 +1403,11 @@ def({
   handler: async (ctx, a, raw?: any) => {
     const ws = ctx.workspace(a.workspaceId);
     const r = await ws.mutateScene(a.sceneId, (doc) => chars.addCharacter(doc, raw?.character ?? a.character, ws.characterContext()));
-    return { summary: `Placed ${a.character.id} (${a.character.character}) in ${a.sceneId}`, warnings: r.warnings, timeline: timelineOf(ws, a.sceneId, a.character.id)[0] };
+    return {
+      summary: `Placed ${a.character.id} (${a.character.character}) in ${a.sceneId}`,
+      warnings: r.warnings,
+      timeline: timelineOf(ws, a.sceneId, a.character.id)[0],
+    };
   },
 });
 
@@ -1151,9 +1439,15 @@ def({
   mutates: true,
   handler: async (ctx, a) => {
     const ws = ctx.workspace(a.workspaceId);
-    const r = await ws.mutateScene(a.sceneId, (doc) => chars.removeCharacter(doc, a.id, { removeInteractions: a.removeInteractions }, ws.characterContext()));
+    const r = await ws.mutateScene(a.sceneId, (doc) =>
+      chars.removeCharacter(doc, a.id, { removeInteractions: a.removeInteractions }, ws.characterContext()),
+    );
     const removedInteractions = (r.result as { removedInteractions?: string[] } | undefined)?.removedInteractions ?? [];
-    return { summary: `Removed ${a.id}${removedInteractions.length ? ` and interaction(s) ${removedInteractions.join(", ")}` : ""}`, removed: a.id, removedInteractions };
+    return {
+      summary: `Removed ${a.id}${removedInteractions.length ? ` and interaction(s) ${removedInteractions.join(", ")}` : ""}`,
+      removed: a.id,
+      removedInteractions,
+    };
   },
 });
 
@@ -1161,13 +1455,26 @@ def({
   name: "character_actions",
   description:
     "Schedule/edit a character's HIGH-LEVEL actions in one atomic batch: WHAT, WHEN (start s), HOW LONG (duration/end s), WHERE (direction/to/distance). Ops: add {action:{action,start,duration?,direction?,to?,speech?,...}}, update {id, patch}, replace {id, action}, remove {id}, shift {by, after?|ids?}, clear {actions?}. Actions: walk/run (direction left|right[|camera|away 3D], to, distance, speed), idle, talk (speech: timing id or inline; none = generic talking), smile/sad/... or expression, blink (count/interval), wave, point, turn, look... Compatible actions overlap freely (walk+talk, talk+smile+blink); conflicts return ACTION_CONFLICT naming both actions. Returns the resolved schedule.",
-  args: z.object({ workspaceId: WorkspaceId, sceneId: SceneId, character: InstanceId, operations: z.array(chars.ActionOpSchema).min(1).max(500) }).strict(),
+  args: z
+    .object({
+      workspaceId: WorkspaceId,
+      sceneId: SceneId,
+      character: InstanceId,
+      operations: z.array(chars.ActionOpSchema).min(1).max(500),
+    })
+    .strict(),
   mutates: true,
   handler: async (ctx, a, raw?: any) => {
     const ws = ctx.workspace(a.workspaceId);
-    const r = await ws.mutateScene(a.sceneId, (doc) => chars.applyCharacterActions(doc, a.character, raw?.operations ?? a.operations, ws.characterContext()));
+    const r = await ws.mutateScene(a.sceneId, (doc) =>
+      chars.applyCharacterActions(doc, a.character, raw?.operations ?? a.operations, ws.characterContext()),
+    );
     const tl = timelineOf(ws, a.sceneId, a.character)[0];
-    return { summary: `${a.operations.length} action operation(s) applied to ${a.character}: ${tl.actions.length} action(s) scheduled`, warnings: r.warnings, timeline: tl };
+    return {
+      summary: `${a.operations.length} action operation(s) applied to ${a.character}: ${tl.actions.length} action(s) scheduled`,
+      warnings: r.warnings,
+      timeline: tl,
+    };
   },
 });
 
@@ -1178,7 +1485,10 @@ def({
   args: z.object({ workspaceId: WorkspaceId, sceneId: SceneId, character: InstanceId.optional() }).strict(),
   handler: async (ctx, a) => {
     const tl = timelineOf(ctx.workspace(a.workspaceId), a.sceneId, a.character);
-    return { summary: `${tl.length} character(s): ${tl.map((c) => `${c.id} ${c.actions.length} action(s)`).join(", ") || "none"}`, characters: tl };
+    return {
+      summary: `${tl.length} character(s): ${tl.map((c) => `${c.id} ${c.actions.length} action(s)`).join(", ") || "none"}`,
+      characters: tl,
+    };
   },
 });
 
@@ -1213,11 +1523,18 @@ def({
     const ws = ctx.workspace(a.workspaceId);
     if (a.interactionId) {
       const d = ws.describeInteraction(a.interactionId);
-      return { summary: `${d.name}: ${d.actors} actors (${d.roles.map((r) => r.name).join(", ")}), ${d.duration.default}s`, interaction: d };
+      return {
+        summary: `${d.name}: ${d.actors} actors (${d.roles.map((r) => r.name).join(", ")}), ${d.duration.default}s`,
+        interaction: d,
+      };
     }
     const list = ws.listInteractions();
     const packages = a.library ? ctx.manager.listInteractionPackages(a.library) : undefined;
-    return { summary: `${list.length} interaction(s): ${list.map((x) => x.id).join(", ")}`, interactions: list, ...(packages ? { library: a.library, packages } : {}) };
+    return {
+      summary: `${list.length} interaction(s): ${list.map((x) => x.id).join(", ")}`,
+      interactions: list,
+      ...(packages ? { library: a.library, packages } : {}),
+    };
   },
 });
 
@@ -1236,7 +1553,14 @@ def({
       interaction: IdSchema,
       actors: z.array(CheckActor).min(1).max(8),
       sceneId: SceneId.optional().describe("Needed when actors are instance ids."),
-      params: z.object({ object: IdSchema.optional(), hand: z.enum(["right", "left"]).optional(), anchor: z.enum(["first", "second", "midpoint"]).optional() }).strict().optional(),
+      params: z
+        .object({
+          object: IdSchema.optional(),
+          hand: z.enum(["right", "left"]).optional(),
+          anchor: z.enum(["first", "second", "midpoint"]).optional(),
+        })
+        .strict()
+        .optional(),
     })
     .strict(),
   handler: async (ctx, a) => {
@@ -1247,13 +1571,20 @@ def({
       if (typeof x === "string") {
         if (!doc) throw new EngineError("INVALID_ARGUMENT", "Instance ids need sceneId", { actor: x });
         const inst = (doc.characters ?? []).find((c: any) => c.id === x);
-        if (!inst) throw new EngineError("CHARACTER_NOT_FOUND", `No character instance "${x}" in ${a.sceneId}`, { instances: (doc.characters ?? []).map((c: any) => c.id) });
+        if (!inst)
+          throw new EngineError("CHARACTER_NOT_FOUND", `No character instance "${x}" in ${a.sceneId}`, {
+            instances: (doc.characters ?? []).map((c: any) => c.id),
+          });
         return { id: x, def: ws.getCharacter(inst.character).def, scale: inst.scale, props: inst.props };
       }
       return { id: x.character, def: ws.getCharacter(x.character).def, scale: x.scale };
     });
     const r = checkInteraction(def, actors, { model: (id) => ws.modelInfo(id) }, a.params);
-    return { summary: `${a.interaction}: ${r.compatible ? "compatible" : "NOT compatible"}${r.issues.length ? ` (${r.issues.map((i) => `${i.actor}: ${i.problem}`).join("; ")})` : ""}`, interaction: a.interaction, ...r };
+    return {
+      summary: `${a.interaction}: ${r.compatible ? "compatible" : "NOT compatible"}${r.issues.length ? ` (${r.issues.map((i) => `${i.actor}: ${i.problem}`).join("; ")})` : ""}`,
+      interaction: a.interaction,
+      ...r,
+    };
   },
 });
 
@@ -1283,7 +1614,11 @@ def({
       }
     }
     const r = ws.defineInteraction(raw, { replace: a.replace, origin: a.source });
-    return { summary: `${r.reused ? "Reused" : "Defined"} interaction ${r.interaction.id} (${r.interaction.actors} actors)`, reused: r.reused, interaction: r.interaction };
+    return {
+      summary: `${r.reused ? "Reused" : "Defined"} interaction ${r.interaction.id} (${r.interaction.actors} actors)`,
+      reused: r.reused,
+      interaction: r.interaction,
+    };
   },
 });
 
@@ -1297,9 +1632,15 @@ def({
   mutates: true,
   handler: async (ctx, a, raw?: any) => {
     const ws = ctx.workspace(a.workspaceId);
-    const r = await ws.mutateScene(a.sceneId, (doc) => chars.applyInteractionOps(doc, raw?.operations ?? a.operations, ws.characterContext()));
+    const r = await ws.mutateScene(a.sceneId, (doc) =>
+      chars.applyInteractionOps(doc, raw?.operations ?? a.operations, ws.characterContext()),
+    );
     const tl = await ws.inspectInteractions(a.sceneId);
-    return { summary: `${a.operations.length} interaction operation(s) applied: ${(tl.interactions as any[]).map((x) => `${x.id} ${x.interaction} ${x.start}-${x.end}s`).join(", ") || "none"}`, warnings: r.warnings, ...tl };
+    return {
+      summary: `${a.operations.length} interaction operation(s) applied: ${(tl.interactions as any[]).map((x) => `${x.id} ${x.interaction} ${x.start}-${x.end}s`).join(", ") || "none"}`,
+      warnings: r.warnings,
+      ...tl,
+    };
   },
 });
 
@@ -1310,50 +1651,90 @@ def({
   args: z.object({ workspaceId: WorkspaceId, sceneId: SceneId, frame: z.number().int().min(0).optional() }).strict(),
   handler: async (ctx, a) => {
     const tl: any = await ctx.workspace(a.workspaceId).inspectInteractions(a.sceneId, a.frame);
-    return { summary: `${tl.interactions.length} interaction(s)${a.frame !== undefined ? ` at frame ${a.frame}: ${tl.atFrame?.interactions.map((x: any) => `${x.id} ${x.phase.name}`).join(", ") || "none active"}` : ""}`, ...tl };
+    return {
+      summary: `${tl.interactions.length} interaction(s)${a.frame !== undefined ? ` at frame ${a.frame}: ${tl.atFrame?.interactions.map((x: any) => `${x.id} ${x.phase.name}`).join(", ") || "none active"}` : ""}`,
+      ...tl,
+    };
   },
 });
 
-
 // Video compositing tools use existing workspace isolation and job lifecycle.
 def({
-  name: "prepare_video_asset", description: "Start a CFR video preparation job from a workspace inbox file. Poll/cancel via render_video_status/render_video_cancel; result contains the prepared asset and scene entry.",
-  args: z.object({ workspaceId: WorkspaceId, sceneId: SceneId.optional(), input: z.string(), assetId: AssetId.optional(), options: PrepareVideoOptionsSchema.optional() }).strict(), mutates: true,
+  name: "prepare_video_asset",
+  description:
+    "Start a CFR video preparation job from a workspace inbox file. Poll/cancel via render_video_status/render_video_cancel; result contains the prepared asset and scene entry.",
+  args: z
+    .object({
+      workspaceId: WorkspaceId,
+      sceneId: SceneId.optional(),
+      input: z.string(),
+      assetId: AssetId.optional(),
+      options: PrepareVideoOptionsSchema.optional(),
+    })
+    .strict(),
+  mutates: true,
   handler: async (ctx, a) => {
-    const ws = ctx.workspace(a.workspaceId), fps = a.sceneId ? ws.getSceneDoc(a.sceneId).canvas.fps : 30;
+    const ws = ctx.workspace(a.workspaceId),
+      fps = a.sceneId ? ws.getSceneDoc(a.sceneId).canvas.fps : 30;
     const job = await ctx.jobsFor(ws).startPreparation(a.input, { fps, ...a.options }, a.assetId);
     return { summary: "Video preparation started", ...presentJob(ws, job) };
   },
 });
 def({
-  name: "subtitles_from_timing", description: "Write ASS and SRT in this workspace from provider-neutral speech alignment. Returns paths for render_video_start subtitles.file.",
-  args: z.object({ workspaceId: WorkspaceId, blocks: z.array(TimingBlockSchema).min(1), options: SubtitlesTimingOptionsSchema }).strict(), mutates: true,
+  name: "subtitles_from_timing",
+  description:
+    "Write ASS and SRT in this workspace from provider-neutral speech alignment. Returns paths for render_video_start subtitles.file.",
+  args: z.object({ workspaceId: WorkspaceId, blocks: z.array(TimingBlockSchema).min(1), options: SubtitlesTimingOptionsSchema }).strict(),
+  mutates: true,
   handler: async (ctx, a) => {
-    const ws = ctx.workspace(a.workspaceId), result = subtitlesFromTiming(a.blocks, a.options), id = ws.nextId("subtitles");
-    const ass = `subtitles/${id}.ass`, srt = `subtitles/${id}.srt`;
-    writeFileAtomic(ws.abs(ass), result.ass); writeFileAtomic(ws.abs(srt), result.srt);
+    const ws = ctx.workspace(a.workspaceId),
+      result = subtitlesFromTiming(a.blocks, a.options),
+      id = ws.nextId("subtitles");
+    const ass = `subtitles/${id}.ass`,
+      srt = `subtitles/${id}.srt`;
+    writeFileAtomic(ws.abs(ass), result.ass);
+    writeFileAtomic(ws.abs(srt), result.srt);
     return { summary: "Subtitle files generated", ass, srt, cues: result.cues, warnings: result.warnings };
   },
 });
 def({
-  name: "add_audio", description: "Append an audio asset with trim, sub-frame placement and fades. Returns its array index.",
-  args: z.object({ workspaceId: WorkspaceId, sceneId: SceneId, track: AudioSchema.omit({ src: true, owner: true }).extend({ assetId: AssetId }) }).strict(), mutates: true,
-  handler: async (ctx, a) => { const ws = ctx.workspace(a.workspaceId); return { summary: "Audio added", ...await ws.mutateScene(a.sceneId, d => ops.addAudio(d, ws.audioEntries([a.track])[0])) }; },
-});
-def({
-  name: "update_audio", description: "Patch an audio track by array index; assetId replaces the source; null removes optional fields.",
-  args: z.object({ workspaceId: WorkspaceId, sceneId: SceneId, index: FrameArg, patch: z.record(z.string(), z.unknown()) }).strict(), mutates: true,
+  name: "add_audio",
+  description: "Append an audio asset with trim, sub-frame placement and fades. Returns its array index.",
+  args: z
+    .object({
+      workspaceId: WorkspaceId,
+      sceneId: SceneId,
+      track: AudioSchema.omit({ src: true, owner: true }).extend({ assetId: AssetId }),
+    })
+    .strict(),
+  mutates: true,
   handler: async (ctx, a) => {
-    const ws = ctx.workspace(a.workspaceId), { assetId, ...patch } = a.patch;
-    if ("src" in patch) throw new EngineError("INVALID_ARGUMENT", "Use assetId, not a file path");
-    if (assetId !== undefined) patch.src = ws.audioEntries([{ assetId }])[0].src;
-    return { summary: "Audio updated", ...await ws.mutateScene(a.sceneId, d => ops.updateAudio(d, a.index, patch)) };
+    const ws = ctx.workspace(a.workspaceId);
+    return { summary: "Audio added", ...(await ws.mutateScene(a.sceneId, (d) => ops.addAudio(d, ws.audioEntries([a.track])[0]))) };
   },
 });
 def({
-  name: "remove_audio", description: "Remove an audio track by array index.",
-  args: z.object({ workspaceId: WorkspaceId, sceneId: SceneId, index: FrameArg }).strict(), mutates: true,
-  handler: async (ctx, a) => ({ summary: "Audio removed", ...await ctx.workspace(a.workspaceId).mutateScene(a.sceneId, d => ops.removeAudio(d, a.index)) }),
+  name: "update_audio",
+  description: "Patch an audio track by array index; assetId replaces the source; null removes optional fields.",
+  args: z.object({ workspaceId: WorkspaceId, sceneId: SceneId, index: FrameArg, patch: z.record(z.string(), z.unknown()) }).strict(),
+  mutates: true,
+  handler: async (ctx, a) => {
+    const ws = ctx.workspace(a.workspaceId),
+      { assetId, ...patch } = a.patch;
+    if ("src" in patch) throw new EngineError("INVALID_ARGUMENT", "Use assetId, not a file path");
+    if (assetId !== undefined) patch.src = ws.audioEntries([{ assetId }])[0].src;
+    return { summary: "Audio updated", ...(await ws.mutateScene(a.sceneId, (d) => ops.updateAudio(d, a.index, patch))) };
+  },
+});
+def({
+  name: "remove_audio",
+  description: "Remove an audio track by array index.",
+  args: z.object({ workspaceId: WorkspaceId, sceneId: SceneId, index: FrameArg }).strict(),
+  mutates: true,
+  handler: async (ctx, a) => ({
+    summary: "Audio removed",
+    ...(await ctx.workspace(a.workspaceId).mutateScene(a.sceneId, (d) => ops.removeAudio(d, a.index))),
+  }),
 });
 
 export const TOOL_DEFS: readonly ToolDef[] = tools;

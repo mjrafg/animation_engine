@@ -1,0 +1,25 @@
+
+> animation-engine@1.1.0 test:mcp
+> npm run build:mcp && vitest run tests/mcp
+
+
+> animation-engine@1.1.0 build:mcp
+> esbuild mcp/src/main.ts --bundle --platform=node --format=esm --target=node20 --outfile=dist/video-engine-mcp.mjs --external:@napi-rs/canvas --external:sharp --external:ffmpeg-static --external:ffprobe-static --banner:js="import{createRequire as __cr}from\"node:module\";const require=__cr(import.meta.url);" && node -e "require('fs').mkdirSync('dist/blender',{recursive:true});require('fs').copyFileSync('src/scene3d/blender/engine3d.py','dist/blender/engine3d.py')" && esbuild src/render/chunk-worker.ts --bundle --platform=node --format=esm --target=node20 --outfile=dist/video-chunk-worker.mjs --packages=external
+
+
+  dist/video-engine-mcp.mjs  1.6mb ⚠️
+
+⚡ Done in 195ms
+
+  dist/video-chunk-worker.mjs  99.2kb
+
+⚡ Done in 57ms
+
+ RUN  v5.0.1 /tmp/animation-engine-media-before-format
+
+
+ Test Files  5 passed (5)
+      Tests  19 passed | 1 skipped (20)
+   Start at  09:52:02
+   Duration  5.24s (tests 88%, transform 6%, import 5%)
+

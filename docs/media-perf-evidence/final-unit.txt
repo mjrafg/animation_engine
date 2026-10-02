@@ -1,0 +1,13 @@
+
+> animation-engine@1.1.0 test
+> vitest run --exclude "tests/mcp/**"
+
+
+ RUN  v5.0.1 /srv/tandem/projects/animation_engine/repo
+
+
+ Test Files  12 passed (12)
+      Tests  156 passed | 7 skipped (163)
+   Start at  09:52:12
+   Duration  12.97s (tests 79%, transform 12%, import 9%)
+

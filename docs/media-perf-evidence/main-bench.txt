@@ -1,0 +1,6 @@
+Generating shared 120s 1920x1080 30fps source (excluded from preparation timing)...
+Engine: /tmp/animation-engine-media-main
+Preparation: 199176.98 ms (fresh)
+renderFrame(10): 415.26 ms
+renderFrame(1800): 14103.08 ms
+renderFrame(3590): 22987.30 ms

@@ -8,17 +8,8 @@
   "generationId": "R74ZOqhMdbAyhAWYj7ub",
   "timingSource": "Fallback estimates: detected sentence pauses; word durations proportional to character count. Not provider alignment.",
   "sentenceIntervals": [
-    [
-      0.1,
-      4.42023
-    ],
-    [
-      5.18973,
-      9.31351
-    ],
-    [
-      10.1748,
-      14.05
-    ]
+    [0.1, 4.42023],
+    [5.18973, 9.31351],
+    [10.1748, 14.05]
   ]
 }

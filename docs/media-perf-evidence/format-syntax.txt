@@ -1,0 +1,3 @@
+38 TypeScript files: identical normalized syntax trees (comments, locations and raw literal spelling excluded).
+src/scene/validate.ts: separately reviewed extraction into sceneIssueCode, retaining branch order and return values.
+10 JSON files: parsed values identical before and after formatting.

@@ -27,9 +27,18 @@ const Json = z.record(z.string(), z.unknown());
 const Frame = z.number().int().min(0);
 
 export const TOOLS = {
-  capabilities: { description: "Media decode and subtitle shaping capability of the active FFmpeg build.", args: z.object({ fontsDir: z.string().optional() }) },
-  prepare_video_asset: { description: "Prepare a CFR, silent video intermediate and return its metadata and asset entry.", args: z.object({ input: z.string(), outDir: z.string(), options: PrepareVideoOptionsSchema.optional() }) },
-  subtitles_from_timing: { description: "Build deterministic ASS and SRT files from provider-neutral speech alignment.", args: z.object({ blocks: z.array(TimingBlockSchema), options: SubtitlesTimingOptionsSchema, outDir: z.string() }) },
+  capabilities: {
+    description: "Media decode and subtitle shaping capability of the active FFmpeg build.",
+    args: z.object({ fontsDir: z.string().optional() }),
+  },
+  prepare_video_asset: {
+    description: "Prepare a CFR, silent video intermediate and return its metadata and asset entry.",
+    args: z.object({ input: z.string(), outDir: z.string(), options: PrepareVideoOptionsSchema.optional() }),
+  },
+  subtitles_from_timing: {
+    description: "Build deterministic ASS and SRT files from provider-neutral speech alignment.",
+    args: z.object({ blocks: z.array(TimingBlockSchema), options: SubtitlesTimingOptionsSchema, outDir: z.string() }),
+  },
   add_audio: { description: "Append an audio track; returns its index.", args: z.object({ track: AudioSchema }) },
   update_audio: { description: "Patch an audio track by index, null removes a field.", args: z.object({ index: Frame, patch: Json }) },
   remove_audio: { description: "Remove an audio track by index.", args: z.object({ index: Frame }) },
@@ -37,7 +46,14 @@ export const TOOLS = {
     description: "Create a new empty scene document (replaces the session's current scene).",
     args: z.object({
       name: z.string().optional(),
-      canvas: z.object({ width: z.number().optional(), height: z.number().optional(), fps: z.number().optional(), background: z.string().optional() }).optional(),
+      canvas: z
+        .object({
+          width: z.number().optional(),
+          height: z.number().optional(),
+          fps: z.number().optional(),
+          background: z.string().optional(),
+        })
+        .optional(),
       duration: z.number().int().optional(),
       baseDir: z.string().optional().describe("Directory that relative asset paths resolve against"),
     }),
@@ -51,7 +67,10 @@ export const TOOLS = {
     args: z.object({ id: z.string(), asset: Json }),
   },
   remove_asset: { description: "Remove an asset entry.", args: z.object({ id: z.string() }) },
-  add_layer: { description: "Add a layer. `index` only affects z tie-breaking.", args: z.object({ layer: Json, index: z.number().int().optional() }) },
+  add_layer: {
+    description: "Add a layer. `index` only affects z tie-breaking.",
+    args: z.object({ layer: Json, index: z.number().int().optional() }),
+  },
   update_layer: {
     description: "Shallow-merge a patch into a layer (null removes a key, restoring its default).",
     args: z.object({ id: z.string(), patch: Json }),
@@ -119,7 +138,16 @@ export const TOOLS = {
   },
   render_video: {
     description: "Render frames [startFrame, endFrame) to an H.264 MP4 via an FFmpeg pipe (with scene audio).",
-    args: z.object({ videoCacheBytes: z.number().int().min(0).optional(), subtitles: SubtitleOptionsSchema.optional(), chunks: z.number().int().min(1).max(16).optional(), out: z.string(), startFrame: Frame.optional(), endFrame: Frame.optional(), crf: z.number().optional(), audio: z.boolean().optional() }),
+    args: z.object({
+      videoCacheBytes: z.number().int().min(0).optional(),
+      subtitles: SubtitleOptionsSchema.optional(),
+      chunks: z.number().int().min(1).max(16).optional(),
+      out: z.string(),
+      startFrame: Frame.optional(),
+      endFrame: Frame.optional(),
+      crf: z.number().optional(),
+      audio: z.boolean().optional(),
+    }),
   },
 } as const;
 
@@ -181,7 +209,12 @@ export class EngineSession {
     if (!parsed.success) {
       return {
         ok: false,
-        errors: parsed.error.issues.map((i) => ({ severity: "error", code: "INVALID_ARGUMENT", path: i.path.map(String), message: i.message })),
+        errors: parsed.error.issues.map((i) => ({
+          severity: "error",
+          code: "INVALID_ARGUMENT",
+          path: i.path.map(String),
+          message: i.message,
+        })),
       };
     }
     try {
@@ -194,24 +227,42 @@ export class EngineSession {
   }
 
   private needDoc(): ops.SceneDoc {
-    if (!this.doc) throw new SceneValidationError([{ severity: "error", code: "NO_SCENE", path: [], message: "No scene loaded; call create_scene or load_scene" }]);
+    if (!this.doc)
+      throw new SceneValidationError([
+        { severity: "error", code: "NO_SCENE", path: [], message: "No scene loaded; call create_scene or load_scene" },
+      ]);
     return this.doc;
   }
 
   private async run(name: ToolName, a: any): Promise<ToolResult> {
     switch (name) {
-      case "capabilities": return { ok: true, result: await mediaCapabilities(a.fontsDir ? this.resolvePath(a.fontsDir) : undefined) };
-      case "prepare_video_asset": return { ok: true, result: await prepareVideoAsset(this.resolvePath(a.input), this.resolvePath(a.outDir), { fps: this.doc?.canvas?.fps ?? 30, ...a.options }) };
+      case "capabilities":
+        return { ok: true, result: await mediaCapabilities(a.fontsDir ? this.resolvePath(a.fontsDir) : undefined) };
+      case "prepare_video_asset":
+        return {
+          ok: true,
+          result: await prepareVideoAsset(this.resolvePath(a.input), this.resolvePath(a.outDir), {
+            fps: this.doc?.canvas?.fps ?? 30,
+            ...a.options,
+          }),
+        };
       case "subtitles_from_timing": {
-        const r = subtitlesFromTiming(a.blocks, a.options), dir = this.resolvePath(a.outDir);
+        const r = subtitlesFromTiming(a.blocks, a.options),
+          dir = this.resolvePath(a.outDir);
         await fs.mkdir(dir, { recursive: true });
         await fs.writeFile(path.join(dir, "captions.ass"), r.ass);
         await fs.writeFile(path.join(dir, "captions.srt"), r.srt);
-        return { ok: true, result: { ass: path.join(dir, "captions.ass"), srt: path.join(dir, "captions.srt"), cues: r.cues, warnings: r.warnings } };
+        return {
+          ok: true,
+          result: { ass: path.join(dir, "captions.ass"), srt: path.join(dir, "captions.srt"), cues: r.cues, warnings: r.warnings },
+        };
       }
-      case "add_audio": return this.edit(ops.addAudio(this.needDoc(), a.track));
-      case "update_audio": return this.edit(ops.updateAudio(this.needDoc(), a.index, a.patch));
-      case "remove_audio": return this.edit(ops.removeAudio(this.needDoc(), a.index));
+      case "add_audio":
+        return this.edit(ops.addAudio(this.needDoc(), a.track));
+      case "update_audio":
+        return this.edit(ops.updateAudio(this.needDoc(), a.index, a.patch));
+      case "remove_audio":
+        return this.edit(ops.removeAudio(this.needDoc(), a.index));
       case "create_scene": {
         const r = ops.createScene(a);
         if (!r.ok) return r;
@@ -288,7 +339,8 @@ export class EngineSession {
       case "trim_transparent": {
         const input = this.resolvePath(a.input);
         const output = this.resolvePath(a.output);
-        if (path.resolve(input) === path.resolve(output)) return fail("WOULD_OVERWRITE", "output must differ from input (non-destructive)", ["output"]);
+        if (path.resolve(input) === path.resolve(output))
+          return fail("WOULD_OVERWRITE", "output must differ from input (non-destructive)", ["output"]);
         const { image } = await readRgba(input);
         const r = trimTransparent(image, { alphaThreshold: a.alphaThreshold, padding: a.padding });
         await writePng(r.image, output);
@@ -301,7 +353,8 @@ export class EngineSession {
       case "remove_component": {
         const input = this.resolvePath(a.input);
         const output = this.resolvePath(a.output);
-        if (path.resolve(input) === path.resolve(output)) return fail("WOULD_OVERWRITE", "output must differ from input (non-destructive)", ["output"]);
+        if (path.resolve(input) === path.resolve(output))
+          return fail("WOULD_OVERWRITE", "output must differ from input (non-destructive)", ["output"]);
         const { image } = await readRgba(input);
         const r = removeComponents(image, a.ids, a.alphaThreshold ?? 8);
         await writePng(r.image, output);

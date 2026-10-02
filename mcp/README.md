@@ -58,17 +58,17 @@ npm link                               # optional: puts `video-engine-mcp` on PA
 
 Configuration comes from flags or environment. Tandem passes environment variables per integration.
 
-| Env | Flag | Meaning |
-|---|---|---|
-| `VIDEO_ENGINE_ROOT` | `--root` | Directory holding all workspaces (default `~/.video-engine/workspaces`) |
-| `VIDEO_ENGINE_WORKSPACE` | `--workspace` | Lock the server to ONE workspace id; every other id → `WORKSPACE_FORBIDDEN` |
-| `VIDEO_ENGINE_LIBRARIES` | `--library name=/dir` | Read-only asset libraries, `name=/dir;name2=/dir2` |
-| `VIDEO_ENGINE_LOG` | `--log` | JSONL operation log (default `<root>/.logs/mcp.jsonl`) |
-| `VIDEO_ENGINE_MAX_RENDERS` | | Concurrent video renders per workspace (default 1) |
-| `FFMPEG_PATH` | | FFmpeg binary (default: bundled) |
-| `BLENDER_PATH` | | Blender binary for 3D (default: `blender` on PATH) |
-| `VIDEO_ENGINE_3D_ENGINE` | | `cycles` forces the CPU path tracer (default: EEVEE when it works) |
-| `VIDEO_ENGINE_3D_DEVICE` | | `GPU` lets Cycles use CUDA/OptiX/HIP/oneAPI when present |
+| Env                        | Flag                  | Meaning                                                                     |
+| -------------------------- | --------------------- | --------------------------------------------------------------------------- |
+| `VIDEO_ENGINE_ROOT`        | `--root`              | Directory holding all workspaces (default `~/.video-engine/workspaces`)     |
+| `VIDEO_ENGINE_WORKSPACE`   | `--workspace`         | Lock the server to ONE workspace id; every other id → `WORKSPACE_FORBIDDEN` |
+| `VIDEO_ENGINE_LIBRARIES`   | `--library name=/dir` | Read-only asset libraries, `name=/dir;name2=/dir2`                          |
+| `VIDEO_ENGINE_LOG`         | `--log`               | JSONL operation log (default `<root>/.logs/mcp.jsonl`)                      |
+| `VIDEO_ENGINE_MAX_RENDERS` |                       | Concurrent video renders per workspace (default 1)                          |
+| `FFMPEG_PATH`              |                       | FFmpeg binary (default: bundled)                                            |
+| `BLENDER_PATH`             |                       | Blender binary for 3D (default: `blender` on PATH)                          |
+| `VIDEO_ENGINE_3D_ENGINE`   |                       | `cycles` forces the CPU path tracer (default: EEVEE when it works)          |
+| `VIDEO_ENGINE_3D_DEVICE`   |                       | `GPU` lets Cycles use CUDA/OptiX/HIP/oneAPI when present                    |
 
 - **stdout** carries only MCP JSON-RPC.
 - **stderr** is silent except for startup failures. Tandem does not drain the child's stderr, so the server never writes to it during normal operation.
@@ -94,18 +94,18 @@ Configuration comes from flags or environment. Tandem passes environment variabl
 
 ## Tools (54)
 
-| Group | Tools |
-|---|---|
-| Engine | `engine_capabilities`, `engine_version`, `engine_health` |
-| Workspace | `workspace_create`, `workspace_open`, `workspace_info`, `workspace_list` |
-| Assets | `library_list`, `asset_import`, `asset_list`, `asset_get`, `asset_update`, `asset_inspect`, `asset_process`, `asset_trim`, `asset_components`, `asset_component_remove` |
-| Scenes | `scene_create`, `scene_get`, `scene_list`, `scene_update`, `scene_delete` |
-| Layers | `layer_add` (batch), `layer_update` (multi-property / multi-layer, atomic), `layer_remove`, `layer_list` |
-| Timeline | `timeline_get`, `timeline_apply` (atomic batch: `keyframe.add/update/remove`, `track.set/remove`; target = layer id or `camera`) |
-| Layout & render | `measure_layout`, `render_preview` (`debug`), `render_frame`, `render_video_start`, `render_video_status` (`waitSeconds` ≤ 45), `render_video_cancel`, `artifact_list` |
-| Characters | `character_list`, `character_import`, `character_inspect`, `character_add`, `character_update`, `character_remove`, `character_actions` (atomic high-level action batch), `character_timeline`, `speech_timing_save` |
-| 3D | `object_add`, `object_update`, `object_remove`, `object_list`, `scene_settings_3d`. `scene_create kind:"3d"`; timeline, measure and render tools work on both kinds. |
-| Interactions | `interaction_list` (built-in + custom, full description), `interaction_check` (compatibility and fit for given characters/sizes), `interaction_define` (custom definition as data), `interaction_apply` (atomic batch: add/update/replace/remove/shift/clear), `interaction_inspect` (phases, alignment, contacts, transfers, ownership; measured contact at a frame) |
+| Group           | Tools                                                                                                                                                                                                                                                                                                                                                                 |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Engine          | `engine_capabilities`, `engine_version`, `engine_health`                                                                                                                                                                                                                                                                                                              |
+| Workspace       | `workspace_create`, `workspace_open`, `workspace_info`, `workspace_list`                                                                                                                                                                                                                                                                                              |
+| Assets          | `library_list`, `asset_import`, `asset_list`, `asset_get`, `asset_update`, `asset_inspect`, `asset_process`, `asset_trim`, `asset_components`, `asset_component_remove`                                                                                                                                                                                               |
+| Scenes          | `scene_create`, `scene_get`, `scene_list`, `scene_update`, `scene_delete`                                                                                                                                                                                                                                                                                             |
+| Layers          | `layer_add` (batch), `layer_update` (multi-property / multi-layer, atomic), `layer_remove`, `layer_list`                                                                                                                                                                                                                                                              |
+| Timeline        | `timeline_get`, `timeline_apply` (atomic batch: `keyframe.add/update/remove`, `track.set/remove`; target = layer id or `camera`)                                                                                                                                                                                                                                      |
+| Layout & render | `measure_layout`, `render_preview` (`debug`), `render_frame`, `render_video_start`, `render_video_status` (`waitSeconds` ≤ 45), `render_video_cancel`, `artifact_list`                                                                                                                                                                                                |
+| Characters      | `character_list`, `character_import`, `character_inspect`, `character_add`, `character_update`, `character_remove`, `character_actions` (atomic high-level action batch), `character_timeline`, `speech_timing_save`                                                                                                                                                  |
+| 3D              | `object_add`, `object_update`, `object_remove`, `object_list`, `scene_settings_3d`. `scene_create kind:"3d"`; timeline, measure and render tools work on both kinds.                                                                                                                                                                                                  |
+| Interactions    | `interaction_list` (built-in + custom, full description), `interaction_check` (compatibility and fit for given characters/sizes), `interaction_define` (custom definition as data), `interaction_apply` (atomic batch: add/update/replace/remove/shift/clear), `interaction_inspect` (phases, alignment, contacts, transfers, ownership; measured contact at a frame) |
 
 **Multi-character interactions** (see [`docs/INTERACTIONS.md`](../docs/INTERACTIONS.md)): place the characters, then `interaction_apply {operations: [{type: "add", interaction: {interaction: "handshake", actors: ["a", "b"], start: 11, duration: 3}}]}`. The runtime aligns, approaches, reaches, holds contact, hands objects over and returns, and it rejects overlapping walks, turns or gestures with `ACTION_CONFLICT` naming the interaction.
 
@@ -158,7 +158,13 @@ Configuration comes from flags or environment. Tandem passes environment variabl
 A failed call is an MCP tool error (`isError: true`) whose text is:
 
 ```json
-{"error":{"code":"LAYER_NOT_FOUND","message":"No layer \"woman_02\"","details":{"sceneId":"shot1","issues":[{"code":"MISSING_LAYER","path":["id"],"message":"No layer \"woman_02\""}]}}}
+{
+  "error": {
+    "code": "LAYER_NOT_FOUND",
+    "message": "No layer \"woman_02\"",
+    "details": { "sceneId": "shot1", "issues": [{ "code": "MISSING_LAYER", "path": ["id"], "message": "No layer \"woman_02\"" }] }
+  }
+}
 ```
 
 Stable codes:
@@ -251,18 +257,18 @@ npm run test:mcp  # builds dist/ then runs tests/mcp over real stdio with a Tand
 Set `VIDEO_ENGINE_FONTS_DIR` to an explicit font directory to run the Persian and
 Korean shaping probe. `FFMPEG_PATH` and `FFPROBE_PATH` override the bundled binaries.
 
-| Tool | Arguments and result |
-| --- | --- |
-| `prepare_video_asset` | `workspaceId`, inbox-relative `input`, optional `sceneId`, `assetId`, `options: {fps,width,height,fit,gop}`. Returns a job id; defaults fps from scene or 30. |
-| `render_video_status` / `render_video_cancel` | Preparation uses the existing persisted queue, cancellation and recovery. Completed preparation has `result.asset`, `result.entry`, warnings. |
-| `layer_add` / `layer_update` | Accept `shape`, `sourceTime`, `space` through the scene schema. |
-| `add_audio` | `workspaceId`, `sceneId`, `track: {assetId,startFrame,sourceIn?,sourceOut?,startOffsetMs?,fadeInMs?,fadeOutMs?,volume?}`; returns track index. |
-| `update_audio` | `workspaceId`, `sceneId`, `index`, `patch`; use `assetId` to replace source, null to remove optional fields. Host paths are rejected. |
-| `remove_audio` | `workspaceId`, `sceneId`, `index`. |
-| `subtitles_from_timing` | `workspaceId`, `blocks: [{timing,startFrame,startOffsetMs?,sourceIn?,sourceOut?}]`, `options: {fps,width?,height?,maxCharacters?,maxLines?,minDuration?,maxDuration?,pauseThreshold?,style?}`. Returns workspace-relative ASS/SRT paths and cues. |
-| `render_video_start` | Adds `subtitles: {file,mode,fontsDir?}` (workspace-relative paths) and `chunks` 1–16. |
-| `measure_layout` | Video layers include `sourceTime` and `sourceFrame` in compact/full results. |
-| `asset_list` | Supports `kind: "video"`; prepared records include hash and stream metadata. |
+| Tool                                          | Arguments and result                                                                                                                                                                                                                              |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `prepare_video_asset`                         | `workspaceId`, inbox-relative `input`, optional `sceneId`, `assetId`, `options: {fps,width,height,fit,gop}`. Returns a job id; defaults fps from scene or 30.                                                                                     |
+| `render_video_status` / `render_video_cancel` | Preparation uses the existing persisted queue, cancellation and recovery. Completed preparation has `result.asset`, `result.entry`, warnings.                                                                                                     |
+| `layer_add` / `layer_update`                  | Accept `shape`, `sourceTime`, `space` through the scene schema.                                                                                                                                                                                   |
+| `add_audio`                                   | `workspaceId`, `sceneId`, `track: {assetId,startFrame,sourceIn?,sourceOut?,startOffsetMs?,fadeInMs?,fadeOutMs?,volume?}`; returns track index.                                                                                                    |
+| `update_audio`                                | `workspaceId`, `sceneId`, `index`, `patch`; use `assetId` to replace source, null to remove optional fields. Host paths are rejected.                                                                                                             |
+| `remove_audio`                                | `workspaceId`, `sceneId`, `index`.                                                                                                                                                                                                                |
+| `subtitles_from_timing`                       | `workspaceId`, `blocks: [{timing,startFrame,startOffsetMs?,sourceIn?,sourceOut?}]`, `options: {fps,width?,height?,maxCharacters?,maxLines?,minDuration?,maxDuration?,pauseThreshold?,style?}`. Returns workspace-relative ASS/SRT paths and cues. |
+| `render_video_start`                          | Adds `subtitles: {file,mode,fontsDir?}` (workspace-relative paths) and `chunks` 1–16.                                                                                                                                                             |
+| `measure_layout`                              | Video layers include `sourceTime` and `sourceFrame` in compact/full results.                                                                                                                                                                      |
+| `asset_list`                                  | Supports `kind: "video"`; prepared records include hash and stream metadata.                                                                                                                                                                      |
 
 Prepared video is CFR H.264/yuv420p, without audio, with a recorded byte hash.
 Edits and loads reject missing, unprepared or modified video. `sourceTime` is a

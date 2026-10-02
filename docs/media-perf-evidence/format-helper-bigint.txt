@@ -1,0 +1,3 @@
+TypeError: Do not know how to serialize a BigInt
+    at JSON.stringify (<anonymous>)
+    at /tmp/media-format-ast.cjs:18:14
