@@ -2,6 +2,7 @@ import { spawn, type ChildProcessByStdio } from 'node:child_process';
 import type { Readable } from 'node:stream';
 import { EngineError } from '../errors.js';
 import type { VideoMetadata } from '../scene/schema.js';
+import { readVideoSeekIndex, type VideoSeekIndex } from './seek.js';
 import { ffmpegPath } from '../render/video.js';
 export interface RGBA { width: number; height: number; data: Buffer }
 export interface VideoFrameSource {
@@ -9,16 +10,18 @@ export interface VideoFrameSource {
   close(): Promise<void>;
 }
 export interface FrameSourceOptions { mode?: 'sequential' | 'random'; cacheBytes?: number; maxForwardFrames?: number; signal?: AbortSignal }
-/** select uses decoded frame indices from frame zero. Slower than timestamp seeking, but exact
- * even when a container has unusual timestamps. The sequential process stays alive for reads. */
+/** Seek to a preceding keyframe, then select the exact integer presentation timestamp.
+ * The sequential process stays alive for nearby forward reads. */
 export class FFmpegFrameSource implements VideoFrameSource {
   private cache = new Map<number, RGBA>();
   private bytes = 0;
   private decoder?: { proc: ChildProcessByStdio<null, Readable, Readable>; done: Promise<void>; iterator: AsyncIterator<Buffer>; pending: Buffer; next: number };
   private closed = false;
+  private seekIndex?: VideoSeekIndex;
+  private lifetime = new AbortController();
   decodeMs = 0;
   private queue: Promise<unknown> = Promise.resolve();
-  private cancel = () => { this.closed = true; this.decoder?.proc.kill('SIGKILL'); };
+  private cancel = () => { this.closed = true; this.lifetime.abort(); this.decoder?.proc.kill('SIGKILL'); };
   readonly cacheBytes: number;
   constructor(readonly file: string, readonly video: VideoMetadata, readonly options: FrameSourceOptions = {}) {
     this.cacheBytes = options.cacheBytes ?? 32 * 1024 * 1024;
@@ -43,12 +46,16 @@ export class FFmpegFrameSource implements VideoFrameSource {
     await this.stop();
     await this.queue;
     this.cache.clear(); this.bytes = 0;
+    this.seekIndex = undefined;
     this.options.signal?.removeEventListener('abort', this.cancel);
   }
   private async start(index: number) {
     await this.stop();
     if (this.closed || this.options.signal?.aborted) throw new EngineError('RENDER_CANCELLED', 'Video decoder closed');
-    const proc = spawn(ffmpegPath(), ['-nostdin', '-v', 'error', '-threads', '1', '-i', this.file, '-map', '0:v:0', '-an', '-vf', `select=gte(n\\,${index})`, '-vsync', '0', ...(this.options.mode === 'sequential' ? [] : ['-frames:v', '1']), '-f', 'rawvideo', '-pix_fmt', 'rgba', '-threads', '1', 'pipe:1'], { stdio: ['ignore', 'pipe', 'pipe'] });
+    this.seekIndex ??= await readVideoSeekIndex(this.file, this.video.frameCount, this.lifetime.signal);
+    if (this.closed || this.options.signal?.aborted) throw new EngineError('RENDER_CANCELLED', 'Video decoder closed');
+    const seek = this.seekIndex.at(index);
+    const proc = spawn(ffmpegPath(), ['-nostdin', '-v', 'error', '-threads', '1', '-copyts', '-seek_timestamp', '1', '-ss', seek.timestamp, '-noaccurate_seek', '-i', this.file, '-map', '0:v:0', '-an', '-vf', `select=gte(pts\\,${seek.pts})`, '-vsync', '0', ...(this.options.mode === 'sequential' ? [] : ['-frames:v', '1']), '-f', 'rawvideo', '-pix_fmt', 'rgba', '-threads', '1', 'pipe:1'], { stdio: ['ignore', 'pipe', 'pipe'] });
     let stderr = '';
     proc.stderr.on('data', d => { stderr = (stderr + d).slice(-8192); });
     const done = new Promise<void>((resolve, reject) => {

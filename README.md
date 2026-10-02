@@ -454,7 +454,10 @@ interpolation. Selection is `floor(sourceTime * fps + 1e-6)`, clamped to the sou
 frame count. Equal values hold; step interpolation cuts. Multiple layers can
 reference different frames of the same asset. `measure_layout` reports both
 `sourceTime` and `sourceFrame`. Sources larger than the canvas retain detail on zoom.
-Sequential renders keep a decoder per asset. Random previews use an LRU cache;
+Sequential renders keep a decoder per asset. Random reads and sequential restarts
+seek to a preceding keyframe, then select the exact integer packet timestamp.
+The packet index is demuxed once per frame source (without decoding pixels); it
+also supports older prepared files without stored GOP metadata. Random previews use an LRU cache;
 `videoCacheBytes` (library and render tools) bounds cached RGBA bytes per asset (default
 32 MiB). Transient draw/decode buffers are additional. Library users can call
 `closeVideoSources()` to release cached frames immediately.
