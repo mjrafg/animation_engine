@@ -19,7 +19,14 @@ export interface LoadedImageAsset {
   height: number;
 }
 
-export interface LoadedVideoAsset { id: string; file: string; kind: "video"; video: VideoMetadata; width: number; height: number }
+export interface LoadedVideoAsset {
+  id: string;
+  file: string;
+  kind: "video";
+  video: VideoMetadata;
+  width: number;
+  height: number;
+}
 export type LoadedAsset = LoadedImageAsset | LoadedVideoAsset;
 
 export class AssetCatalog {
@@ -34,9 +41,30 @@ export class AssetCatalog {
       if (a.kind === "video" && a.video) {
         const probe = probeMedia(file);
         const v = probe.streams.find((s: any) => s.codec_type === "video");
-        const rateMatches = (value: unknown) => { const [n, d] = String(value).split("/").map(Number); const rate = n / d; return Number.isFinite(rate) && Math.abs(rate - a.video!.fps) <= 1e-6; };
-        if (!v || v.width !== a.video.width || v.height !== a.video.height || !rateMatches(v.avg_frame_rate) || !rateMatches(v.r_frame_rate) || Math.abs(a.video.duration - a.video.frameCount / a.video.fps) > 1e-6 || Number(v.nb_frames) !== a.video.frameCount || v.pix_fmt !== "yuv420p" || probe.streams.some((s: any) => s.codec_type === "audio")) {
-          throw new SceneValidationError([{ severity: "error", code: "VIDEO_NOT_PREPARED", path: ["assets", id, "video"], message: "Prepared metadata does not match the silent CFR video stream" }]);
+        const rateMatches = (value: unknown) => {
+          const [n, d] = String(value).split("/").map(Number);
+          const rate = n / d;
+          return Number.isFinite(rate) && Math.abs(rate - a.video!.fps) <= 1e-6;
+        };
+        if (
+          !v ||
+          v.width !== a.video.width ||
+          v.height !== a.video.height ||
+          !rateMatches(v.avg_frame_rate) ||
+          !rateMatches(v.r_frame_rate) ||
+          Math.abs(a.video.duration - a.video.frameCount / a.video.fps) > 1e-6 ||
+          Number(v.nb_frames) !== a.video.frameCount ||
+          v.pix_fmt !== "yuv420p" ||
+          probe.streams.some((s: any) => s.codec_type === "audio")
+        ) {
+          throw new SceneValidationError([
+            {
+              severity: "error",
+              code: "VIDEO_NOT_PREPARED",
+              path: ["assets", id, "video"],
+              message: "Prepared metadata does not match the silent CFR video stream",
+            },
+          ]);
         }
         next.set(id, { id, file, kind: "video", width: a.video.width, height: a.video.height, video: a.video });
         continue;

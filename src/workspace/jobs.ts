@@ -111,12 +111,30 @@ export class RenderJobs {
 
   async startPreparation(input: string, options: PrepareVideoOptions = {}, assetId?: string): Promise<RenderJob> {
     const renderId = this.ws.nextId("render");
-    const job: RenderJob = { renderId, workspaceId: this.ws.id, sceneId: "", status: "queued", frame: 0, totalFrames: 1, progress: 0, options: {}, preparation: { input, options, assetId }, createdAt: new Date().toISOString(), pid: process.pid };
+    const job: RenderJob = {
+      renderId,
+      workspaceId: this.ws.id,
+      sceneId: "",
+      status: "queued",
+      frame: 0,
+      totalFrames: 1,
+      progress: 0,
+      options: {},
+      preparation: { input, options, assetId },
+      createdAt: new Date().toISOString(),
+      pid: process.pid,
+    };
     this.save(job);
-    const ctrl = new AbortController(); let resolve!: () => void;
-    const done = new Promise<void>(r => { resolve = r; });
-    this.active.set(renderId, { job, ctrl, done, resolve }); this.queue.push(renderId);
-    const snapshot = { ...job }; this.pump(); return snapshot;
+    const ctrl = new AbortController();
+    let resolve!: () => void;
+    const done = new Promise<void>((r) => {
+      resolve = r;
+    });
+    this.active.set(renderId, { job, ctrl, done, resolve });
+    this.queue.push(renderId);
+    const snapshot = { ...job };
+    this.pump();
+    return snapshot;
   }
 
   private pump() {

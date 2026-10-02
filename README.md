@@ -1,7 +1,7 @@
 # Deterministic Layered 2D (+ 3D) Animation Engine
 
 A deliberately simple, **non-intelligent** 2D renderer. It executes an explicit scene
-description exactly: positions, pivots, z values, keyframes, camera. All decisions about *what*
+description exactly: positions, pivots, z values, keyframes, camera. All decisions about _what_
 the scene should contain are left to whoever writes the JSON (later, an AI agent).
 
 ```text
@@ -10,10 +10,10 @@ AI agent (later) ──► Scene JSON ──► validate ──► evaluate(fram
           MP4 ◄── FFmpeg ◄── raw RGBA frames ◄── Renderer ◄── display list
 ```
 
-* TypeScript on Node.js 22. CPU rendering with Skia (`@napi-rs/canvas`): no Chromium, no WebGL.
-* Zod schema validation with machine-readable errors.
-* `sharp` handles image I/O for the asset pipeline. FFmpeg (bundled `ffmpeg-static`, or `FFMPEG_PATH`) encodes H.264 + AAC.
-* Proof of work: `examples/kitchen/out/kitchen.mp4` (11 s, 1920×1080, 30 fps, with audio).
+- TypeScript on Node.js 22. CPU rendering with Skia (`@napi-rs/canvas`): no Chromium, no WebGL.
+- Zod schema validation with machine-readable errors.
+- `sharp` handles image I/O for the asset pipeline. FFmpeg (bundled `ffmpeg-static`, or `FFMPEG_PATH`) encodes H.264 + AAC.
+- Proof of work: `examples/kitchen/out/kitchen.mp4` (11 s, 1920×1080, 30 fps, with audio).
   See [docs/REPORT.md](docs/REPORT.md) for what was inspected, the problems found and fixed, and
   the remaining limitations.
 
@@ -111,13 +111,13 @@ npx tsx src/cli.ts batch commands.json                      # [{ "tool": ..., "a
 
 ## Coordinate system
 
-| | |
-|---|---|
-| Units | output-canvas pixels |
-| Origin | `(0,0)` = top-left of the canvas; `(width,height)` = bottom-right; centre of 1920×1080 = `(960,540)` |
-| Axes | +x right, **+y down** |
-| Rotation | degrees; **positive = clockwise** on screen |
-| Time | integer frame numbers `0 … duration-1`; seconds = frame / fps. No clocks, no randomness |
+|          |                                                                                                      |
+| -------- | ---------------------------------------------------------------------------------------------------- |
+| Units    | output-canvas pixels                                                                                 |
+| Origin   | `(0,0)` = top-left of the canvas; `(width,height)` = bottom-right; centre of 1920×1080 = `(960,540)` |
+| Axes     | +x right, **+y down**                                                                                |
+| Rotation | degrees; **positive = clockwise** on screen                                                          |
+| Time     | integer frame numbers `0 … duration-1`; seconds = frame / fps. No clocks, no randomness              |
 
 **World space** is the scene before the camera. **Screen space** is the output canvas after the
 camera. With the default camera the two are identical.
@@ -129,20 +129,24 @@ or nothing: a layer with neither is a pure transform node, e.g. a character root
 
 ```jsonc
 {
-  "id": "counter",               // unique; "camera" is reserved
-  "asset": "counter_keyed",      // key in scene.assets (or omit / "fill": "#rrggbb")
-  "parent": null,                // transform parent (layer id)
-  "parentPoint": null,           // optional: attach to a named attachment point of the parent
-  "x": 1250, "y": 1000,          // position of the PIVOT, in the parent's pivot space
-  "width": 1248, "height": 426,  // base box size before scale (default: the asset's pixel size)
-  "anchorX": 0.5, "anchorY": 1,  // where the pivot is inside the box: 0,0 top-left … 1,1 bottom-right
-  "scaleX": 0.85, "scaleY": 0.85,// rendered size = width·scaleX × height·scaleY (negative = mirror)
-  "rotation": 0,                 // degrees clockwise, around the pivot
-  "opacity": 1,                  // 0..1, multiplied by ancestors' opacity
-  "visible": true,               // false hides this layer and its descendants
-  "z": 20,                       // GLOBAL render order
-  "mask": null,                  // optional, see Masks
-  "attachmentPoints": {}         // optional, merged over the asset's points
+  "id": "counter", // unique; "camera" is reserved
+  "asset": "counter_keyed", // key in scene.assets (or omit / "fill": "#rrggbb")
+  "parent": null, // transform parent (layer id)
+  "parentPoint": null, // optional: attach to a named attachment point of the parent
+  "x": 1250,
+  "y": 1000, // position of the PIVOT, in the parent's pivot space
+  "width": 1248,
+  "height": 426, // base box size before scale (default: the asset's pixel size)
+  "anchorX": 0.5,
+  "anchorY": 1, // where the pivot is inside the box: 0,0 top-left … 1,1 bottom-right
+  "scaleX": 0.85,
+  "scaleY": 0.85, // rendered size = width·scaleX × height·scaleY (negative = mirror)
+  "rotation": 0, // degrees clockwise, around the pivot
+  "opacity": 1, // 0..1, multiplied by ancestors' opacity
+  "visible": true, // false hides this layer and its descendants
+  "z": 20, // GLOBAL render order
+  "mask": null, // optional, see Masks
+  "attachmentPoints": {}, // optional, merged over the asset's points
 }
 ```
 
@@ -165,16 +169,17 @@ screen= camera · box                                       box pixels  -> canva
 ```
 
 Consequences worth knowing:
-* Changing `rotation` or `scale` never moves the pivot. Changing the anchor moves the image around a fixed pivot.
-* A child's `x/y` is measured from the parent's **pivot**, along the parent's rotated and scaled axes. A forearm at `x:0, y:140` under an upper arm pivoted at the shoulder sits 140 px down the arm, however the arm is rotated.
-* A parent's scale scales the child's offset **and** its size.
+
+- Changing `rotation` or `scale` never moves the pivot. Changing the anchor moves the image around a fixed pivot.
+- A child's `x/y` is measured from the parent's **pivot**, along the parent's rotated and scaled axes. A forearm at `x:0, y:140` under an upper arm pivoted at the shoulder sits 140 px down the arm, however the arm is rotated.
+- A parent's scale scales the child's offset **and** its size.
 
 ## Transform hierarchy vs. global z-order
 
 These are **separate concepts**.
 
-* `parent` controls **transform inheritance only** (position, rotation, scale), plus opacity and visibility.
-* `z` controls the **global draw order** across the whole scene. The engine sorts all drawable
+- `parent` controls **transform inheritance only** (position, rotation, scale), plus opacity and visibility.
+- `z` controls the **global draw order** across the whole scene. The engine sorts all drawable
   layers by `z` ascending; ties keep document order. There is no per-parent render group, so a
   child can draw below its parent, above unrelated layers, or anywhere in between.
 
@@ -234,25 +239,37 @@ definitions never change when the camera moves. All four properties are animatab
 ## Timeline and keyframes
 
 ```json
-{ "target": "character", "property": "x",
-  "keyframes": [ { "frame": 0, "value": -150, "interpolation": "linear" },
-                 { "frame": 84, "value": 1060, "interpolation": "ease-out" },
-                 { "frame": 100, "value": 1150 } ] }
+{
+  "target": "character",
+  "property": "x",
+  "keyframes": [
+    { "frame": 0, "value": -150, "interpolation": "linear" },
+    { "frame": 84, "value": 1060, "interpolation": "ease-out" },
+    { "frame": 100, "value": 1150 }
+  ]
+}
 ```
 
-* A track overrides the static value for that `(target, property)` at every frame. There is at most one track per pair.
-* A keyframe's `interpolation` applies to the segment **from that keyframe to the next**:
+- A track overrides the static value for that `(target, property)` at every frame. There is at most one track per pair.
+- A keyframe's `interpolation` applies to the segment **from that keyframe to the next**:
   `step`, `linear`, `ease-in`, `ease-out`, `ease-in-out`, and `cubic-bezier` with `"bezier": [x1,y1,x2,y2]` (CSS semantics).
-* Before the first keyframe the first value holds. After the last keyframe the last value holds.
+- Before the first keyframe the first value holds. After the last keyframe the last value holds.
   With `step`, the value switches exactly on the next keyframe's frame.
-* **Continuous** properties: `x y width height scaleX scaleY anchorX anchorY rotation opacity`, and
+- **Continuous** properties: `x y width height scaleX scaleY anchorX anchorY rotation opacity`, and
   camera `x y scale rotation`. Bounded values are clamped after easing.
-* **Discrete** properties: `asset visible z fill`. These must use `step`, which is also the default.
+- **Discrete** properties: `asset visible z fill`. These must use `step`, which is also the default.
   Mouth shapes, blinking and hand-offs all use this single generic mechanism:
 
 ```json
-{ "target": "mouth", "property": "asset",
-  "keyframes": [ {"frame":0,"value":"mouth_rest"}, {"frame":210,"value":"mouth_A"}, {"frame":214,"value":"mouth_MBP"} ] }
+{
+  "target": "mouth",
+  "property": "asset",
+  "keyframes": [
+    { "frame": 0, "value": "mouth_rest" },
+    { "frame": 210, "value": "mouth_A" },
+    { "frame": 214, "value": "mouth_MBP" }
+  ]
+}
 ```
 
 When a layer has no explicit `width`/`height`, its size follows the current asset's natural size.
@@ -274,8 +291,13 @@ Each issue has a stable `code`, a JSON `path` into the document, a `message`, an
 `details`. For example:
 
 ```json
-{ "severity": "error", "code": "PARENT_CYCLE", "path": ["layers", 2, "parent"],
-  "message": "Parent cycle: a -> c -> b -> a", "details": { "cycle": ["a","c","b"] } }
+{
+  "severity": "error",
+  "code": "PARENT_CYCLE",
+  "path": ["layers", 2, "parent"],
+  "message": "Parent cycle: a -> c -> b -> a",
+  "details": { "cycle": ["a", "c", "b"] }
+}
 ```
 
 Codes include `DUPLICATE_LAYER_ID`, `MISSING_ASSET`, `MISSING_ASSET_FILE`, `INVALID_TYPE` (NaN,
@@ -291,18 +313,18 @@ opacity, camera scale ≤ 0, negative frames), `UNKNOWN_PROPERTY` (typos), `MISS
 ```ts
 import { processAsset } from "./src/assets/pipeline.js";
 const meta = await processAsset("cup.png", "processed/cup", {
-  detect:  { borderSampleSize: 12, uniformityTolerance: 12, minUniformity: 0.9 },
+  detect: { borderSampleSize: 12, uniformityTolerance: 12, minUniformity: 0.9 },
   removal: { colorTolerance: 18, edgeSoftness: 3, despill: true, removeHoles: [2] },
-  trim:    { alphaThreshold: 4, padding: 2 },
+  trim: { alphaThreshold: 4, padding: 2 },
   removeComponents: [2],
   attachmentPointsPx: { handle: { x: 330, y: 205 } },
 });
 ```
 
-* **Path A: native alpha.** Chosen automatically when at least half the border is transparent. The
+- **Path A: native alpha.** Chosen automatically when at least half the border is transparent. The
   pipeline validates the alpha (transparent, partial and opaque fractions; subject touching an
   edge; hard edges) and trims. It never colour-keys this path.
-* **Path B: solid key colour.**
+- **Path B: solid key colour.**
   1. **Detect** the background from the outer border band, with no assumed colour. Uses a coarse Lab histogram mode,
      then the per-channel median of the inliers. It reports `borderUniformity`, `sideUniformity`, `sideColorSpread`
      (gradients), `noise` and `confidence = min(uniformity, worst side) · (1 − spread/tolerance)`. If
@@ -319,7 +341,7 @@ const meta = await processAsset("cup.png", "processed/cup", {
   4. **Components.** 8-connected components of the alpha mask get stable ids (1 = largest).
      Nothing is removed automatically; `removeComponents: [ids]` removes the chosen ones.
   5. **Trim** to the visible bounds, with a threshold and padding.
-* **Non-destructive output:** `original.<ext>` (byte copy), `background-mask.png`,
+- **Non-destructive output:** `original.<ext>` (byte copy), `background-mask.png`,
   `untrimmed-transparent.png`, `processed-transparent.png`, and `asset-metadata.json`. The metadata
   holds the diagnostics, trim offsets, components, holes and attachment points. The source file is
   never modified.
@@ -328,12 +350,12 @@ const meta = await processAsset("cup.png", "processed/cup", {
 
 ```ts
 const engine = await AnimationEngine.fromFile("scene.json");
-await engine.prepare();                                  // validate + load assets
-await engine.renderPreview(155, "p.png");               // normal PNG
+await engine.prepare(); // validate + load assets
+await engine.renderPreview(155, "p.png"); // normal PNG
 await engine.renderDebugPreview(155, "d.png", { only: ["right_hand"], aabb: true });
-engine.measureLayout(155);                               // numbers, see below
-const frame = await engine.renderFrame(155);             // RGBA buffer / PNG
-await engine.renderVideo("out.mp4", { crf: 18 });        // RGBA → FFmpeg stdin → H.264
+engine.measureLayout(155); // numbers, see below
+const frame = await engine.renderFrame(155); // RGBA buffer / PNG
+await engine.renderVideo("out.mp4", { crf: 18 }); // RGBA → FFmpeg stdin → H.264
 ```
 
 The **debug preview** draws each layer's rotated bounds, id, `z` and parent, pivot cross, centre
@@ -359,8 +381,8 @@ instances.
 `{ ok: false, errors }`, with the same issue format as validation. Every tool takes and returns
 plain JSON. `toolDefinitions()` emits JSON Schemas, ready for MCP or function calling.
 
-| Scene | Layers & hierarchy | Timeline | Assets | Output |
-|---|---|---|---|---|
+| Scene                                                                                                | Layers & hierarchy                                                                | Timeline                                                       | Assets                                                                             | Output                                                                                 |
+| ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
 | `create_scene` `load_scene` `save_scene` `get_scene` `validate_scene` `set_scene_props` `set_camera` | `add_layer` `update_layer` `remove_layer` `set_parent` `set_asset` `remove_asset` | `add_keyframe` `update_keyframe` `remove_keyframe` `set_track` | `process_asset_background` `trim_transparent` `find_components` `remove_component` | `render_preview` `render_debug_preview` `measure_layout` `render_frame` `render_video` |
 
 Edits are transactional. Each one is applied to a copy, validated, and rejected if it introduces a
@@ -418,21 +440,34 @@ schemas, `validateScene`, `prepareVideoAsset`, `subtitlesFromTiming`, `TOOLS`, a
 Prepare arbitrary footage once, then register the returned asset:
 
 ```ts
-import { EngineSession } from 'animation-engine';
+import { EngineSession } from "animation-engine";
 const session = new EngineSession();
-await session.call('create_scene', { baseDir: process.cwd(), duration: 300 });
-const prepared = await session.call('prepare_video_asset', {
-  input: 'input.mp4', outDir: 'assets/prepared', options: { fps: 30 }
+await session.call("create_scene", { baseDir: process.cwd(), duration: 300 });
+const prepared = await session.call("prepare_video_asset", {
+  input: "input.mp4",
+  outDir: "assets/prepared",
+  options: { fps: 30 },
 });
 if (!prepared.ok) throw new Error(JSON.stringify(prepared.errors));
-await session.call('set_asset', { id: 'footage', asset: prepared.result.asset });
-await session.call('add_layer', { layer: {
-  id: 'footage', asset: 'footage', width: 1920, height: 1080,
-  x: 960, y: 540, sourceTime: 0
-}});
-await session.call('set_track', {
-  target: 'footage', property: 'sourceTime',
-  keyframes: [{ frame: 0, value: 0 }, { frame: 299, value: 299 / 30 }]
+await session.call("set_asset", { id: "footage", asset: prepared.result.asset });
+await session.call("add_layer", {
+  layer: {
+    id: "footage",
+    asset: "footage",
+    width: 1920,
+    height: 1080,
+    x: 960,
+    y: 540,
+    sourceTime: 0,
+  },
+});
+await session.call("set_track", {
+  target: "footage",
+  property: "sourceTime",
+  keyframes: [
+    { frame: 0, value: 0 },
+    { frame: 299, value: 299 / 30 },
+  ],
 });
 ```
 
@@ -465,9 +500,14 @@ also supports older prepared files without stored GOP metadata. Random previews 
 A layer can carry `shape` instead of an asset or fill:
 
 ```json
-{"id":"outline","x":500,"y":300,"width":200,"height":80,
- "shape":{"type":"rect","cornerRadius":14,"fill":null,"stroke":"#3b82f6",
- "strokeWidth":3,"strokeAlign":"outside"}}
+{
+  "id": "outline",
+  "x": 500,
+  "y": 300,
+  "width": 200,
+  "height": 80,
+  "shape": { "type": "rect", "cornerRadius": 14, "fill": null, "stroke": "#3b82f6", "strokeWidth": 3, "strokeAlign": "outside" }
+}
 ```
 
 Shapes support `rect`, `ellipse`, and `path` (`d` in layer-box pixels), optional
@@ -488,11 +528,27 @@ pixels (0–256); it softens the alpha edge, independently of colored shadows:
 
 ```json
 [
- {"id":"hole","x":1381,"y":206,"width":180,"height":80,"visible":false,
-  "shape":{"type":"rect","cornerRadius":14,"fill":"#ffffffff","feather":8}},
- {"id":"dim","x":960,"y":540,"width":1920,"height":1080,"space":"screen",
-  "fill":"#000000","opacity":0.55,"z":35,
-  "mask":{"type":"layer","layer":"hole","invert":true}}
+  {
+    "id": "hole",
+    "x": 1381,
+    "y": 206,
+    "width": 180,
+    "height": 80,
+    "visible": false,
+    "shape": { "type": "rect", "cornerRadius": 14, "fill": "#ffffffff", "feather": 8 }
+  },
+  {
+    "id": "dim",
+    "x": 960,
+    "y": 540,
+    "width": 1920,
+    "height": 1080,
+    "space": "screen",
+    "fill": "#000000",
+    "opacity": 0.55,
+    "z": 35,
+    "mask": { "type": "layer", "layer": "hole", "invert": true }
+  }
 ]
 ```
 

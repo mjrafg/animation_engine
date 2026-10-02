@@ -11,7 +11,9 @@ export class SkiaRenderer implements Renderer {
   readonly name = "skia";
   private videos: ReadonlyMap<string, VideoFrameSource> = new Map();
   private videoCanvas: Canvas | null = null;
-  setVideoSources(sources: ReadonlyMap<string, VideoFrameSource>) { this.videos = sources; }
+  setVideoSources(sources: ReadonlyMap<string, VideoFrameSource>) {
+    this.videos = sources;
+  }
   private images = new Map<string, Image>();
   private loadedBytes = new Map<string, Buffer>();
   private canvas: Canvas | null = null;
@@ -80,13 +82,22 @@ export class SkiaRenderer implements Renderer {
 
   private async drawSource(ctx: SKRSContext2D, src: DrawSource | { kind: "rect" }, w: number, h: number) {
     if (src.kind === "shape") {
-      const s = src.shape, p = new Path2D(s.type === "path" ? s.d : undefined);
+      const s = src.shape,
+        p = new Path2D(s.type === "path" ? s.d : undefined);
       if (s.type === "rect") p.roundRect(0, 0, w, h, Math.min(s.cornerRadius ?? 0, w / 2, h / 2));
       if (s.type === "ellipse") p.ellipse(w / 2, h / 2, w / 2, h / 2, 0, 0, Math.PI * 2);
       ctx.save();
       if (s.feather) ctx.filter = `blur(${s.feather}px)`;
-      if (s.shadow) { ctx.shadowColor = s.shadow.color; ctx.shadowBlur = s.shadow.blur; ctx.shadowOffsetX = s.shadow.x; ctx.shadowOffsetY = s.shadow.y; }
-      if (s.fill) { ctx.fillStyle = s.fill; ctx.fill(p); }
+      if (s.shadow) {
+        ctx.shadowColor = s.shadow.color;
+        ctx.shadowBlur = s.shadow.blur;
+        ctx.shadowOffsetX = s.shadow.x;
+        ctx.shadowOffsetY = s.shadow.y;
+      }
+      if (s.fill) {
+        ctx.fillStyle = s.fill;
+        ctx.fill(p);
+      }
       if (s.stroke && (s.strokeWidth ?? 1) > 0) {
         ctx.save();
         const align = s.strokeAlign ?? "center";
@@ -94,7 +105,9 @@ export class SkiaRenderer implements Renderer {
           this.drawOutsideStroke(ctx, p, s.stroke, s.strokeWidth ?? 1);
         } else {
           if (align === "inside") ctx.clip(p);
-          ctx.strokeStyle = s.stroke; ctx.lineWidth = (s.strokeWidth ?? 1) * (align === "center" ? 1 : 2); ctx.stroke(p);
+          ctx.strokeStyle = s.stroke;
+          ctx.lineWidth = (s.strokeWidth ?? 1) * (align === "center" ? 1 : 2);
+          ctx.stroke(p);
         }
         ctx.restore();
       }
@@ -103,8 +116,15 @@ export class SkiaRenderer implements Renderer {
       const source = this.videos.get(src.assetId);
       if (!source) throw new Error(`Video source ${src.assetId} is not loaded`);
       const frame = await source.getFrame(src.sourceFrame);
-      if (!this.videoCanvas || this.videoCanvas.width !== frame.width || this.videoCanvas.height !== frame.height) this.videoCanvas = createCanvas(frame.width, frame.height);
-      this.videoCanvas.getContext("2d").putImageData(new ImageData(new Uint8ClampedArray(frame.data.buffer, frame.data.byteOffset, frame.data.byteLength), frame.width, frame.height), 0, 0);
+      if (!this.videoCanvas || this.videoCanvas.width !== frame.width || this.videoCanvas.height !== frame.height)
+        this.videoCanvas = createCanvas(frame.width, frame.height);
+      this.videoCanvas
+        .getContext("2d")
+        .putImageData(
+          new ImageData(new Uint8ClampedArray(frame.data.buffer, frame.data.byteOffset, frame.data.byteLength), frame.width, frame.height),
+          0,
+          0,
+        );
       ctx.drawImage(this.videoCanvas, 0, 0, w, h);
     } else if (src.kind === "image") {
       const img = this.images.get(src.assetId);

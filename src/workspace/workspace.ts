@@ -43,7 +43,12 @@ import { validateScene3D, type AssetLookup3D } from "../scene3d/validate.js";
 import { describeCharacter } from "../characters/capabilities.js";
 import { analyzeJoints2D, type AlphaImage } from "../characters/continuity.js";
 import type { CharacterContext } from "../characters/operations.js";
-import { BUILTIN_INTERACTIONS, InteractionDefinitionSchema, interactionSha, type InteractionDefinition } from "../characters/interaction-defs.js";
+import {
+  BUILTIN_INTERACTIONS,
+  InteractionDefinitionSchema,
+  interactionSha,
+  type InteractionDefinition,
+} from "../characters/interaction-defs.js";
 import { describeInteraction, interactionTimeline } from "../characters/interactions.js";
 import { CharacterDefinitionSchema, SpeechTimingSchema, type CharacterDefinition, type SpeechTiming } from "../characters/schema.js";
 import { checkEntityId, checkWorkspaceId, readJson, resolveInside, toPosix, writeFileAtomic } from "./paths.js";
@@ -53,9 +58,18 @@ export const AUDIO_EXT = new Set([".wav", ".mp3", ".m4a", ".aac", ".ogg", ".flac
 export const VIDEO_EXT = new Set([".mp4", ".mov", ".mkv", ".webm", ".avi", ".m4v"]);
 export const MODEL_EXT = new Set([".glb", ".gltf"]);
 const MIME: Record<string, string> = {
-  ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp",
-  ".wav": "audio/wav", ".mp3": "audio/mpeg", ".m4a": "audio/mp4", ".aac": "audio/aac", ".ogg": "audio/ogg", ".flac": "audio/flac",
-  ".glb": "model/gltf-binary", ".gltf": "model/gltf+json",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".webp": "image/webp",
+  ".wav": "audio/wav",
+  ".mp3": "audio/mpeg",
+  ".m4a": "audio/mp4",
+  ".aac": "audio/aac",
+  ".ogg": "audio/ogg",
+  ".flac": "audio/flac",
+  ".glb": "model/gltf-binary",
+  ".gltf": "model/gltf+json",
 };
 
 export interface AssetRecord {
@@ -225,7 +239,8 @@ export class WorkspaceManager {
     this.checkAllowed(id);
     if (this.exists(id)) throw new EngineError("WORKSPACE_EXISTS", `Workspace "${id}" already exists`, { workspaceId: id });
     const dir = path.join(this.root, id);
-    for (const d of ["inbox", "assets", "scenes", "previews", "frames", "renders", "artifacts", "jobs"]) fs.mkdirSync(path.join(dir, d), { recursive: true });
+    for (const d of ["inbox", "assets", "scenes", "previews", "frames", "renders", "artifacts", "jobs"])
+      fs.mkdirSync(path.join(dir, d), { recursive: true });
     const meta: WorkspaceMeta = { id, name: opts.name ?? id, createdAt: now(), version: 1, counters: {} };
     writeFileAtomic(path.join(dir, "workspace.json"), JSON.stringify(meta, null, 2));
     return this.open(id);
@@ -273,7 +288,15 @@ export class WorkspaceManager {
         if (e.isDirectory()) walk(full);
         else {
           const ext = path.extname(e.name).toLowerCase();
-          const kind = IMAGE_EXT.has(ext) ? "image" : AUDIO_EXT.has(ext) ? "audio" : MODEL_EXT.has(ext) ? "model" : VIDEO_EXT.has(ext) ? "video" : null;
+          const kind = IMAGE_EXT.has(ext)
+            ? "image"
+            : AUDIO_EXT.has(ext)
+              ? "audio"
+              : MODEL_EXT.has(ext)
+                ? "model"
+                : VIDEO_EXT.has(ext)
+                  ? "video"
+                  : null;
           if (kind) out.push({ path: toPosix(path.relative(fs.realpathSync(root), full)), kind, bytes: fs.statSync(full).size });
         }
       }
@@ -291,14 +314,21 @@ export class WorkspaceManager {
       if (fs.existsSync(f)) {
         try {
           const j = JSON.parse(fs.readFileSync(f, "utf8"));
-          out.push({ path: toPosix(path.relative(root, dir)) || ".", characterId: j.id, name: j.name ?? j.id, kind: j.kind, ...(j.description ? { description: j.description } : {}) });
+          out.push({
+            path: toPosix(path.relative(root, dir)) || ".",
+            characterId: j.id,
+            name: j.name ?? j.id,
+            kind: j.kind,
+            ...(j.description ? { description: j.description } : {}),
+          });
         } catch {
           /* not a valid package: skipped */
         }
         return;
       }
       if (depth <= 0) return;
-      for (const e of fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) if (e.isDirectory()) walk(path.join(dir, e.name), depth - 1);
+      for (const e of fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name)))
+        if (e.isDirectory()) walk(path.join(dir, e.name), depth - 1);
     };
     walk(root, 3);
     return out;
@@ -317,7 +347,12 @@ export class WorkspaceManager {
           try {
             const j = JSON.parse(fs.readFileSync(full, "utf8"));
             if (j && typeof j.id === "string" && Array.isArray(j.roles) && Array.isArray(j.phases)) {
-              out.push({ path: toPosix(path.relative(root, full)), interactionId: j.id, name: j.name ?? j.id, ...(j.description ? { description: j.description } : {}) });
+              out.push({
+                path: toPosix(path.relative(root, full)),
+                interactionId: j.id,
+                name: j.name ?? j.id,
+                ...(j.description ? { description: j.description } : {}),
+              });
             }
           } catch {
             /* not an interaction definition */
@@ -333,7 +368,11 @@ export class WorkspaceManager {
   resolveLibraryDir(name: string, rel: string): string {
     const dir = resolveInside(this.libraryRoot(name), rel || ".");
     if (!fs.existsSync(path.join(dir, "character.json"))) {
-      throw new EngineError("CHARACTER_NOT_FOUND", `No character package (character.json) at "${rel}" in library "${name}"`, { library: name, path: rel, packages: this.listCharacterPackages(name).map((p) => p.path) });
+      throw new EngineError("CHARACTER_NOT_FOUND", `No character package (character.json) at "${rel}" in library "${name}"`, {
+        library: name,
+        path: rel,
+        packages: this.listCharacterPackages(name).map((p) => p.path),
+      });
     }
     return dir;
   }
@@ -434,7 +473,9 @@ export class VideoWorkspace {
     if (!this.hasAsset(id)) {
       throw new EngineError("ASSET_NOT_FOUND", `Asset "${id}" does not exist in workspace "${this.id}"`, {
         assetId: id,
-        available: this.listAssets().map((a) => a.assetId).slice(0, 50),
+        available: this.listAssets()
+          .map((a) => a.assetId)
+          .slice(0, 50),
       });
     }
     return readJson<AssetRecord>(path.join(this.assetDir(id), "asset.json"));
@@ -475,20 +516,29 @@ export class VideoWorkspace {
     const ext = path.extname(file).toLowerCase();
     const sha = crypto.createHash("sha256").update(bytes).digest("hex");
     if (IMAGE_EXT.has(ext)) {
-      const m = await sharp(bytes).metadata().catch(() => null);
+      const m = await sharp(bytes)
+        .metadata()
+        .catch(() => null);
       if (!m?.width || !m?.height) throw new EngineError("INVALID_ASSET", `Not a readable image: ${path.basename(file)}`);
       return { kind: "image" as const, bytes: bytes.length, sha256: sha, width: m.width, height: m.height, hasAlpha: !!m.hasAlpha };
     }
     if (AUDIO_EXT.has(ext)) return { kind: "audio" as const, bytes: bytes.length, sha256: sha };
-    if (MODEL_EXT.has(ext)) return { kind: "model" as const, bytes: bytes.length, sha256: sha, model: inspectGltf(bytes, path.basename(file)) };
-    throw new EngineError("INVALID_ASSET", `Unsupported file type "${ext}". Images: png jpg jpeg webp; audio: wav mp3 m4a aac ogg flac; 3D models: glb gltf`);
+    if (MODEL_EXT.has(ext))
+      return { kind: "model" as const, bytes: bytes.length, sha256: sha, model: inspectGltf(bytes, path.basename(file)) };
+    throw new EngineError(
+      "INVALID_ASSET",
+      `Unsupported file type "${ext}". Images: png jpg jpeg webp; audio: wav mp3 m4a aac ogg flac; 3D models: glb gltf`,
+    );
   }
 
   /**
    * Copies a file into the workspace as a new asset. Importing byte-identical content again returns
    * the existing asset (reused: true) instead of duplicating it.
    */
-  async importAsset(src: ImportSource, opts: { assetId?: string; name?: string; tags?: string[]; attachmentPoints?: AssetRecord["attachmentPoints"] } = {}) {
+  async importAsset(
+    src: ImportSource,
+    opts: { assetId?: string; name?: string; tags?: string[]; attachmentPoints?: AssetRecord["attachmentPoints"] } = {},
+  ) {
     const filename = src.kind === "file" ? path.basename(src.file) : src.filename;
     const ext = path.extname(filename).toLowerCase();
     if (!IMAGE_EXT.has(ext) && !AUDIO_EXT.has(ext) && !MODEL_EXT.has(ext)) {
@@ -529,14 +579,33 @@ export class VideoWorkspace {
   /** Preparation input is confined to the inbox; derived assets never replace originals. */
   async prepareVideo(input: string, options: PrepareVideoOptions = {}, assetId?: string, signal?: AbortSignal) {
     const source = resolveInside(path.join(this.dir, "inbox"), input);
-    const id = this.freshAssetId(assetId, "video"), dir = this.assetDir(id);
+    const id = this.freshAssetId(assetId, "video"),
+      dir = this.assetDir(id);
     fs.mkdirSync(dir, { recursive: false });
     try {
       const r = await prepareVideoAsset(source, dir, options, signal);
-      const rec: AssetRecord = { assetId: id, name: id, kind: "video", file: this.rel(r.file), mime: "video/mp4", bytes: fs.statSync(r.file).size, sha256: r.video.sha256, width: r.video.width, height: r.video.height, video: r.video, tags: [], createdAt: now(), provenance: { operation: "prepare_video", source: { inbox: input }, options }, auxFiles: { metadata: this.rel(path.join(dir, "video-metadata.json")) } };
+      const rec: AssetRecord = {
+        assetId: id,
+        name: id,
+        kind: "video",
+        file: this.rel(r.file),
+        mime: "video/mp4",
+        bytes: fs.statSync(r.file).size,
+        sha256: r.video.sha256,
+        width: r.video.width,
+        height: r.video.height,
+        video: r.video,
+        tags: [],
+        createdAt: now(),
+        provenance: { operation: "prepare_video", source: { inbox: input }, options },
+        auxFiles: { metadata: this.rel(path.join(dir, "video-metadata.json")) },
+      };
       this.writeAsset(rec);
       return { asset: rec, entry: { ...r.asset, src: rec.file }, warnings: r.warnings };
-    } catch (e) { fs.rmSync(dir, { recursive: true, force: true }); throw e; }
+    } catch (e) {
+      fs.rmSync(dir, { recursive: true, force: true });
+      throw e;
+    }
   }
 
   updateAsset(id: string, patch: { name?: string; tags?: string[]; attachmentPoints?: AssetRecord["attachmentPoints"] | null }) {
@@ -560,7 +629,9 @@ export class VideoWorkspace {
   async assetView(id: string) {
     const rec = this.requireImage(id);
     const out = path.join(this.assetDir(id), "view.jpg");
-    const v = fs.existsSync(out) ? { ...(await sharp(out).metadata()), bytes: fs.statSync(out).size } : await makeViewImage(this.abs(rec.file), out);
+    const v = fs.existsSync(out)
+      ? { ...(await sharp(out).metadata()), bytes: fs.statSync(out).size }
+      : await makeViewImage(this.abs(rec.file), out);
     return { relativePath: this.rel(out), width: v.width!, height: v.height!, bytes: v.bytes };
   }
 
@@ -588,20 +659,32 @@ export class VideoWorkspace {
         await makeViewImage(fs.readFileSync(png), out);
         writeFileAtomic(facts, JSON.stringify(info, null, 2));
       } catch (e) {
-        if (e instanceof EngineError && e.code === "ENGINE_CAPABILITY_UNAVAILABLE") return { note: "No thumbnail: the 3D backend (Blender) is not installed" };
+        if (e instanceof EngineError && e.code === "ENGINE_CAPABILITY_UNAVAILABLE")
+          return { note: "No thumbnail: the 3D backend (Blender) is not installed" };
         throw e;
       } finally {
         fs.rmSync(png, { force: true });
       }
     }
     const m = await sharp(out).metadata();
-    return { view: { relativePath: this.rel(out), width: m.width!, height: m.height!, bytes: fs.statSync(out).size }, blender: readJson(facts) };
+    return {
+      view: { relativePath: this.rel(out), width: m.width!, height: m.height!, bytes: fs.statSync(out).size },
+      blender: readJson(facts),
+    };
   }
 
   private async deriveImage(
     sourceId: string,
     opts: { assetId?: string; name?: string; suffix: string },
-    write: (dir: string, id: string) => Promise<{ file: string; provenance: AssetRecord["provenance"]; attachmentPoints?: AssetRecord["attachmentPoints"]; auxFiles?: Record<string, string> }>,
+    write: (
+      dir: string,
+      id: string,
+    ) => Promise<{
+      file: string;
+      provenance: AssetRecord["provenance"];
+      attachmentPoints?: AssetRecord["attachmentPoints"];
+      auxFiles?: Record<string, string>;
+    }>,
   ) {
     const src = this.requireImage(sourceId);
     const id = this.freshAssetId(opts.assetId, `${sourceId}_${opts.suffix}`);
@@ -666,7 +749,11 @@ export class VideoWorkspace {
       const file = path.join(dir, `${id}.png`);
       fs.renameSync(path.join(work, meta.files.processed), file);
       const aux: Record<string, string> = {};
-      for (const [k, f] of [["backgroundMask", meta.files.backgroundMask], ["untrimmed", meta.files.untrimmed], ["metadata", meta.files.metadata]] as const) {
+      for (const [k, f] of [
+        ["backgroundMask", meta.files.backgroundMask],
+        ["untrimmed", meta.files.untrimmed],
+        ["metadata", meta.files.metadata],
+      ] as const) {
         if (f && fs.existsSync(path.join(work, f))) {
           const dst = path.join(dir, f);
           fs.renameSync(path.join(work, f), dst);
@@ -691,7 +778,8 @@ export class VideoWorkspace {
     const rec = await this.deriveImage(sourceId, { ...opts, suffix: "trimmed" }, async (dir, id) => {
       const { image } = await readRgba(this.abs(src.file));
       const t = trimTransparent(image, options);
-      if (t.info.empty) throw new EngineError("INVALID_ASSET", `Asset "${sourceId}" has no visible pixels to trim to`, { assetId: sourceId });
+      if (t.info.empty)
+        throw new EngineError("INVALID_ASSET", `Asset "${sourceId}" has no visible pixels to trim to`, { assetId: sourceId });
       info = t.info;
       const file = path.join(dir, `${id}.png`);
       await writePng(t.image, file);
@@ -715,7 +803,12 @@ export class VideoWorkspace {
     return findComponents(image, alphaThreshold).components;
   }
 
-  async removeAssetComponents(sourceId: string, componentIds: number[], alphaThreshold = 8, opts: { assetId?: string; name?: string } = {}) {
+  async removeAssetComponents(
+    sourceId: string,
+    componentIds: number[],
+    alphaThreshold = 8,
+    opts: { assetId?: string; name?: string } = {},
+  ) {
     const known = (await this.assetComponents(sourceId, alphaThreshold)).map((c) => c.id);
     const unknown = componentIds.filter((c) => !known.includes(c));
     if (unknown.length) {
@@ -763,7 +856,9 @@ export class VideoWorkspace {
           name: doc.name ?? id,
           canvas: doc.canvas,
           duration: doc.duration,
-          ...(ops.is3D(doc) ? { objects: (doc.objects ?? []).length, lights: (doc.lights ?? []).length } : { layers: (doc.layers ?? []).length }),
+          ...(ops.is3D(doc)
+            ? { objects: (doc.objects ?? []).length, lights: (doc.lights ?? []).length }
+            : { layers: (doc.layers ?? []).length }),
           tracks: (doc.animations ?? []).length,
           ...(doc.characters?.length ? { characters: doc.characters.map((c: any) => `${c.id} (${c.character})`) } : {}),
         };
@@ -794,15 +889,24 @@ export class VideoWorkspace {
       sceneId: id,
       ...(ops.is3D(doc) ? {} : { kind: "2d" }),
       ...rest,
-      audio: (audio ?? []).map(({ src, ...a }: any) => ({ ...a, assetId: byFile.get(src) ?? null, startFrame: a.startFrame ?? 0, volume: a.volume ?? 1 })),
+      audio: (audio ?? []).map(({ src, ...a }: any) => ({
+        ...a,
+        assetId: byFile.get(src) ?? null,
+        startFrame: a.startFrame ?? 0,
+        volume: a.volume ?? 1,
+      })),
       assetsUsed: ops.is3D(doc) ? [...new Set((doc.objects ?? []).map((o: any) => o.asset).filter(Boolean))] : Object.keys(assets ?? {}),
     };
   }
 
   private withAllAssets(doc: ops.SceneDoc): ops.SceneDoc {
     const assets: Record<string, unknown> = {};
-    for (const rec of this.listAssets().filter(a => a.kind === "image" || a.kind === "video")) {
-      assets[rec.assetId] = { src: rec.file, ...(rec.kind === "video" ? { kind: "video", video: rec.video } : {}), ...(rec.attachmentPoints ? { attachmentPoints: rec.attachmentPoints } : {}) };
+    for (const rec of this.listAssets().filter((a) => a.kind === "image" || a.kind === "video")) {
+      assets[rec.assetId] = {
+        src: rec.file,
+        ...(rec.kind === "video" ? { kind: "video", video: rec.video } : {}),
+        ...(rec.attachmentPoints ? { attachmentPoints: rec.attachmentPoints } : {}),
+      };
     }
     return { ...doc, assets };
   }
@@ -819,7 +923,11 @@ export class VideoWorkspace {
       if (!/^[A-Za-z_][A-Za-z0-9_\-.]*$/.test(id) || !this.hasAsset(id)) continue; // left missing -> validation reports it
       const rec = this.getAsset(id);
       if (rec.kind !== "image" && rec.kind !== "video") continue;
-      assets[id] = { src: rec.file, ...(rec.kind === "video" ? { kind: "video", video: rec.video } : {}), ...(rec.attachmentPoints ? { attachmentPoints: rec.attachmentPoints } : {}) };
+      assets[id] = {
+        src: rec.file,
+        ...(rec.kind === "video" ? { kind: "video", video: rec.video } : {}),
+        ...(rec.attachmentPoints ? { attachmentPoints: rec.attachmentPoints } : {}),
+      };
     }
     return { ...doc, assets };
   }
@@ -837,7 +945,12 @@ export class VideoWorkspace {
     if (v.ok) {
       v.scene!.objects.forEach((o, i) => {
         if (o.asset && !fs.existsSync(this.assetFile(o.asset))) {
-          errors.push({ severity: "error", code: "MISSING_ASSET_FILE", path: ["objects", i, "asset"], message: `The file of asset "${o.asset}" is missing` });
+          errors.push({
+            severity: "error",
+            code: "MISSING_ASSET_FILE",
+            path: ["objects", i, "asset"],
+            message: `The file of asset "${o.asset}" is missing`,
+          });
         }
       });
       const ov = v.scene!.overlay;
@@ -854,7 +967,13 @@ export class VideoWorkspace {
         }
       }
     }
-    if (errors.length) throw errorFromIssues(errors, { sceneId: id, availableAssets: this.listAssets({ kind: "model" }).map((a) => a.assetId).slice(0, 50) });
+    if (errors.length)
+      throw errorFromIssues(errors, {
+        sceneId: id,
+        availableAssets: this.listAssets({ kind: "model" })
+          .map((a) => a.assetId)
+          .slice(0, 50),
+      });
     return v.warnings;
   }
 
@@ -863,7 +982,12 @@ export class VideoWorkspace {
     const v = validateScene(doc, { baseDir: this.dir });
     if (!v.ok) {
       // report unknown assets with the workspace's asset list so a client can fix the id
-      throw errorFromIssues(v.errors, { sceneId: id, availableAssets: this.listAssets().map((a) => a.assetId).slice(0, 50) });
+      throw errorFromIssues(v.errors, {
+        sceneId: id,
+        availableAssets: this.listAssets()
+          .map((a) => a.assetId)
+          .slice(0, 50),
+      });
     }
     return v.warnings;
   }
@@ -871,11 +995,23 @@ export class VideoWorkspace {
   private async withSceneLock<T>(id: string, fn: () => Promise<T> | T): Promise<T> {
     const prev = this.sceneLocks.get(id) ?? Promise.resolve();
     const next = prev.then(fn, fn);
-    this.sceneLocks.set(id, next.catch(() => undefined));
+    this.sceneLocks.set(
+      id,
+      next.catch(() => undefined),
+    );
     return next;
   }
 
-  async createScene(args: { sceneId?: string; kind?: "2d" | "3d"; name?: string; canvas?: Record<string, unknown>; duration?: number; camera?: Record<string, unknown> } = {}) {
+  async createScene(
+    args: {
+      sceneId?: string;
+      kind?: "2d" | "3d";
+      name?: string;
+      canvas?: Record<string, unknown>;
+      duration?: number;
+      camera?: Record<string, unknown>;
+    } = {},
+  ) {
     const id = args.sceneId ? checkEntityId("scene", args.sceneId) : this.nextFreeSceneId();
     if (this.hasScene(id)) throw new EngineError("SCENE_EXISTS", `Scene "${id}" already exists`, { sceneId: id });
     if (args.kind === "3d") {
@@ -957,18 +1093,24 @@ export class VideoWorkspace {
   /** A prepared engine for the scene's current document (cached until the document changes). */
   async engine(id: string): Promise<AnimationEngine> {
     const raw = this.getSceneDoc(id);
-    if (ops.is3D(raw)) throw new EngineError("INVALID_ARGUMENT", `Scene "${id}" is a 3D scene; use the 3D operations (measure_3d / 3D render)`, { sceneId: id, kind: "3d" });
+    if (ops.is3D(raw))
+      throw new EngineError("INVALID_ARGUMENT", `Scene "${id}" is a 3D scene; use the 3D operations (measure_3d / 3D render)`, {
+        sceneId: id,
+        kind: "3d",
+      });
     const doc = this.syncSceneAssets(raw);
     // the cache key covers the document AND the state of every referenced file, so a changed or
     // deleted asset/audio file is noticed (and reported) instead of rendering stale bytes
-    const files = [...Object.values(doc.assets ?? {}).map((a: any) => a.src), ...(doc.audio ?? []).map((a: any) => a.src)].map((rel: string) => {
-      try {
-        const st = fs.statSync(path.join(this.dir, rel));
-        return `${rel}:${st.size}:${st.mtimeMs}`;
-      } catch {
-        return `${rel}:missing`;
-      }
-    });
+    const files = [...Object.values(doc.assets ?? {}).map((a: any) => a.src), ...(doc.audio ?? []).map((a: any) => a.src)].map(
+      (rel: string) => {
+        try {
+          const st = fs.statSync(path.join(this.dir, rel));
+          return `${rel}:${st.size}:${st.mtimeMs}`;
+        } catch {
+          return `${rel}:missing`;
+        }
+      },
+    );
     const hash = crypto.createHash("sha256").update(JSON.stringify(doc)).update(files.join("|")).digest("hex");
     const cached = this.engines.get(id);
     if (cached?.hash === hash) return cached.engine;
@@ -1013,9 +1155,13 @@ export class VideoWorkspace {
     if (opts.characterId) raw.id = opts.characterId;
     const parsed = CharacterDefinitionSchema.safeParse(raw);
     if (!parsed.success) {
-      throw new EngineError("INVALID_ASSET", `Invalid character definition: ${parsed.error.issues[0]?.path.join(".")}: ${parsed.error.issues[0]?.message}`, {
-        issues: parsed.error.issues.slice(0, 20).map((i) => ({ path: i.path.map(String), message: i.message })),
-      });
+      throw new EngineError(
+        "INVALID_ASSET",
+        `Invalid character definition: ${parsed.error.issues[0]?.path.join(".")}: ${parsed.error.issues[0]?.message}`,
+        {
+          issues: parsed.error.issues.slice(0, 20).map((i) => ({ path: i.path.map(String), message: i.message })),
+        },
+      );
     }
     const def = parsed.data;
     checkEntityId("character", def.id);
@@ -1030,7 +1176,11 @@ export class VideoWorkspace {
       const meta = readJson<{ packageSha: string }>(path.join(this.characterDir(def.id), "meta.json"));
       if (meta.packageSha === packageSha) return { character: this.getCharacter(def.id), reused: true };
       if (!opts.replace) {
-        throw new EngineError("CHARACTER_EXISTS", `Character "${def.id}" is already prepared in this workspace from a different package; pass replace: true to update it`, { characterId: def.id });
+        throw new EngineError(
+          "CHARACTER_EXISTS",
+          `Character "${def.id}" is already prepared in this workspace from a different package; pass replace: true to update it`,
+          { characterId: def.id },
+        );
       }
     }
     const mapped: Record<string, string> = {};
@@ -1046,14 +1196,20 @@ export class VideoWorkspace {
         fs.rmSync(this.assetDir(assetId), { recursive: true, force: true });
         this.engines.clear();
       }
-      await this.importAsset({ kind: "file", file, origin: { character: def.id, file: f, ...opts.origin } }, { assetId, name: `${def.id} ${name}`, tags: ["character", def.id] });
+      await this.importAsset(
+        { kind: "file", file, origin: { character: def.id, file: f, ...opts.origin } },
+        { assetId, name: `${def.id} ${name}`, tags: ["character", def.id] },
+      );
       mapped[name] = assetId;
     }
     const stored: CharacterDefinition = def.kind === "2d" ? { ...def, assets: mapped } : { ...def, model: mapped.model };
     const sha = crypto.createHash("sha256").update(JSON.stringify(stored)).digest("hex");
     const continuity = await this.characterContinuity(stored);
     writeFileAtomic(path.join(this.characterDir(def.id), "character.json"), JSON.stringify(stored, null, 2));
-    writeFileAtomic(path.join(this.characterDir(def.id), "meta.json"), JSON.stringify({ characterId: def.id, sha, packageSha, importedAt: now(), origin: opts.origin ?? {}, continuity }, null, 2));
+    writeFileAtomic(
+      path.join(this.characterDir(def.id), "meta.json"),
+      JSON.stringify({ characterId: def.id, sha, packageSha, importedAt: now(), origin: opts.origin ?? {}, continuity }, null, 2),
+    );
     return { character: this.getCharacter(def.id), reused: false };
   }
 
@@ -1066,12 +1222,23 @@ export class VideoWorkspace {
     if (def.kind === "3d") {
       const sk = this.getAsset(def.model).model?.skinning;
       return sk
-        ? { method: "3d skinning: joint weights", continuous: sk.continuous, productionReady: sk.continuous, rigidJoints: sk.rigidJoints, maxInfluences: sk.maxInfluences, joints: sk.joints }
+        ? {
+            method: "3d skinning: joint weights",
+            continuous: sk.continuous,
+            productionReady: sk.continuous,
+            rigidJoints: sk.rigidJoints,
+            maxInfluences: sk.maxInfluences,
+            joints: sk.joints,
+          }
         : { method: "3d skinning: joint weights", continuous: false, productionReady: false, note: "model has no readable skin weights" };
     }
     const images: Record<string, AlphaImage> = {};
     for (const [name, assetId] of Object.entries(def.assets)) {
-      const { data, info } = await sharp(this.assetFile(assetId)).ensureAlpha().extractChannel(3).raw().toBuffer({ resolveWithObject: true });
+      const { data, info } = await sharp(this.assetFile(assetId))
+        .ensureAlpha()
+        .extractChannel(3)
+        .raw()
+        .toBuffer({ resolveWithObject: true });
       images[name] = { width: info.width, height: info.height, alpha: new Uint8Array(data) };
     }
     const r = analyzeJoints2D(def, (n) => images[n]);
@@ -1081,10 +1248,14 @@ export class VideoWorkspace {
   getCharacter(id: string): { def: CharacterDefinition; sha: string; meta: Record<string, unknown> } {
     checkEntityId("character", id);
     if (!this.hasCharacter(id)) {
-      throw new EngineError("CHARACTER_NOT_FOUND", `No prepared character "${id}" in workspace "${this.id}" (character_import it from a library first)`, {
-        characterId: id,
-        available: this.listCharacters().map((c) => c.characterId),
-      });
+      throw new EngineError(
+        "CHARACTER_NOT_FOUND",
+        `No prepared character "${id}" in workspace "${this.id}" (character_import it from a library first)`,
+        {
+          characterId: id,
+          available: this.listCharacters().map((c) => c.characterId),
+        },
+      );
     }
     const def = CharacterDefinitionSchema.parse(readJson(path.join(this.characterDir(id), "character.json")));
     const meta = readJson<Record<string, unknown>>(path.join(this.characterDir(id), "meta.json"));
@@ -1101,7 +1272,14 @@ export class VideoWorkspace {
       .map((id) => {
         const { def, sha } = this.getCharacter(id);
         const d = describeCharacter(def);
-        return { characterId: id, name: d.name, kind: def.kind, sha256: sha, actions: d.actions.map((a) => a.name), expressions: d.expressions };
+        return {
+          characterId: id,
+          name: d.name,
+          kind: def.kind,
+          sha256: sha,
+          actions: d.actions.map((a) => a.name),
+          expressions: d.expressions,
+        };
       });
   }
 
@@ -1113,7 +1291,11 @@ export class VideoWorkspace {
   saveSpeechTiming(id: string, timing: unknown) {
     checkEntityId("speech", id);
     const p = SpeechTimingSchema.safeParse(timing);
-    if (!p.success) throw new EngineError("INVALID_ARGUMENT", `Invalid speech timing: ${p.error.issues[0]?.path.join(".")}: ${p.error.issues[0]?.message}`);
+    if (!p.success)
+      throw new EngineError(
+        "INVALID_ARGUMENT",
+        `Invalid speech timing: ${p.error.issues[0]?.path.join(".")}: ${p.error.issues[0]?.message}`,
+      );
     if (p.data.audio) {
       const rec = this.getAsset(p.data.audio);
       if (rec.kind !== "audio") throw new EngineError("INVALID_ASSET", `Asset "${p.data.audio}" is not audio`, { assetId: p.data.audio });
@@ -1130,7 +1312,13 @@ export class VideoWorkspace {
 
   listSpeechTimings() {
     const dir = path.join(this.dir, "speech");
-    return fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5)).sort() : [];
+    return fs.existsSync(dir)
+      ? fs
+          .readdirSync(dir)
+          .filter((f) => f.endsWith(".json"))
+          .map((f) => f.slice(0, -5))
+          .sort()
+      : [];
   }
 
   // ---- interaction definitions -----------------------------------------------------------------
@@ -1152,17 +1340,36 @@ export class VideoWorkspace {
 
   requireInteraction(id: string) {
     const r = this.getInteraction(id);
-    if (!r) throw new EngineError("INTERACTION_NOT_FOUND", `No interaction definition "${id}"`, { interactionId: id, available: this.listInteractions().map((x) => x.id) });
+    if (!r)
+      throw new EngineError("INTERACTION_NOT_FOUND", `No interaction definition "${id}"`, {
+        interactionId: id,
+        available: this.listInteractions().map((x) => x.id),
+      });
     return r;
   }
 
   listInteractions() {
     const dir = path.join(this.dir, "interactions");
-    const custom = fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5)) : [];
+    const custom = fs.existsSync(dir)
+      ? fs
+          .readdirSync(dir)
+          .filter((f) => f.endsWith(".json"))
+          .map((f) => f.slice(0, -5))
+      : [];
     return [...Object.keys(BUILTIN_INTERACTIONS), ...custom.sort()]
       .map((id) => this.getInteraction(id)!)
       .filter(Boolean)
-      .map(({ def, sha, builtin }) => ({ id: def.id, name: def.name ?? def.id, description: def.description ?? "", builtin, actors: def.roles.length, roles: def.roles.map((r) => r.name), duration: def.duration.default, params: Object.keys(def.params), sha256: sha }));
+      .map(({ def, sha, builtin }) => ({
+        id: def.id,
+        name: def.name ?? def.id,
+        description: def.description ?? "",
+        builtin,
+        actors: def.roles.length,
+        roles: def.roles.map((r) => r.name),
+        duration: def.duration.default,
+        params: Object.keys(def.params),
+        sha256: sha,
+      }));
   }
 
   describeInteraction(id: string) {
@@ -1178,18 +1385,30 @@ export class VideoWorkspace {
   defineInteraction(raw: unknown, opts: { replace?: boolean; origin?: Record<string, unknown> } = {}) {
     const p = InteractionDefinitionSchema.safeParse(raw);
     if (!p.success) {
-      throw new EngineError("INTERACTION_INVALID", `Invalid interaction definition: ${p.error.issues[0]?.path.join(".")}: ${p.error.issues[0]?.message}`, {
-        issues: p.error.issues.slice(0, 20).map((i) => ({ path: i.path.map(String), message: i.message })),
-      });
+      throw new EngineError(
+        "INTERACTION_INVALID",
+        `Invalid interaction definition: ${p.error.issues[0]?.path.join(".")}: ${p.error.issues[0]?.message}`,
+        {
+          issues: p.error.issues.slice(0, 20).map((i) => ({ path: i.path.map(String), message: i.message })),
+        },
+      );
     }
     const def = p.data;
     checkEntityId("interaction", def.id);
-    if (BUILTIN_INTERACTIONS[def.id]) throw new EngineError("INTERACTION_EXISTS", `"${def.id}" is a built-in interaction; define yours under another id`, { interactionId: def.id });
+    if (BUILTIN_INTERACTIONS[def.id])
+      throw new EngineError("INTERACTION_EXISTS", `"${def.id}" is a built-in interaction; define yours under another id`, {
+        interactionId: def.id,
+      });
     const existing = this.getInteraction(def.id);
     const sha = interactionSha(def);
     if (existing) {
       if (existing.sha === sha) return { interaction: describeInteraction(def, sha, false), reused: true };
-      if (!opts.replace) throw new EngineError("INTERACTION_EXISTS", `Interaction "${def.id}" is already defined differently in this workspace; pass replace: true to update it (scenes using it are marked stale until recompiled)`, { interactionId: def.id });
+      if (!opts.replace)
+        throw new EngineError(
+          "INTERACTION_EXISTS",
+          `Interaction "${def.id}" is already defined differently in this workspace; pass replace: true to update it (scenes using it are marked stale until recompiled)`,
+          { interactionId: def.id },
+        );
     }
     writeFileAtomic(this.interactionFile(def.id), JSON.stringify(def, null, 2));
     return { interaction: describeInteraction(def, sha, false), reused: false };
@@ -1207,7 +1426,10 @@ export class VideoWorkspace {
     const { plan, ...out } = tl;
     if (frame === undefined || !plan.ok) return out;
     if (!Number.isInteger(frame) || frame < 0 || frame >= doc.duration) {
-      throw new EngineError("INVALID_FRAME", `Frame ${frame} is outside the scene (0..${doc.duration - 1})`, { frame, duration: doc.duration });
+      throw new EngineError("INVALID_FRAME", `Frame ${frame} is outside the scene (0..${doc.duration - 1})`, {
+        frame,
+        duration: doc.duration,
+      });
     }
     const active = Object.values(plan.reaches)
       .flat()
@@ -1215,7 +1437,10 @@ export class VideoWorkspace {
     const grip = new Map<(typeof active)[number], { x: number; y: number; z: number }>();
     if (active.length) {
       if (ops.is3D(doc)) {
-        const m = await this.measure3D(sceneId, frame, { objects: [...new Set(active.map((r) => r.actor))], bones: [...new Set(active.map((r) => r.end))] });
+        const m = await this.measure3D(sceneId, frame, {
+          objects: [...new Set(active.map((r) => r.actor))],
+          bones: [...new Set(active.map((r) => r.end))],
+        });
         for (const r of active) {
           const o: any = m.objects.find((x: any) => x.id === r.actor);
           const b = o?.bones?.[r.end];
@@ -1223,10 +1448,18 @@ export class VideoWorkspace {
           const t = b.tail?.world ?? b.world;
           const len = Math.hypot(t.x - b.world.x, t.y - b.world.y, t.z - b.world.z) || 1;
           const g = r.grip ?? 0;
-          grip.set(r, { x: b.world.x + ((t.x - b.world.x) / len) * g, y: b.world.y + ((t.y - b.world.y) / len) * g, z: b.world.z + ((t.z - b.world.z) / len) * g });
+          grip.set(r, {
+            x: b.world.x + ((t.x - b.world.x) / len) * g,
+            y: b.world.y + ((t.y - b.world.y) / len) * g,
+            z: b.world.z + ((t.z - b.world.z) / len) * g,
+          });
         }
       } else {
-        const l = await this.measureLayout(sceneId, frame, active.map((r) => `${r.actor}.${r.end}`));
+        const l = await this.measureLayout(
+          sceneId,
+          frame,
+          active.map((r) => `${r.actor}.${r.end}`),
+        );
         for (const r of active) {
           const layer = l.layers.find((x) => x.id === `${r.actor}.${r.end}`);
           if (!layer) continue;
@@ -1251,7 +1484,9 @@ export class VideoWorkspace {
         inContact: frame >= r.contactF0 && frame < r.contactF1,
         grip: g ? { x: round(g.x), y: round(g.y), ...(unit === "m" ? { z: round(g.z) } : {}) } : null,
         distanceToTarget: g ? round(Math.hypot(g.x - t.x, g.y - t.y, g.z - t.z)) : null,
-        ...(partners.length ? { partner: partners[0].actor, distanceToPartnerHand: g && pg ? round(Math.hypot(g.x - pg.x, g.y - pg.y, g.z - pg.z)) : null } : {}),
+        ...(partners.length
+          ? { partner: partners[0].actor, distanceToPartnerHand: g && pg ? round(Math.hypot(g.x - pg.x, g.y - pg.y, g.z - pg.z)) : null }
+          : {}),
       };
     });
     return { ...out, measured: { frame, unit, hands } };
@@ -1283,7 +1518,10 @@ export class VideoWorkspace {
         return { ...c, continuity: c.meta.continuity as { continuous: boolean } | undefined };
       },
       speech: (id) => this.getSpeechTiming(id),
-      audioSrc: (assetId) => (/^[A-Za-z_][A-Za-z0-9_\-.]*$/.test(assetId) && this.hasAsset(assetId) && this.getAsset(assetId).kind === "audio" ? this.getAsset(assetId).file : undefined),
+      audioSrc: (assetId) =>
+        /^[A-Za-z_][A-Za-z0-9_\-.]*$/.test(assetId) && this.hasAsset(assetId) && this.getAsset(assetId).kind === "audio"
+          ? this.getAsset(assetId).file
+          : undefined,
     };
   }
 
@@ -1335,18 +1573,26 @@ export class VideoWorkspace {
       const c = colors[i % colors.length];
       const sc = o.screen;
       if (sc?.onScreen && sc.width < W * 3) {
-        parts.push(`<rect x="${sc.x}" y="${sc.y}" width="${sc.width}" height="${sc.height}" fill="none" stroke="${c}" stroke-width="2" stroke-dasharray="6 3"/>`);
+        parts.push(
+          `<rect x="${sc.x}" y="${sc.y}" width="${sc.width}" height="${sc.height}" fill="none" stroke="${c}" stroke-width="2" stroke-dasharray="6 3"/>`,
+        );
         const label = `${o.id}${o.clips?.length ? " [" + o.clips.map((k: any) => k.name).join("→") + "]" : ""} z${o.cameraSpace?.depth?.toFixed(1)}m`;
-        parts.push(`<text x="${Math.max(2, sc.x) + 3}" y="${Math.max(fs1, sc.y) + fs1}" fill="${c}" font-size="${fs1}" font-family="sans-serif" font-weight="bold" stroke="#000" stroke-width="0.6">${esc(label)}</text>`);
+        parts.push(
+          `<text x="${Math.max(2, sc.x) + 3}" y="${Math.max(fs1, sc.y) + fs1}" fill="${c}" font-size="${fs1}" font-family="sans-serif" font-weight="bold" stroke="#000" stroke-width="0.6">${esc(label)}</text>`,
+        );
       }
       for (const [name, b] of Object.entries<any>(o.bones ?? {})) {
         if (!b.screen.onScreen || !/Hand$|^head$|^root$/.test(name)) continue;
         parts.push(`<circle cx="${b.screen.x}" cy="${b.screen.y}" r="4" fill="${c}" stroke="#fff" stroke-width="1.5"/>`);
-        parts.push(`<text x="${b.screen.x + 6}" y="${b.screen.y - 4}" fill="#fff" font-size="${Math.round(fs1 * 0.8)}" font-family="sans-serif" stroke="#000" stroke-width="0.5">${esc(name)}</text>`);
+        parts.push(
+          `<text x="${b.screen.x + 6}" y="${b.screen.y - 4}" fill="#fff" font-size="${Math.round(fs1 * 0.8)}" font-family="sans-serif" stroke="#000" stroke-width="0.5">${esc(name)}</text>`,
+        );
       }
     });
     const cam = m.camera as any;
-    parts.push(`<text x="6" y="${H - 8}" fill="#fff" font-size="${fs1}" font-family="monospace" stroke="#000" stroke-width="0.5">${esc(`frame ${m.frame}  camera (${cam.position.x}, ${cam.position.y}, ${cam.position.z}) fov ${cam.fov}`)}</text>`);
+    parts.push(
+      `<text x="6" y="${H - 8}" fill="#fff" font-size="${fs1}" font-family="monospace" stroke="#000" stroke-width="0.5">${esc(`frame ${m.frame}  camera (${cam.position.x}, ${cam.position.y}, ${cam.position.z}) fov ${cam.fov}`)}</text>`,
+    );
     return Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">${parts.join("")}</svg>`);
   }
 
@@ -1355,10 +1601,19 @@ export class VideoWorkspace {
     const tmp = path.join(this.dir, "previews", `.tmp3d_${process.pid}_${Date.now()}.png`);
     fs.mkdirSync(path.dirname(tmp), { recursive: true });
     try {
-      const r = await renderFrames3D(ctx, [{ frame, out: tmp }], { quality: opts.quality ?? "draft", ...(opts.debug ? { measure: {} } : {}) });
+      const r = await renderFrames3D(ctx, [{ frame, out: tmp }], {
+        quality: opts.quality ?? "draft",
+        ...(opts.debug ? { measure: {} } : {}),
+      });
       const { width, height } = ctx.scene.canvas;
-      let png = await sharp(await this.compose3D(ctx, frame, tmp, false), { raw: { width, height, channels: 4 } }).png().toBuffer();
-      if (opts.debug && r.measurements[0]) png = await sharp(png).composite([{ input: this.debugSvg(r.measurements[0]) }]).png().toBuffer();
+      let png = await sharp(await this.compose3D(ctx, frame, tmp, false), { raw: { width, height, channels: 4 } })
+        .png()
+        .toBuffer();
+      if (opts.debug && r.measurements[0])
+        png = await sharp(png)
+          .composite([{ input: this.debugSvg(r.measurements[0]) }])
+          .png()
+          .toBuffer();
       const rec = await this.imageArtifact(opts.debug ? "debug-preview" : "preview", sceneId, frame, png, "previews");
       return opts.debug ? { ...rec, measurement: r.measurements[0] } : rec;
     } finally {
@@ -1366,30 +1621,56 @@ export class VideoWorkspace {
     }
   }
 
-  private async renderVideo3D(
-    sceneId: string,
-    o: RenderVideoOptions & { renderId?: string },
-  ) {
+  private async renderVideo3D(sceneId: string, o: RenderVideoOptions & { renderId?: string }) {
     const ctx = this.scene3D(sceneId);
     const s = ctx.scene;
     const start = o.startFrame ?? 0;
     const end = o.endFrame ?? s.duration;
     if (!(Number.isInteger(start) && Number.isInteger(end) && start >= 0 && end <= s.duration && end > start)) {
-      throw new EngineError("INVALID_FRAME", `invalid frame range [${start}, ${end}) for duration ${s.duration}`, { startFrame: start, endFrame: end, duration: s.duration });
+      throw new EngineError("INVALID_FRAME", `invalid frame range [${start}, ${end}) for duration ${s.duration}`, {
+        startFrame: start,
+        endFrame: end,
+        duration: s.duration,
+      });
     }
     const artifactId = this.nextId("video");
     const file = path.join(this.dir, "renders", `${sceneId}_${artifactId}.mp4`);
     const tmpDir = path.join(this.dir, "renders", `.frames_${artifactId}`);
     const fps = s.canvas.fps;
-    if (s.audio.some(a => a.sourceIn !== undefined || a.sourceOut !== undefined || a.startOffsetMs !== undefined || a.fadeInMs !== undefined || a.fadeOutMs !== undefined)) {
-      const audioValidation = validateScene({ canvas: { width: s.canvas.width, height: s.canvas.height, fps }, duration: s.duration, audio: s.audio }, { baseDir: this.dir });
+    if (
+      s.audio.some(
+        (a) =>
+          a.sourceIn !== undefined ||
+          a.sourceOut !== undefined ||
+          a.startOffsetMs !== undefined ||
+          a.fadeInMs !== undefined ||
+          a.fadeOutMs !== undefined,
+      )
+    ) {
+      const audioValidation = validateScene(
+        { canvas: { width: s.canvas.width, height: s.canvas.height, fps }, duration: s.duration, audio: s.audio },
+        { baseDir: this.dir },
+      );
       if (!audioValidation.ok) throw errorFromIssues(audioValidation.errors, { sceneId });
     }
-    const audio = o.audio === false ? [] : s.audio.map((a) => ({ file: this.abs(a.src), start: (a.startFrame - start) / fps + (a.startOffsetMs ?? 0) / 1000, volume: a.volume, sourceIn: a.sourceIn, sourceOut: a.sourceOut, fadeInMs: a.fadeInMs, fadeOutMs: a.fadeOutMs }));
+    const audio =
+      o.audio === false
+        ? []
+        : s.audio.map((a) => ({
+            file: this.abs(a.src),
+            start: (a.startFrame - start) / fps + (a.startOffsetMs ?? 0) / 1000,
+            volume: a.volume,
+            sourceIn: a.sourceIn,
+            sourceOut: a.sourceOut,
+            fadeInMs: a.fadeInMs,
+            fadeOutMs: a.fadeOutMs,
+          }));
     const subtitles = o.subtitles ? await stageSubtitles(o.subtitles, this.dir) : undefined;
     let enc: ReturnType<typeof startEncoder> | undefined;
     const warnings: unknown[] = [];
-    const cancel = () => { void enc?.abort(); };
+    const cancel = () => {
+      void enc?.abort();
+    };
     o.signal?.addEventListener("abort", cancel, { once: true });
     let chain = Promise.resolve();
     let encoded = 0;
@@ -1398,17 +1679,35 @@ export class VideoWorkspace {
       fs.mkdirSync(tmpDir, { recursive: true });
       if (o.subtitles?.mode === "burn") {
         const caps = await mediaCapabilities(o.subtitles.fontsDir);
-        if (!caps.subtitles.complexShaping) warnings.push({ severity: "warning", code: "SUBTITLE_SHAPING_UNAVAILABLE", message: caps.subtitles.reason });
+        if (!caps.subtitles.complexShaping)
+          warnings.push({ severity: "warning", code: "SUBTITLE_SHAPING_UNAVAILABLE", message: caps.subtitles.reason });
       }
       if (o.signal?.aborted) throw new EngineError("RENDER_CANCELLED", "Render cancelled");
-      enc = startEncoder({ out: file, width: s.canvas.width, height: s.canvas.height, fps, frameCount: end - start, audio, crf: o.crf, preset: o.preset, subtitles, subtitleStartSeconds: start / fps });
-      const frames = Array.from({ length: end - start }, (_, i) => ({ frame: start + i, out: path.join(tmpDir, `f${String(start + i).padStart(6, "0")}.png`) }));
+      enc = startEncoder({
+        out: file,
+        width: s.canvas.width,
+        height: s.canvas.height,
+        fps,
+        frameCount: end - start,
+        audio,
+        crf: o.crf,
+        preset: o.preset,
+        subtitles,
+        subtitleStartSeconds: start / fps,
+      });
+      const frames = Array.from({ length: end - start }, (_, i) => ({
+        frame: start + i,
+        out: path.join(tmpDir, `f${String(start + i).padStart(6, "0")}.png`),
+      }));
       await renderFrames3D(ctx, frames, {
         signal: o.signal,
         onFrame: (frame, png) => {
           chain = chain.then(async () => {
             const rgba = await this.compose3D(ctx, frame, png, true);
-            if (!poster) poster = await sharp(rgba, { raw: { width: s.canvas.width, height: s.canvas.height, channels: 4 } }).png().toBuffer();
+            if (!poster)
+              poster = await sharp(rgba, { raw: { width: s.canvas.width, height: s.canvas.height, channels: 4 } })
+                .png()
+                .toBuffer();
             await enc!.write(rgba);
             fs.rmSync(png, { force: true });
             o.onProgress?.(++encoded, end - start);
@@ -1495,7 +1794,11 @@ export class VideoWorkspace {
   }
 
   /** Normal preview (debug=false) or debug preview with bounds/ids/pivots/z/attachment overlays. */
-  async renderPreview(sceneId: string, frame: number, opts: { debug?: boolean; debugOptions?: DebugOptions; quality?: "draft" | "standard" | "high" } = {}) {
+  async renderPreview(
+    sceneId: string,
+    frame: number,
+    opts: { debug?: boolean; debugOptions?: DebugOptions; quality?: "draft" | "standard" | "high" } = {},
+  ) {
     if (this.sceneKind(sceneId) === "3d") return this.renderPreview3D(sceneId, frame, opts);
     const engine = await this.engine(sceneId);
     const tmp = path.join(this.dir, "previews", `.tmp_${process.pid}_${Date.now()}.png`);
@@ -1518,7 +1821,15 @@ export class VideoWorkspace {
         await renderFrames3D(ctx, [{ frame, out: tmp }]);
         const { width, height } = ctx.scene.canvas;
         const rgba = await this.compose3D(ctx, frame, tmp, false);
-        const rec = await this.imageArtifact("frame", sceneId, frame, await sharp(rgba, { raw: { width, height, channels: 4 } }).png().toBuffer(), "frames");
+        const rec = await this.imageArtifact(
+          "frame",
+          sceneId,
+          frame,
+          await sharp(rgba, { raw: { width, height, channels: 4 } })
+            .png()
+            .toBuffer(),
+          "frames",
+        );
         return { ...rec, pixelSha256: crypto.createHash("sha256").update(rgba).digest("hex") };
       } finally {
         fs.rmSync(tmp, { force: true });
@@ -1532,11 +1843,16 @@ export class VideoWorkspace {
   }
 
   /** Renders [startFrame, endFrame) to MP4 (H.264 + scene audio). Prefer RenderJobs for long renders. */
-  async renderVideo(
-    sceneId: string,
-    o: RenderVideoOptions & { renderId?: string } = {},
-  ) {
-    if (o.subtitles) o = { ...o, subtitles: { ...o.subtitles, file: this.abs(o.subtitles.file), fontsDir: o.subtitles.fontsDir ? this.abs(o.subtitles.fontsDir) : undefined } };
+  async renderVideo(sceneId: string, o: RenderVideoOptions & { renderId?: string } = {}) {
+    if (o.subtitles)
+      o = {
+        ...o,
+        subtitles: {
+          ...o.subtitles,
+          file: this.abs(o.subtitles.file),
+          fontsDir: o.subtitles.fontsDir ? this.abs(o.subtitles.fontsDir) : undefined,
+        },
+      };
     if (this.sceneKind(sceneId) === "3d") {
       if ((o.chunks ?? 1) > 1) throw new EngineError("INVALID_ARGUMENT", "Parallel chunks currently support 2D scenes only");
       return this.renderVideo3D(sceneId, o);
@@ -1560,7 +1876,8 @@ export class VideoWorkspace {
       width: engine.scene.canvas.width,
       height: engine.scene.canvas.height,
       durationSeconds: r.seconds,
-      timings: r.timings, warnings: r.warnings,
+      timings: r.timings,
+      warnings: r.warnings,
       relativePath: this.rel(file),
       bytes: fs.statSync(file).size,
       view: { relativePath: `renders/${sceneId}_${artifactId}.poster.jpg`, ...view },

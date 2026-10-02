@@ -163,14 +163,18 @@ export function evaluateScene(scene: Scene, frame: number, assetSize: AssetSizeL
       id: layer.id,
       index,
       ...(layer.space ? { space: layer.space } : {}),
-      ...(layer.shape ? { shape: {
-        ...layer.shape,
-        cornerRadius: v("cornerRadius", layer.shape.cornerRadius ?? 0),
-        strokeWidth: v("strokeWidth", layer.shape.strokeWidth ?? 1),
-        fill: tracks?.has("shapeFill") ? v("shapeFill", "") : layer.shape.fill,
-        stroke: tracks?.has("stroke") ? v("stroke", "") : layer.shape.stroke,
-        ...(layer.shape.shadow ? { shadow: { ...layer.shape.shadow, blur: v("shadowBlur", layer.shape.shadow.blur) } } : {}),
-      } } : {}),
+      ...(layer.shape
+        ? {
+            shape: {
+              ...layer.shape,
+              cornerRadius: v("cornerRadius", layer.shape.cornerRadius ?? 0),
+              strokeWidth: v("strokeWidth", layer.shape.strokeWidth ?? 1),
+              fill: tracks?.has("shapeFill") ? v("shapeFill", "") : layer.shape.fill,
+              stroke: tracks?.has("stroke") ? v("stroke", "") : layer.shape.stroke,
+              ...(layer.shape.shadow ? { shadow: { ...layer.shape.shadow, blur: v("shadowBlur", layer.shape.shadow.blur) } } : {}),
+            },
+          }
+        : {}),
       asset,
       fill: v<string>("fill", layer.fill ?? "") || null,
       parent: layer.parent ?? null,

@@ -9,15 +9,7 @@ import fs from "node:fs";
 import { hashFile, probeMedia } from "../media/process.js";
 import path from "node:path";
 import { evaluateScene } from "../timeline/evaluate.js";
-import {
-  CAMERA_PROPERTIES,
-  CAMERA_TARGET,
-  COLOR_RE,
-  LAYER_PROPERTIES,
-  SceneSchema,
-  type PropertySpec,
-  type Scene,
-} from "./schema.js";
+import { CAMERA_PROPERTIES, CAMERA_TARGET, COLOR_RE, LAYER_PROPERTIES, SceneSchema, type PropertySpec, type Scene } from "./schema.js";
 
 export type IssueSeverity = "error" | "warning";
 
@@ -68,6 +60,16 @@ function zodCode(code: string): string {
   }
 }
 
+/** Preserve the specialized compositing issue codes before the generic Zod mapping. */
+function sceneIssueCode(issue: { code: string; path: PropertyKey[] }): string {
+  if (issue.path.includes("shape")) return issue.path.includes("d") ? "INVALID_PATH_DATA" : "INVALID_SHAPE";
+  if (issue.path.includes("video")) return "VIDEO_NOT_PREPARED";
+  if (issue.path[0] === "audio" && ["sourceIn", "sourceOut", "startOffsetMs", "fadeInMs", "fadeOutMs"].includes(String(issue.path[2]))) {
+    return "INVALID_AUDIO_RANGE";
+  }
+  return zodCode(issue.code);
+}
+
 export function resolveScenePath(baseDir: string | undefined, p: string): string {
   if (path.isAbsolute(p) || !baseDir) return p;
   return path.join(baseDir, p);
@@ -91,7 +93,7 @@ export function validateScene(input: unknown, options: ValidateOptions = {}): Va
       if (anyIssue.minimum !== undefined) details.minimum = anyIssue.minimum;
       if (anyIssue.maximum !== undefined) details.maximum = anyIssue.maximum;
       err(
-        issue.path.includes("shape") ? (issue.path.includes("d") ? "INVALID_PATH_DATA" : "INVALID_SHAPE") : issue.path.includes("video") ? "VIDEO_NOT_PREPARED" : issue.path[0] === "audio" && ["sourceIn", "sourceOut", "startOffsetMs", "fadeInMs", "fadeOutMs"].includes(String(issue.path[2])) ? "INVALID_AUDIO_RANGE" : zodCode(issue.code),
+        sceneIssueCode(issue),
         issue.path.map((k) => (typeof k === "symbol" ? String(k) : k)),
         issue.message,
         Object.keys(details).length ? details : undefined,
@@ -109,11 +111,19 @@ export function validateScene(input: unknown, options: ValidateOptions = {}): Va
     if (checkFiles) {
       const file = resolveScenePath(options.baseDir, asset.src);
       if (!fs.existsSync(file)) {
-        err(asset.kind === "video" ? "MISSING_VIDEO_FILE" : "MISSING_ASSET_FILE", ["assets", id, "src"], `Asset "${id}" file not found: ${asset.src}`, { file });
+        err(
+          asset.kind === "video" ? "MISSING_VIDEO_FILE" : "MISSING_ASSET_FILE",
+          ["assets", id, "src"],
+          `Asset "${id}" file not found: ${asset.src}`,
+          { file },
+        );
       } else if (asset.kind === "video" && asset.video) {
         try {
-          if (hashFile(file) !== asset.video.sha256) err("VIDEO_HASH_MISMATCH", ["assets", id, "video", "sha256"], "Prepared video bytes have changed");
-        } catch (e) { err("MISSING_VIDEO_FILE", ["assets", id, "src"], String(e)); }
+          if (hashFile(file) !== asset.video.sha256)
+            err("VIDEO_HASH_MISMATCH", ["assets", id, "video", "sha256"], "Prepared video bytes have changed");
+        } catch (e) {
+          err("MISSING_VIDEO_FILE", ["assets", id, "src"], String(e));
+        }
       }
     }
   }
@@ -144,8 +154,10 @@ export function validateScene(input: unknown, options: ValidateOptions = {}): Va
     } else if ([layer.asset != null, layer.fill !== undefined, layer.shape !== undefined].filter(Boolean).length > 1) {
       err("CONFLICTING_CONTENT", ["layers", i], "asset, fill and shape are mutually exclusive");
     }
-    if (layer.shape?.type === "path" && !validPathData(layer.shape.d ?? "")) err("INVALID_PATH_DATA", ["layers", i, "shape", "d"], "Invalid SVG path grammar");
-    if (layer.shape && layer.shape.type !== "path" && layer.shape.d !== undefined) err("INVALID_SHAPE", ["layers", i, "shape"], "Only path shapes accept d");
+    if (layer.shape?.type === "path" && !validPathData(layer.shape.d ?? ""))
+      err("INVALID_PATH_DATA", ["layers", i, "shape", "d"], "Invalid SVG path grammar");
+    if (layer.shape && layer.shape.type !== "path" && layer.shape.d !== undefined)
+      err("INVALID_SHAPE", ["layers", i, "shape"], "Only path shapes accept d");
     if (layer.parent != null) {
       if (layer.parent === layer.id) {
         err("PARENT_CYCLE", ["layers", i, "parent"], `Layer "${layer.id}" is its own parent`);
@@ -180,7 +192,12 @@ export function validateScene(input: unknown, options: ValidateOptions = {}): Va
           err("INVALID_MASK", ["layers", i, "mask", "layer"], `Mask layer "${layer.mask.layer}" does not exist`);
         } else {
           const m = scene.layers[layerIndex.get(layer.mask.layer)!];
-          if (m.mask) warn("NESTED_MASK_IGNORED", ["layers", i, "mask"], `Mask layer "${m.id}" has its own mask, which is ignored when it is used as a mask`);
+          if (m.mask)
+            warn(
+              "NESTED_MASK_IGNORED",
+              ["layers", i, "mask"],
+              `Mask layer "${m.id}" has its own mask, which is ignored when it is used as a mask`,
+            );
           if (m.asset == null && m.fill === undefined && !m.shape) {
             warn("EMPTY_MASK", ["layers", i, "mask"], `Mask layer "${m.id}" has no asset or fill, so it masks everything out`);
           }
@@ -222,13 +239,23 @@ export function validateScene(input: unknown, options: ValidateOptions = {}): Va
       err("MISSING_TARGET", [...base, "target"], `Animation target "${anim.target}" is not a layer id or "camera"`);
       return;
     }
-    if (!isCamera && scene.layers[layerIndex.get(anim.target)!]?.shape && ["asset", "fill"].includes(anim.property)) err("CONFLICTING_CONTENT", [...base, "property"], "Shape layers use shapeFill; asset/fill tracks would introduce conflicting content");
+    if (!isCamera && scene.layers[layerIndex.get(anim.target)!]?.shape && ["asset", "fill"].includes(anim.property))
+      err(
+        "CONFLICTING_CONTENT",
+        [...base, "property"],
+        "Shape layers use shapeFill; asset/fill tracks would introduce conflicting content",
+      );
     const table = isCamera ? CAMERA_PROPERTIES : LAYER_PROPERTIES;
     const spec: PropertySpec | undefined = table[anim.property];
     if (!spec) {
-      err("UNSUPPORTED_PROPERTY", [...base, "property"], `Property "${anim.property}" cannot be animated on ${isCamera ? "the camera" : "a layer"}`, {
-        supported: Object.keys(table),
-      });
+      err(
+        "UNSUPPORTED_PROPERTY",
+        [...base, "property"],
+        `Property "${anim.property}" cannot be animated on ${isCamera ? "the camera" : "a layer"}`,
+        {
+          supported: Object.keys(table),
+        },
+      );
       return;
     }
     const key = `${anim.target}\u0000${anim.property}`;
@@ -248,7 +275,11 @@ export function validateScene(input: unknown, options: ValidateOptions = {}): Va
       }
       frames.set(kf.frame, ki);
       if (kf.frame >= scene.duration) {
-        warn("KEYFRAME_AFTER_END", [...kp, "frame"], `Keyframe at frame ${kf.frame} is at/after the scene end (duration ${scene.duration})`);
+        warn(
+          "KEYFRAME_AFTER_END",
+          [...kp, "frame"],
+          `Keyframe at frame ${kf.frame} is at/after the scene end (duration ${scene.duration})`,
+        );
       }
       // value type & range
       const v = kf.value;
@@ -284,7 +315,7 @@ export function validateScene(input: unknown, options: ValidateOptions = {}): Va
   });
 
   // Report contiguous scene-frame ranges, including easing overshoot and asset swaps.
-  if (!errors.length && Object.values(scene.assets).some(a => a.kind === "video")) {
+  if (!errors.length && Object.values(scene.assets).some((a) => a.kind === "video")) {
     const ranges = new Map<string, [number, number][]>();
     for (let f = 0; f < scene.duration; f++) {
       for (const layer of evaluateScene(scene, f, () => undefined).layers) {
@@ -293,12 +324,19 @@ export function validateScene(input: unknown, options: ValidateOptions = {}): Va
         if (layer.sourceTime < 0 || layer.sourceTime >= video.frameCount / video.fps) {
           const r = ranges.get(layer.id) ?? [];
           const last = r.at(-1);
-          if (last && last[1] === f - 1) last[1] = f; else r.push([f, f]);
+          if (last && last[1] === f - 1) last[1] = f;
+          else r.push([f, f]);
           ranges.set(layer.id, r);
         }
       }
     }
-    for (const [id, frames] of ranges) warn("SOURCE_TIME_OUT_OF_RANGE", ["layers", layerIndex.get(id)!, "sourceTime"], `Source time clamps for layer "${id}" on scene frames ${frames.map(r => r.join("–")).join(", ")}`, { frames });
+    for (const [id, frames] of ranges)
+      warn(
+        "SOURCE_TIME_OUT_OF_RANGE",
+        ["layers", layerIndex.get(id)!, "sourceTime"],
+        `Source time clamps for layer "${id}" on scene frames ${frames.map((r) => r.join("–")).join(", ")}`,
+        { frames },
+      );
   }
 
   // --- audio ------------------------------------------------------------------------------
@@ -306,14 +344,22 @@ export function validateScene(input: unknown, options: ValidateOptions = {}): Va
     if (checkFiles && !fs.existsSync(resolveScenePath(options.baseDir, a.src))) {
       err("MISSING_AUDIO_FILE", ["audio", i, "src"], `Audio file not found: ${a.src}`);
     }
-    if ((a.sourceOut !== undefined && a.sourceOut <= (a.sourceIn ?? 0)) || (a.startOffsetMs ?? 0) > 1000 / scene.canvas.fps) err("INVALID_AUDIO_RANGE", ["audio", i], "sourceOut must exceed sourceIn; startOffsetMs must be at most one frame");
-    if (checkFiles && (a.sourceIn !== undefined || a.sourceOut !== undefined || a.fadeOutMs !== undefined) && fs.existsSync(resolveScenePath(options.baseDir, a.src))) {
+    if ((a.sourceOut !== undefined && a.sourceOut <= (a.sourceIn ?? 0)) || (a.startOffsetMs ?? 0) > 1000 / scene.canvas.fps)
+      err("INVALID_AUDIO_RANGE", ["audio", i], "sourceOut must exceed sourceIn; startOffsetMs must be at most one frame");
+    if (
+      checkFiles &&
+      (a.sourceIn !== undefined || a.sourceOut !== undefined || a.fadeOutMs !== undefined) &&
+      fs.existsSync(resolveScenePath(options.baseDir, a.src))
+    ) {
       try {
         const p = probeMedia(resolveScenePath(options.baseDir, a.src));
         const stream = p.streams.find((s: any) => s.codec_type === "audio");
         const duration = Number(stream?.duration ?? p.format?.duration);
-        if (!stream || !Number.isFinite(duration) || (a.sourceIn ?? 0) >= duration || (a.sourceOut ?? duration) > duration + 1e-6) err("INVALID_AUDIO_RANGE", ["audio", i], "Trim is outside audio duration");
-      } catch (e) { err("INVALID_AUDIO_RANGE", ["audio", i], String(e)); }
+        if (!stream || !Number.isFinite(duration) || (a.sourceIn ?? 0) >= duration || (a.sourceOut ?? duration) > duration + 1e-6)
+          err("INVALID_AUDIO_RANGE", ["audio", i], "Trim is outside audio duration");
+      } catch (e) {
+        err("INVALID_AUDIO_RANGE", ["audio", i], String(e));
+      }
     }
     if (a.startFrame >= scene.duration) warn("AUDIO_AFTER_END", ["audio", i, "startFrame"], "Audio starts after the scene ends");
   });
@@ -323,10 +369,7 @@ export function validateScene(input: unknown, options: ValidateOptions = {}): Va
 
 export class SceneValidationError extends Error {
   constructor(public readonly issues: ValidationIssue[]) {
-    super(
-      "Scene validation failed:\n" +
-        issues.map((i) => `  [${i.code}] ${i.path.join(".") || "(root)"}: ${i.message}`).join("\n"),
-    );
+    super("Scene validation failed:\n" + issues.map((i) => `  [${i.code}] ${i.path.join(".") || "(root)"}: ${i.message}`).join("\n"));
     this.name = "SceneValidationError";
   }
 }

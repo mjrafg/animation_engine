@@ -83,11 +83,13 @@ export function startEncoder(o: EncodeOptions): VideoEncoder {
     const parts = audio.map((a, i) => {
       const ms = Math.round(Math.max(0, a.start) * 1000);
       const filters: string[] = [];
-      if (a.sourceIn !== undefined || a.sourceOut !== undefined) filters.push(`atrim=start=${a.sourceIn ?? 0}${a.sourceOut === undefined ? "" : `:end=${a.sourceOut}`}`, "asetpts=PTS-STARTPTS");
+      if (a.sourceIn !== undefined || a.sourceOut !== undefined)
+        filters.push(`atrim=start=${a.sourceIn ?? 0}${a.sourceOut === undefined ? "" : `:end=${a.sourceOut}`}`, "asetpts=PTS-STARTPTS");
       if (a.fadeInMs) filters.push(`afade=t=in:st=0:d=${a.fadeInMs / 1000}`);
       if (a.fadeOutMs) {
         const end = a.sourceOut ?? Number(probeMedia(a.file).format.duration);
-        const duration = end - (a.sourceIn ?? 0), fade = Math.min(duration, a.fadeOutMs / 1000);
+        const duration = end - (a.sourceIn ?? 0),
+          fade = Math.min(duration, a.fadeOutMs / 1000);
         if (!Number.isFinite(duration) || duration <= 0) throw new Error("Invalid audio duration for fade");
         filters.push(`afade=t=out:st=${Math.max(0, duration - fade)}:d=${fade}`);
       }
@@ -110,7 +112,19 @@ export function startEncoder(o: EncodeOptions): VideoEncoder {
     args.push("-map", `${audio.length + 1}:s:0`, "-c:s", "mov_text");
   }
   if (o.lossless) args.push("-c:v", "ffv1", "-level", "3", "-pix_fmt", "bgra");
-  else args.push("-c:v", "libx264", "-preset", o.preset ?? "medium", "-crf", String(o.crf ?? 18), "-pix_fmt", "yuv420p", "-movflags", "+faststart");
+  else
+    args.push(
+      "-c:v",
+      "libx264",
+      "-preset",
+      o.preset ?? "medium",
+      "-crf",
+      String(o.crf ?? 18),
+      "-pix_fmt",
+      "yuv420p",
+      "-movflags",
+      "+faststart",
+    );
   args.push("-t", (o.frameCount / o.fps).toFixed(6), o.subtitles ? path.resolve(o.out) : o.out);
 
   const proc = spawn(ffmpegPath(), args, { cwd: o.subtitles?.dir, env: o.subtitles?.env, stdio: ["pipe", "ignore", "pipe"] });

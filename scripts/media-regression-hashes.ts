@@ -8,9 +8,13 @@ for (const scene of ["examples/kitchen/scene.json", "examples/kitchen/scene.befo
   await engine.prepare();
   try {
     const d = engine.scene.duration;
-    for (const frame of [0, Math.floor(d / 3), Math.floor(2 * d / 3), d - 1]) {
-      const hash = createHash("sha256").update((await engine.renderFrame(frame)).rgba()).digest("hex");
+    for (const frame of [0, Math.floor(d / 3), Math.floor((2 * d) / 3), d - 1]) {
+      const hash = createHash("sha256")
+        .update((await engine.renderFrame(frame)).rgba())
+        .digest("hex");
       console.log(`${scene}\t${frame}\t${hash}`);
     }
-  } finally { await engine.closeVideoSources(); }
+  } finally {
+    await engine.closeVideoSources();
+  }
 }

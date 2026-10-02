@@ -37,25 +37,46 @@ export class VideoSeekIndex {
  * await child exit on cancellation, just like the pixel decoder. */
 export async function readVideoSeekIndex(file: string, frameCount: number, signal: AbortSignal): Promise<VideoSeekIndex> {
   if (signal.aborted) throw new EngineError("RENDER_CANCELLED", "Video decoder closed");
-  const proc = spawn(ffprobePath(), [
-    "-v", "error", "-select_streams", "v:0", "-show_packets", "-show_streams",
-    "-show_entries", "packet=pts,flags:stream=time_base", "-of", "json", file,
-  ], { stdio: ["ignore", "pipe", "pipe"] });
+  const proc = spawn(
+    ffprobePath(),
+    [
+      "-v",
+      "error",
+      "-select_streams",
+      "v:0",
+      "-show_packets",
+      "-show_streams",
+      "-show_entries",
+      "packet=pts,flags:stream=time_base",
+      "-of",
+      "json",
+      file,
+    ],
+    { stdio: ["ignore", "pipe", "pipe"] },
+  );
   const chunks: Buffer[] = [];
-  let bytes = 0, stderr = "", tooLarge = false;
+  let bytes = 0,
+    stderr = "",
+    tooLarge = false;
   proc.stdout.on("data", (chunk: Buffer) => {
     bytes += chunk.length;
-    if (bytes > 64 * 1024 * 1024) { tooLarge = true; proc.kill("SIGKILL"); }
-    else chunks.push(chunk);
+    if (bytes > 64 * 1024 * 1024) {
+      tooLarge = true;
+      proc.kill("SIGKILL");
+    } else chunks.push(chunk);
   });
-  proc.stderr.on("data", chunk => { stderr = (stderr + chunk).slice(-8192); });
-  const cancel = () => { proc.kill("SIGKILL"); };
+  proc.stderr.on("data", (chunk) => {
+    stderr = (stderr + chunk).slice(-8192);
+  });
+  const cancel = () => {
+    proc.kill("SIGKILL");
+  };
   signal.addEventListener("abort", cancel, { once: true });
   const timer = setTimeout(cancel, 120_000);
   try {
     await new Promise<void>((resolve, reject) => {
       proc.on("error", reject);
-      proc.on("close", code => {
+      proc.on("close", (code) => {
         if (signal.aborted) reject(new EngineError("RENDER_CANCELLED", "Video index cancelled"));
         else if (tooLarge) reject(new EngineError("VIDEO_DECODE_FAILED", "Video seek index exceeds 64 MiB"));
         else if (code !== 0) reject(new EngineError("VIDEO_DECODE_FAILED", stderr || `Video index exited ${code}`));
@@ -65,11 +86,15 @@ export async function readVideoSeekIndex(file: string, frameCount: number, signa
     const data = JSON.parse(Buffer.concat(chunks).toString("utf8"));
     const frames: SeekFrame[] = data.packets.map((p: { pts: number; flags: string }) => ({ pts: p.pts, keyframe: p.flags.includes("K") }));
     frames.sort((a, b) => a.pts - b.pts);
-    if (frames.length !== frameCount || !frames[0]?.keyframe || frames.some((f, i) => !Number.isSafeInteger(f.pts) || (i > 0 && f.pts <= frames[i - 1].pts))) {
+    if (
+      frames.length !== frameCount ||
+      !frames[0]?.keyframe ||
+      frames.some((f, i) => !Number.isSafeInteger(f.pts) || (i > 0 && f.pts <= frames[i - 1].pts))
+    ) {
       throw new EngineError("VIDEO_DECODE_FAILED", "Video requires one uniquely timestamped packet per prepared frame");
     }
     const timeBase = String(data.streams[0].time_base).split("/").map(BigInt);
-    if (timeBase.length !== 2 || timeBase.some(n => n <= 0n)) throw new EngineError("VIDEO_DECODE_FAILED", "Invalid video time base");
+    if (timeBase.length !== 2 || timeBase.some((n) => n <= 0n)) throw new EngineError("VIDEO_DECODE_FAILED", "Invalid video time base");
     return new VideoSeekIndex(frames, timeBase as [bigint, bigint]);
   } finally {
     clearTimeout(timer);

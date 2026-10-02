@@ -10,17 +10,17 @@ Work started from `main` at `b5d3b67cc70159e1600381aa59180c2c4787c17a` in the or
 
 The required schema, validator, timeline, display list, transforms, assets, renderers, encoder, API, workspace, MCP, and existing tests were read before implementation. These assumptions needed changes:
 
-| Existing assumption | Implementation |
-| --- | --- |
+| Existing assumption                                                | Implementation                                                                                               |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
 | Asset catalog and `Renderer.loadAssets` receive static image bytes | Separate image/video loaded assets and a `VideoFrameSource` map; video pixels are requested per draw command |
-| Timeline only resolves images and fills | Resolve shape fields and video `sourceTime`/`sourceFrame`, including asset animation |
-| Every layer receives the camera transform | Optional per-layer screen space, including layout pivots and attachment points |
-| Mask content is an image or rectangle | Shape/video draw sources share the mask path; hidden mask layers retain usable alpha |
-| Audio always starts a whole file at a frame | Explicit source trims, offsets and fades before delay/mixing |
-| Encoding requires no job-local files | Safe subtitle/font staging and isolated Fontconfig configuration |
-| Workspace assets are images/audio/models; jobs only render scenes | Prepared video records, metadata, inbox preparation jobs, persisted results and cancellation |
-| Cached workspace engines can serve all requests | Video jobs own independent engines so previews do not change a running job's decoder state |
-| Package entry points reference TypeScript source | ESM and declarations in `dist/lib`, a stable exports surface, separately bundled MCP and chunk worker |
+| Timeline only resolves images and fills                            | Resolve shape fields and video `sourceTime`/`sourceFrame`, including asset animation                         |
+| Every layer receives the camera transform                          | Optional per-layer screen space, including layout pivots and attachment points                               |
+| Mask content is an image or rectangle                              | Shape/video draw sources share the mask path; hidden mask layers retain usable alpha                         |
+| Audio always starts a whole file at a frame                        | Explicit source trims, offsets and fades before delay/mixing                                                 |
+| Encoding requires no job-local files                               | Safe subtitle/font staging and isolated Fontconfig configuration                                             |
+| Workspace assets are images/audio/models; jobs only render scenes  | Prepared video records, metadata, inbox preparation jobs, persisted results and cancellation                 |
+| Cached workspace engines can serve all requests                    | Video jobs own independent engines so previews do not change a running job's decoder state                   |
+| Package entry points reference TypeScript source                   | ESM and declarations in `dist/lib`, a stable exports surface, separately bundled MCP and chunk worker        |
 
 New fields are optional. Existing image/fill transform and drawing arithmetic remains in place. Existing tests and example reference files were not changed. That is a code-review observation, **not** evidence that existing pixel hashes are unchanged. The user's Builder/Reviewer division supersedes the brief's request for a baseline suite run and repeated checks after each feature.
 
@@ -71,10 +71,10 @@ The source region from 6 to 13 seconds is compressed into 36 scene frames (1.2 s
 
 Machine: Linux x64, 8 visible CPUs, AMD EPYC 9354P 32-Core Processor, Node v22.23.2. These are actual production render measurements, not benchmark-suite results:
 
-| Output | Total seconds | Frames/second | Decode seconds | Draw seconds | Encoder write/backpressure seconds | Encoder finish seconds |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Persian `out/fa.mp4` | 73.089 | 8.29 | 13.951 | 50.975 | 7.531 | 0.246 |
-| Korean `out/ko.mp4` | 66.472 | 9.12 | 13.270 | 48.049 | 4.459 | 0.190 |
+| Output               | Total seconds | Frames/second | Decode seconds | Draw seconds | Encoder write/backpressure seconds | Encoder finish seconds |
+| -------------------- | ------------: | ------------: | -------------: | -----------: | ---------------------------------: | ---------------------: |
+| Persian `out/fa.mp4` |        73.089 |          8.29 |         13.951 |       50.975 |                              7.531 |                  0.246 |
+| Korean `out/ko.mp4`  |        66.472 |          9.12 |         13.270 |       48.049 |                              4.459 |                  0.190 |
 
 Drawing dominates, including large video uploads, transformed compositing and full-canvas soft-mask scratch surfaces. Encoder CPU runs concurrently; write/backpressure plus finish time is **not** total encoder CPU time. Preparation and source generation are excluded from render timings. No parallel-worker speed was measured. Timings, full build details and SHA-256 values are preserved in `docs/video-compositing-evidence.json`.
 
