@@ -1,0 +1,5 @@
+{
+  "providerAlignmentAvailable": false,
+  "reason": "Connected speech and Scribe tools export audio/plain text only; no with-timestamps endpoint or word times.",
+  "fallbackTimingFile": "ko.timing.json"
+}

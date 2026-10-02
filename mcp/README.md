@@ -243,3 +243,50 @@ with its Read tool.
 npm test          # core engine + workspace tests, and MCP tests if dist/ is built
 npm run test:mcp  # builds dist/ then runs tests/mcp over real stdio with a Tandem-like client
 ```
+
+## Video compositing extensions
+
+`engine_capabilities` includes `media.videoDecode`, `media.ffmpeg`,
+`media.subtitles.burn` and `media.subtitles.complexShaping` with a reason/diagnostics.
+Set `VIDEO_ENGINE_FONTS_DIR` to an explicit font directory to run the Persian and
+Korean shaping probe. `FFMPEG_PATH` and `FFPROBE_PATH` override the bundled binaries.
+
+| Tool | Arguments and result |
+| --- | --- |
+| `prepare_video_asset` | `workspaceId`, inbox-relative `input`, optional `sceneId`, `assetId`, `options: {fps,width,height,fit,gop}`. Returns a job id; defaults fps from scene or 30. |
+| `render_video_status` / `render_video_cancel` | Preparation uses the existing persisted queue, cancellation and recovery. Completed preparation has `result.asset`, `result.entry`, warnings. |
+| `layer_add` / `layer_update` | Accept `shape`, `sourceTime`, `space` through the scene schema. |
+| `add_audio` | `workspaceId`, `sceneId`, `track: {assetId,startFrame,sourceIn?,sourceOut?,startOffsetMs?,fadeInMs?,fadeOutMs?,volume?}`; returns track index. |
+| `update_audio` | `workspaceId`, `sceneId`, `index`, `patch`; use `assetId` to replace source, null to remove optional fields. Host paths are rejected. |
+| `remove_audio` | `workspaceId`, `sceneId`, `index`. |
+| `subtitles_from_timing` | `workspaceId`, `blocks: [{timing,startFrame,startOffsetMs?,sourceIn?,sourceOut?}]`, `options: {fps,width?,height?,maxCharacters?,maxLines?,minDuration?,maxDuration?,pauseThreshold?,style?}`. Returns workspace-relative ASS/SRT paths and cues. |
+| `render_video_start` | Adds `subtitles: {file,mode,fontsDir?}` (workspace-relative paths) and `chunks` 1–16. |
+| `measure_layout` | Video layers include `sourceTime` and `sourceFrame` in compact/full results. |
+| `asset_list` | Supports `kind: "video"`; prepared records include hash and stream metadata. |
+
+Prepared video is CFR H.264/yuv420p, without audio, with a recorded byte hash.
+Edits and loads reject missing, unprepared or modified video. `sourceTime` is a
+continuous timeline property in seconds; source frame is floor(time × fps + 1e-6),
+clamped at either end. Several layers may reference one asset at different times.
+
+Shape fields: `type` rect/ellipse/path, `d` (path only), `cornerRadius`, `fill`,
+`stroke`, `strokeWidth`, `strokeAlign` inside/center/outside, `shadow: {color,blur,x,y}`,
+`feather`. Animate `cornerRadius`, `strokeWidth`, `shadowBlur` continuously and
+`shapeFill`/`stroke` with step tracks. `space: "screen"` skips the camera.
+Invisible shape layers can mask other layers; inverted alpha masks with `feather`
+make soft spotlights. Existing rect-mask semantics are preserved.
+
+Burn accepts ASS/SRT, requires explicit fontsDir, and isolates font discovery.
+Soft accepts SRT/VTT and produces mov_text. Subtitle paths are staged under safe
+names before building filters. Style fields are `font`, `size`, `outline`,
+`margin`, `position` 1–9, `direction` auto/rtl/ltr. Alignment is provider-neutral
+SpeechTiming, with words or characters; the engine never generates narration.
+
+Validation codes, with the existing issue path/severity/message format:
+`VIDEO_NOT_PREPARED`, `VIDEO_HASH_MISMATCH`, `MISSING_VIDEO_FILE`,
+`SOURCE_TIME_OUT_OF_RANGE` (warning), `CONFLICTING_CONTENT`, `INVALID_SHAPE`,
+`INVALID_PATH_DATA`, `INVALID_AUDIO_RANGE`, `MISSING_SUBTITLE_FILE`,
+`SUBTITLE_SHAPING_UNAVAILABLE` (warning). See the root README for operation errors,
+compatibility details, limits, and the library API.
+
+`render_video_start.videoCacheBytes` limits the per-asset frame cache in bytes (default 32 MiB, per worker when chunked). Partial ranges preserve scene-relative subtitle/audio timing. Audio extensions and subtitles also work with 3D output; `chunks > 1` currently requires a 2D scene. Set `VIDEO_ENGINE_FONTS_DIR` to run the shaping probe at startup and in `engine_capabilities`; individual subtitle renders still require explicit `fontsDir`.

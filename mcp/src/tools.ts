@@ -3,6 +3,11 @@
  * core engine schemas), call the core API (WorkspaceManager / VideoWorkspace / scene operations /
  * RenderJobs), and shape the result. No scene logic lives here.
  */
+import { PrepareVideoOptionsSchema } from "../../src/media/prepare.js";
+import { SubtitleOptionsSchema, mediaCapabilities } from "../../src/subtitles/encode.js";
+import { subtitlesFromTiming, TimingBlockSchema, SubtitlesTimingOptionsSchema } from "../../src/subtitles/timing.js";
+import { AudioSchema } from "../../src/scene/schema.js";
+import { writeFileAtomic } from "../../src/workspace/paths.js";
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
@@ -28,7 +33,7 @@ import { WorkspaceManager, type ArtifactRecord, type VideoWorkspace } from "../.
 import type { ServerContext } from "./context.js";
 
 export const SERVER_NAME = "video-engine";
-export const SERVER_VERSION = "1.0.0";
+export const SERVER_VERSION = "1.1.0";
 
 export interface ToolDef {
   name: string;
@@ -84,6 +89,7 @@ const AudioArg = z
   .array(
     z
       .object({
+        ...AudioSchema.omit({ src: true, owner: true }).partial().shape,
         assetId: AssetId,
         startFrame: z.number().int().min(0).optional().describe("Frame at which the audio starts (default 0)."),
         volume: z.number().min(0).max(10).optional().describe("Gain, default 1."),
@@ -125,6 +131,7 @@ function compactLayout(l: FrameLayout, detail: "compact" | "full") {
       visible: x.visible,
       opacity: r2(x.opacity),
       size: x.size,
+      ...(x.sourceFrame !== undefined ? { sourceFrame: x.sourceFrame, sourceTime: x.sourceTime } : {}),
       worldPivot: rp(x.worldPivot),
       worldCenter: rp(x.worldCenter),
       worldBounds: rb(x.worldBounds),
@@ -155,6 +162,7 @@ def({
   handler: async (ctx) => ({
     summary: "Engine capabilities",
     ...engineCapabilities(),
+    media: await mediaCapabilities(process.env.VIDEO_ENGINE_FONTS_DIR),
     server: {
       name: SERVER_NAME,
       version: SERVER_VERSION,
@@ -338,7 +346,7 @@ def({
 def({
   name: "asset_list",
   description: "List assets in a workspace (id, kind, size, alpha, tags, provenance operation).",
-  args: z.object({ workspaceId: WorkspaceId, kind: z.enum(["image", "audio", "model"]).optional(), tag: z.string().optional() }).strict(),
+  args: z.object({ workspaceId: WorkspaceId, kind: z.enum(["image", "audio", "model", "video"]).optional(), tag: z.string().optional() }).strict(),
   handler: async (ctx, a) => {
     const list = ctx.workspace(a.workspaceId).listAssets(a);
     return {
@@ -772,6 +780,7 @@ function presentJob(ws: VideoWorkspace, j: ReturnType<RenderJobs["get"]>) {
     ...(j.elapsedSeconds !== undefined ? { elapsedSeconds: j.elapsedSeconds } : {}),
     ...(j.artifact ? { artifact: presentArtifact(ws, j.artifact), artifactId: j.artifact.artifactId, relativePath: j.artifact.relativePath, durationSeconds: j.artifact.durationSeconds } : {}),
     ...(j.error ? { error: j.error } : {}),
+    ...(j.result ? { result: j.result } : {}),
   };
 }
 
@@ -787,12 +796,15 @@ def({
       endFrame: z.number().int().min(1).optional().describe("Exclusive; default = scene duration."),
       crf: z.number().int().min(0).max(51).optional().describe("x264 quality, lower = better (default 18)."),
       audio: z.boolean().optional().describe("Include scene audio (default true)."),
+      subtitles: SubtitleOptionsSchema.optional(),
+      chunks: z.number().int().min(1).max(16).optional(),
+      videoCacheBytes: z.number().int().min(0).optional(),
     })
     .strict(),
   mutates: true,
   handler: async (ctx, a) => {
     const ws = ctx.workspace(a.workspaceId);
-    const j = await ctx.jobsFor(ws).start(a.sceneId, { startFrame: a.startFrame, endFrame: a.endFrame, crf: a.crf, audio: a.audio });
+    const j = await ctx.jobsFor(ws).start(a.sceneId, { startFrame: a.startFrame, endFrame: a.endFrame, crf: a.crf, audio: a.audio, subtitles: a.subtitles, chunks: a.chunks, videoCacheBytes: a.videoCacheBytes });
     return { summary: `Render ${j.renderId} started (${j.totalFrames} frames)`, ...presentJob(ws, j) };
   },
 });
@@ -1300,6 +1312,48 @@ def({
     const tl: any = await ctx.workspace(a.workspaceId).inspectInteractions(a.sceneId, a.frame);
     return { summary: `${tl.interactions.length} interaction(s)${a.frame !== undefined ? ` at frame ${a.frame}: ${tl.atFrame?.interactions.map((x: any) => `${x.id} ${x.phase.name}`).join(", ") || "none active"}` : ""}`, ...tl };
   },
+});
+
+
+// Video compositing tools use existing workspace isolation and job lifecycle.
+def({
+  name: "prepare_video_asset", description: "Start a CFR video preparation job from a workspace inbox file. Poll/cancel via render_video_status/render_video_cancel; result contains the prepared asset and scene entry.",
+  args: z.object({ workspaceId: WorkspaceId, sceneId: SceneId.optional(), input: z.string(), assetId: AssetId.optional(), options: PrepareVideoOptionsSchema.optional() }).strict(), mutates: true,
+  handler: async (ctx, a) => {
+    const ws = ctx.workspace(a.workspaceId), fps = a.sceneId ? ws.getSceneDoc(a.sceneId).canvas.fps : 30;
+    const job = await ctx.jobsFor(ws).startPreparation(a.input, { fps, ...a.options }, a.assetId);
+    return { summary: "Video preparation started", ...presentJob(ws, job) };
+  },
+});
+def({
+  name: "subtitles_from_timing", description: "Write ASS and SRT in this workspace from provider-neutral speech alignment. Returns paths for render_video_start subtitles.file.",
+  args: z.object({ workspaceId: WorkspaceId, blocks: z.array(TimingBlockSchema).min(1), options: SubtitlesTimingOptionsSchema }).strict(), mutates: true,
+  handler: async (ctx, a) => {
+    const ws = ctx.workspace(a.workspaceId), result = subtitlesFromTiming(a.blocks, a.options), id = ws.nextId("subtitles");
+    const ass = `subtitles/${id}.ass`, srt = `subtitles/${id}.srt`;
+    writeFileAtomic(ws.abs(ass), result.ass); writeFileAtomic(ws.abs(srt), result.srt);
+    return { summary: "Subtitle files generated", ass, srt, cues: result.cues, warnings: result.warnings };
+  },
+});
+def({
+  name: "add_audio", description: "Append an audio asset with trim, sub-frame placement and fades. Returns its array index.",
+  args: z.object({ workspaceId: WorkspaceId, sceneId: SceneId, track: AudioSchema.omit({ src: true, owner: true }).extend({ assetId: AssetId }) }).strict(), mutates: true,
+  handler: async (ctx, a) => { const ws = ctx.workspace(a.workspaceId); return { summary: "Audio added", ...await ws.mutateScene(a.sceneId, d => ops.addAudio(d, ws.audioEntries([a.track])[0])) }; },
+});
+def({
+  name: "update_audio", description: "Patch an audio track by array index; assetId replaces the source; null removes optional fields.",
+  args: z.object({ workspaceId: WorkspaceId, sceneId: SceneId, index: FrameArg, patch: z.record(z.string(), z.unknown()) }).strict(), mutates: true,
+  handler: async (ctx, a) => {
+    const ws = ctx.workspace(a.workspaceId), { assetId, ...patch } = a.patch;
+    if ("src" in patch) throw new EngineError("INVALID_ARGUMENT", "Use assetId, not a file path");
+    if (assetId !== undefined) patch.src = ws.audioEntries([{ assetId }])[0].src;
+    return { summary: "Audio updated", ...await ws.mutateScene(a.sceneId, d => ops.updateAudio(d, a.index, patch)) };
+  },
+});
+def({
+  name: "remove_audio", description: "Remove an audio track by array index.",
+  args: z.object({ workspaceId: WorkspaceId, sceneId: SceneId, index: FrameArg }).strict(), mutates: true,
+  handler: async (ctx, a) => ({ summary: "Audio removed", ...await ctx.workspace(a.workspaceId).mutateScene(a.sceneId, d => ops.removeAudio(d, a.index)) }),
 });
 
 export const TOOL_DEFS: readonly ToolDef[] = tools;

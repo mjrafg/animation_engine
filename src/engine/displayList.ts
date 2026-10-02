@@ -4,10 +4,10 @@
  * PixiJS/WebGL later) only has to execute these commands; it never sees the scene graph.
  */
 import { multiply, translate, type Mat2D } from "../math/matrix.js";
-import type { Scene } from "../scene/schema.js";
+import type { Scene, Shape } from "../scene/schema.js";
 import { renderOrder, type ResolvedFrame, type ResolvedLayer } from "./transform.js";
 
-export type DrawSource = { kind: "image"; assetId: string } | { kind: "fill"; color: string };
+export type DrawSource = { kind: "shape"; shape: Shape } | { kind: "video"; assetId: string; sourceFrame: number } | { kind: "image"; assetId: string } | { kind: "fill"; color: string };
 
 export interface DrawMask {
   /** Maps mask-box pixels (0..width, 0..height) to screen pixels. */
@@ -41,7 +41,9 @@ export interface DisplayList {
 }
 
 function sourceOf(l: ResolvedLayer): DrawSource | null {
+  if (l.state.asset && l.state.sourceFrame !== undefined) return { kind: "video", assetId: l.state.asset, sourceFrame: l.state.sourceFrame };
   if (l.state.asset) return { kind: "image", assetId: l.state.asset };
+  if (l.state.shape) return { kind: "shape", shape: l.state.shape };
   if (l.state.fill) return { kind: "fill", color: l.state.fill };
   return null;
 }

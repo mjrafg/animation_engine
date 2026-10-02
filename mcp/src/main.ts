@@ -8,6 +8,7 @@
  *
  * stdout carries only MCP JSON-RPC. Diagnostics go to the JSONL log file (see context.ts).
  */
+import { mediaCapabilities } from "../../src/subtitles/encode.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { engineVersion } from "../../src/capabilities.js";
 import { ServerContext, configFrom } from "./context.js";
@@ -40,6 +41,8 @@ async function main() {
   }
 
   const ctx = new ServerContext(config);
+  const media = await mediaCapabilities(process.env.VIDEO_ENGINE_FONTS_DIR);
+  ctx.log({ event: "media_capabilities", media });
   const server = createVideoEngineServer(ctx);
   const transport = new StdioServerTransport();
   let closing = false;

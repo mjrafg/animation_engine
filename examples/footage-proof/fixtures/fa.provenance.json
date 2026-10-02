@@ -1,0 +1,24 @@
+{
+  "provider": "ElevenLabs",
+  "model": "eleven_v3",
+  "voice": "hpp4J3VqNfWAUOO0d1Us",
+  "voiceName": "Bella - Professional, Bright, Warm",
+  "duration": 16.48,
+  "text": "در این تصویر، حرکت نشانگر و تغییر اندازهٔ دوربین را می‌بینیم. اکنون روی بخش روشن کلیک می‌کنیم تا جزئیات بهتر دیده شوند. سپس تصویر ثابت نمایش داده می‌شود و دوباره به ویدیو برمی‌گردیم.",
+  "generationId": "G6vJZPij3p60BGcPewxW",
+  "timingSource": "Fallback estimates: detected sentence pauses; word durations proportional to character count. Not provider alignment.",
+  "sentenceIntervals": [
+    [
+      0.12,
+      4.81937
+    ],
+    [
+      5.49374,
+      10.5518
+    ],
+    [
+      11.0846,
+      16.3
+    ]
+  ]
+}
