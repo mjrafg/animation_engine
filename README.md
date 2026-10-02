@@ -403,3 +403,134 @@ examples/kitchen/         test scene: generators, processed assets, scene.json, 
 examples/3d-proof/        first 3D proof (run.ts) and its outputs
 docs/REPORT.md            inspection report and limitations
 ```
+
+## Video compositing (1.1)
+
+The library is ESM with declarations at `dist/lib`. Install a release tag with
+`npm install github:mjrafg/animation_engine#v1.1.0` once that tag has been released.
+Git installs run `prepare` to build the library and MCP from the same sources.
+Native canvas/sharp and FFmpeg/FFprobe remain external dependencies. Node 22.12+
+is recommended for the repository's development tools. Scene version remains 1.
+The stable root exports include `AnimationEngine`, `EngineSession`, scene types and
+schemas, `validateScene`, `prepareVideoAsset`, `subtitlesFromTiming`, `TOOLS`, and
+`toolDefinitions`. Public breaking changes require a major version.
+
+Prepare arbitrary footage once, then register the returned asset:
+
+```ts
+import { EngineSession } from 'animation-engine';
+const session = new EngineSession();
+await session.call('create_scene', { baseDir: process.cwd(), duration: 300 });
+const prepared = await session.call('prepare_video_asset', {
+  input: 'input.mp4', outDir: 'assets/prepared', options: { fps: 30 }
+});
+if (!prepared.ok) throw new Error(JSON.stringify(prepared.errors));
+await session.call('set_asset', { id: 'footage', asset: prepared.result.asset });
+await session.call('add_layer', { layer: {
+  id: 'footage', asset: 'footage', width: 1920, height: 1080,
+  x: 960, y: 540, sourceTime: 0
+}});
+await session.call('set_track', {
+  target: 'footage', property: 'sourceTime',
+  keyframes: [{ frame: 0, value: 0 }, { frame: 299, value: 299 / 30 }]
+});
+```
+
+`kind: "video"` requires `video: {width,height,fps,frameCount,duration,preparedBy,sha256}`.
+Preparation writes `prepared.mp4` and `video-metadata.json`, uses CFR H.264/yuv420p,
+removes audio, and records the FFmpeg build and prepared-file hash. `fps` defaults
+to the session/scene fps (30 in the standalone function). Optional `width`, `height`,
+`fit: "contain" | "cover"` and `gop` control scaling/cropping and keyframe interval.
+Odd target dimensions are rejected; requested upscaling produces `VIDEO_UPSCALED`.
+Existing outputs and overwriting the input are refused. `FFPROBE_PATH` overrides
+`ffprobe-static`; `FFMPEG_PATH` overrides `ffmpeg-static`.
+
+`sourceTime` is seconds, static zero by default, and supports every continuous
+interpolation. Selection is `floor(sourceTime * fps + 1e-6)`, clamped to the source
+frame count. Equal values hold; step interpolation cuts. Multiple layers can
+reference different frames of the same asset. `measure_layout` reports both
+`sourceTime` and `sourceFrame`. Sources larger than the canvas retain detail on zoom.
+Sequential renders keep a decoder per asset. Random previews use an LRU cache;
+`videoCacheBytes` (library and render tools) bounds cached RGBA bytes per asset (default
+32 MiB). Transient draw/decode buffers are additional. Library users can call
+`closeVideoSources()` to release cached frames immediately.
+
+A layer can carry `shape` instead of an asset or fill:
+
+```json
+{"id":"outline","x":500,"y":300,"width":200,"height":80,
+ "shape":{"type":"rect","cornerRadius":14,"fill":null,"stroke":"#3b82f6",
+ "strokeWidth":3,"strokeAlign":"outside"}}
+```
+
+Shapes support `rect`, `ellipse`, and `path` (`d` in layer-box pixels), optional
+`fill`/`stroke` colors, `strokeWidth`, `strokeAlign` (`inside`, `center`, `outside`),
+and `shadow: {color,blur,x,y}`. Shape geometry is rasterized under the complete
+transform, without a pre-scaled image. `cornerRadius`, `strokeWidth`, and
+`shadowBlur` are continuous animation properties; `shapeFill` and `stroke` are
+step color tracks. SVG paths accept only M/L/H/V/C/S/Q/T/A/Z commands and finite
+numeric arguments, up to 65,536 characters. New content conflicts are errors;
+legacy image+fill layers retain the previous `FILL_IGNORED` warning for compatibility.
+
+`space: "screen"` ignores the camera; omitted/`world` keeps existing behavior.
+Parent transforms, opacity and visibility still apply. A mixed-space child uses
+the inherited numeric transform in its own chosen space.
+
+An inverted shape mask makes a spotlight. `shape.feather` is a blur radius in screen
+pixels (0–256); it softens the alpha edge, independently of colored shadows:
+
+```json
+[
+ {"id":"hole","x":1381,"y":206,"width":180,"height":80,"visible":false,
+  "shape":{"type":"rect","cornerRadius":14,"fill":"#ffffffff","feather":8}},
+ {"id":"dim","x":960,"y":540,"width":1920,"height":1080,"space":"screen",
+  "fill":"#000000","opacity":0.55,"z":35,
+  "mask":{"type":"layer","layer":"hole","invert":true}}
+]
+```
+
+Audio tracks add `sourceIn`/`sourceOut` in seconds, `startOffsetMs` from 0 to one
+frame, and `fadeInMs`/`fadeOutMs` (default zero). Trims reset timestamps before
+placement, fades operate on the trimmed clip, and overlapping clips mix without
+normalization. Range validation probes the file when trim/fade-out fields are used.
+`add_audio {track}`, `update_audio {index,patch}`, and `remove_audio {index}` edit
+tracks transactionally. Generated character speech must be edited through its owner.
+
+`render_video` adds `subtitles: {file,mode,fontsDir?}` and `chunks` (1–16).
+Burn mode accepts ASS/SRT and requires an explicit font directory with TTF/OTF/TTC
+files; soft mode accepts SRT/VTT and muxes MP4 mov_text. Fonts and subtitle paths
+are copied to safe job-local names. Fontconfig is isolated from installed fonts.
+No subtitle options means the original encoding arguments are preserved.
+`capabilities {fontsDir?}` reports the FFmpeg build, video decode, libass burn,
+and runtime FriBidi/HarfBuzz shaping diagnostics. Unsupported shaping is reported
+as `SUBTITLE_SHAPING_UNAVAILABLE`, not silently claimed successful.
+
+`subtitlesFromTiming(blocks, options)` is pure and returns `ass`, `srt`, `cues`, and
+warnings. The `subtitles_from_timing` tool writes both files in `outDir`. Each block
+has `timing: SpeechTiming`, `startFrame`, optional `startOffsetMs`, `sourceIn`, and
+`sourceOut`. Options include `fps`, `width`, `height`, `maxCharacters`, `maxLines`
+(1–2), `minDuration`, `maxDuration`, `pauseThreshold`, and an explicit style
+(`font`, `size`, `outline`, `margin`, `position` 1–9, `direction`). The builder
+breaks at whitespace, punctuation and pauses, never inside a word. Impossible
+word limits are errors; minimum duration yields to the next cue/trim boundary
+with a warning. Persian uses RTL embedding; Korean keeps eojeol intact.
+
+Chunk workers render lossless FFV1/BGRA intermediates, concatenate with stream
+copy, then perform a single final encode with audio/subtitles. This uses more
+scratch disk and I/O than direct rendering; it is intended to preserve pixels
+across chunk boundaries. Equivalence tests are included for the Reviewer.
+
+New issue codes: `VIDEO_NOT_PREPARED`, `VIDEO_HASH_MISMATCH`, `MISSING_VIDEO_FILE`,
+`SOURCE_TIME_OUT_OF_RANGE` (warning with inclusive scene-frame ranges),
+`CONFLICTING_CONTENT`, `INVALID_SHAPE`, `INVALID_PATH_DATA`, `INVALID_AUDIO_RANGE`,
+`MISSING_SUBTITLE_FILE`, `SUBTITLE_SHAPING_UNAVAILABLE` (warning). Operation errors
+also include `MEDIA_PROBE_FAILED`, `VIDEO_DECODE_FAILED`, `WOULD_OVERWRITE`,
+`INVALID_SPEECH_TIMING`, `SUBTITLE_WORD_TOO_LONG`, and `OVERLAPPING_SUBTITLES`.
+
+See [the implementation report](docs/VIDEO_COMPOSITING_REPORT.md) for verification
+status and deviations. Generate the proof with
+`FFMPEG_PATH=/usr/bin/ffmpeg FFPROBE_PATH=/usr/bin/ffprobe npx tsx examples/footage-proof/run.ts`.
+The committed narration/font fixtures make re-renders offline. Only the explicit
+`npx tsx integrations/elevenlabs/regenerate.ts` script uses `ELEVENLABS_API_KEY`.
+
+Partial renders keep scene-relative subtitle timing and retain audio clips that overlap the start of the requested range. Trimming occurs after clip fades, so a cropped range does not restart a fade. Audio extensions and subtitle encoding also apply to 3D outputs; parallel chunks currently support 2D scenes only. Library callers should serialize operations on each `AnimationEngine` instance; workspace video jobs use independent instances. ASS cue text is treated as literal text: braces are removed and backslashes replaced with a full-width character to prevent override-tag injection.

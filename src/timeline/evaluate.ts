@@ -17,6 +17,7 @@ import {
   LAYER_PROPERTIES,
   type Keyframe,
   type Layer,
+  type Shape,
   type Mask,
   type NormPoint,
   type PropertySpec,
@@ -101,6 +102,10 @@ export interface LayerState {
   /** Index in scene.layers (document order; used as the z tie-breaker). */
   index: number;
   asset: string | null;
+  shape?: Shape;
+  space?: "world" | "screen";
+  sourceTime?: number;
+  sourceFrame?: number;
   fill: string | null;
   parent: string | null;
   parentPoint: string | null;
@@ -151,9 +156,21 @@ export function evaluateScene(scene: Scene, frame: number, assetSize: AssetSizeL
     const asset = v<string>("asset", layer.asset ?? "") || null;
     const natural = asset ? assetSize(asset) : undefined;
     const assetPoints = asset ? scene.assets[asset]?.attachmentPoints : undefined;
+    const video = asset && scene.assets[asset]?.kind === "video" ? scene.assets[asset]?.video : undefined;
+    const sourceTime = v("sourceTime", layer.sourceTime ?? 0);
     return {
+      ...(video ? { sourceTime, sourceFrame: Math.max(0, Math.min(video.frameCount - 1, Math.floor(sourceTime * video.fps + 1e-6))) } : {}),
       id: layer.id,
       index,
+      ...(layer.space ? { space: layer.space } : {}),
+      ...(layer.shape ? { shape: {
+        ...layer.shape,
+        cornerRadius: v("cornerRadius", layer.shape.cornerRadius ?? 0),
+        strokeWidth: v("strokeWidth", layer.shape.strokeWidth ?? 1),
+        fill: tracks?.has("shapeFill") ? v("shapeFill", "") : layer.shape.fill,
+        stroke: tracks?.has("stroke") ? v("stroke", "") : layer.shape.stroke,
+        ...(layer.shape.shadow ? { shadow: { ...layer.shape.shadow, blur: v("shadowBlur", layer.shape.shadow.blur) } } : {}),
+      } } : {}),
       asset,
       fill: v<string>("fill", layer.fill ?? "") || null,
       parent: layer.parent ?? null,

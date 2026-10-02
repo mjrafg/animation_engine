@@ -86,7 +86,7 @@ export function resolveFrame(state: FrameState, canvas: { width: number; height:
       localMatrix,
       worldMatrix,
       boxMatrix,
-      screenBoxMatrix: multiply(cam, boxMatrix),
+      screenBoxMatrix: l.space === "screen" ? boxMatrix : multiply(cam, boxMatrix),
       effectiveOpacity: l.opacity * (parent ? parent.effectiveOpacity : 1),
       effectiveVisible: l.visible && (parent ? parent.effectiveVisible : true),
       depth: parent ? parent.depth + 1 : 0,

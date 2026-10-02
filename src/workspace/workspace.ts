@@ -16,6 +16,10 @@
  *
  * This module is part of the core engine; the MCP server is only a thin adapter over it.
  */
+import { stageSubtitles, mediaCapabilities } from "../subtitles/encode.js";
+import { prepareVideoAsset, type PrepareVideoOptions } from "../media/prepare.js";
+import type { VideoMetadata, AudioTrack } from "../scene/schema.js";
+import type { RenderVideoOptions } from "../api/engine.js";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
@@ -46,6 +50,7 @@ import { checkEntityId, checkWorkspaceId, readJson, resolveInside, toPosix, writ
 
 export const IMAGE_EXT = new Set([".png", ".jpg", ".jpeg", ".webp"]);
 export const AUDIO_EXT = new Set([".wav", ".mp3", ".m4a", ".aac", ".ogg", ".flac"]);
+export const VIDEO_EXT = new Set([".mp4", ".mov", ".mkv", ".webm", ".avi", ".m4v"]);
 export const MODEL_EXT = new Set([".glb", ".gltf"]);
 const MIME: Record<string, string> = {
   ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp",
@@ -56,7 +61,7 @@ const MIME: Record<string, string> = {
 export interface AssetRecord {
   assetId: string;
   name: string;
-  kind: "image" | "audio" | "model";
+  kind: "image" | "audio" | "model" | "video";
   /** Workspace-relative path of the asset file. */
   file: string;
   mime: string;
@@ -65,6 +70,7 @@ export interface AssetRecord {
   width?: number;
   height?: number;
   hasAlpha?: boolean;
+  video?: VideoMetadata;
   /** 3D model facts (kind "model"): clips, skeleton, sockets, morph targets, bounds. */
   model?: ModelInfo;
   tags: string[];
@@ -73,7 +79,7 @@ export interface AssetRecord {
   createdAt: string;
   /** How this asset came to exist. Derived assets name their source asset. */
   provenance: {
-    operation: "import" | "process" | "trim" | "component_remove";
+    operation: "import" | "process" | "trim" | "component_remove" | "prepare_video";
     source?: Record<string, unknown>;
     sourceAssetId?: string;
     options?: unknown;
@@ -95,6 +101,8 @@ export interface ArtifactRecord {
   width: number;
   height: number;
   durationSeconds?: number;
+  timings?: Record<string, number>;
+  warnings?: unknown[];
   relativePath: string;
   bytes: number;
   /** Small JPEG copy for looking at the result (<= ~140 KB, <= 960 px wide). */
@@ -256,7 +264,7 @@ export class WorkspaceManager {
   listLibrary(name: string, opts: { subdir?: string; limit?: number } = {}) {
     const root = this.libraryRoot(name);
     const start = opts.subdir ? resolveInside(root, opts.subdir) : fs.realpathSync(root);
-    const out: { path: string; kind: "image" | "audio" | "model"; bytes: number }[] = [];
+    const out: { path: string; kind: "image" | "audio" | "model" | "video"; bytes: number }[] = [];
     const limit = opts.limit ?? 500;
     const walk = (dir: string) => {
       for (const e of fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
@@ -265,7 +273,7 @@ export class WorkspaceManager {
         if (e.isDirectory()) walk(full);
         else {
           const ext = path.extname(e.name).toLowerCase();
-          const kind = IMAGE_EXT.has(ext) ? "image" : AUDIO_EXT.has(ext) ? "audio" : MODEL_EXT.has(ext) ? "model" : null;
+          const kind = IMAGE_EXT.has(ext) ? "image" : AUDIO_EXT.has(ext) ? "audio" : MODEL_EXT.has(ext) ? "model" : VIDEO_EXT.has(ext) ? "video" : null;
           if (kind) out.push({ path: toPosix(path.relative(fs.realpathSync(root), full)), kind, bytes: fs.statSync(full).size });
         }
       }
@@ -516,6 +524,19 @@ export class VideoWorkspace {
       fs.rmSync(dir, { recursive: true, force: true });
       throw e;
     }
+  }
+
+  /** Preparation input is confined to the inbox; derived assets never replace originals. */
+  async prepareVideo(input: string, options: PrepareVideoOptions = {}, assetId?: string, signal?: AbortSignal) {
+    const source = resolveInside(path.join(this.dir, "inbox"), input);
+    const id = this.freshAssetId(assetId, "video"), dir = this.assetDir(id);
+    fs.mkdirSync(dir, { recursive: false });
+    try {
+      const r = await prepareVideoAsset(source, dir, options, signal);
+      const rec: AssetRecord = { assetId: id, name: id, kind: "video", file: this.rel(r.file), mime: "video/mp4", bytes: fs.statSync(r.file).size, sha256: r.video.sha256, width: r.video.width, height: r.video.height, video: r.video, tags: [], createdAt: now(), provenance: { operation: "prepare_video", source: { inbox: input }, options }, auxFiles: { metadata: this.rel(path.join(dir, "video-metadata.json")) } };
+      this.writeAsset(rec);
+      return { asset: rec, entry: { ...r.asset, src: rec.file }, warnings: r.warnings };
+    } catch (e) { fs.rmSync(dir, { recursive: true, force: true }); throw e; }
   }
 
   updateAsset(id: string, patch: { name?: string; tags?: string[]; attachmentPoints?: AssetRecord["attachmentPoints"] | null }) {
@@ -773,15 +794,15 @@ export class VideoWorkspace {
       sceneId: id,
       ...(ops.is3D(doc) ? {} : { kind: "2d" }),
       ...rest,
-      audio: (audio ?? []).map((a: any) => ({ assetId: byFile.get(a.src) ?? null, startFrame: a.startFrame ?? 0, volume: a.volume ?? 1 })),
+      audio: (audio ?? []).map(({ src, ...a }: any) => ({ ...a, assetId: byFile.get(src) ?? null, startFrame: a.startFrame ?? 0, volume: a.volume ?? 1 })),
       assetsUsed: ops.is3D(doc) ? [...new Set((doc.objects ?? []).map((o: any) => o.asset).filter(Boolean))] : Object.keys(assets ?? {}),
     };
   }
 
   private withAllAssets(doc: ops.SceneDoc): ops.SceneDoc {
     const assets: Record<string, unknown> = {};
-    for (const rec of this.listAssets({ kind: "image" })) {
-      assets[rec.assetId] = { src: rec.file, ...(rec.attachmentPoints ? { attachmentPoints: rec.attachmentPoints } : {}) };
+    for (const rec of this.listAssets().filter(a => a.kind === "image" || a.kind === "video")) {
+      assets[rec.assetId] = { src: rec.file, ...(rec.kind === "video" ? { kind: "video", video: rec.video } : {}), ...(rec.attachmentPoints ? { attachmentPoints: rec.attachmentPoints } : {}) };
     }
     return { ...doc, assets };
   }
@@ -797,8 +818,8 @@ export class VideoWorkspace {
     for (const id of [...ids].sort()) {
       if (!/^[A-Za-z_][A-Za-z0-9_\-.]*$/.test(id) || !this.hasAsset(id)) continue; // left missing -> validation reports it
       const rec = this.getAsset(id);
-      if (rec.kind !== "image") continue;
-      assets[id] = { src: rec.file, ...(rec.attachmentPoints ? { attachmentPoints: rec.attachmentPoints } : {}) };
+      if (rec.kind !== "image" && rec.kind !== "video") continue;
+      assets[id] = { src: rec.file, ...(rec.kind === "video" ? { kind: "video", video: rec.video } : {}), ...(rec.attachmentPoints ? { attachmentPoints: rec.attachmentPoints } : {}) };
     }
     return { ...doc, assets };
   }
@@ -924,11 +945,12 @@ export class VideoWorkspace {
   }
 
   /** Maps scene audio given by assetId to the engine's file-based audio entries. */
-  audioEntries(audio: { assetId: string; startFrame?: number; volume?: number }[]) {
+  audioEntries(audio: (Partial<Omit<AudioTrack, "src">> & { assetId: string })[]) {
     return audio.map((a) => {
       const rec = this.getAsset(a.assetId);
       if (rec.kind !== "audio") throw new EngineError("INVALID_ASSET", `Asset "${a.assetId}" is not audio`, { assetId: a.assetId });
-      return { src: rec.file, startFrame: a.startFrame ?? 0, volume: a.volume ?? 1 };
+      const { assetId, ...rest } = a;
+      return { ...rest, src: rec.file, startFrame: a.startFrame ?? 0, volume: a.volume ?? 1 };
     });
   }
 
@@ -1346,7 +1368,7 @@ export class VideoWorkspace {
 
   private async renderVideo3D(
     sceneId: string,
-    o: { startFrame?: number; endFrame?: number; crf?: number; audio?: boolean; signal?: AbortSignal; onProgress?: (done: number, total: number) => void; renderId?: string },
+    o: RenderVideoOptions & { renderId?: string },
   ) {
     const ctx = this.scene3D(sceneId);
     const s = ctx.scene;
@@ -1358,14 +1380,28 @@ export class VideoWorkspace {
     const artifactId = this.nextId("video");
     const file = path.join(this.dir, "renders", `${sceneId}_${artifactId}.mp4`);
     const tmpDir = path.join(this.dir, "renders", `.frames_${artifactId}`);
-    fs.mkdirSync(tmpDir, { recursive: true });
     const fps = s.canvas.fps;
-    const audio = o.audio === false ? [] : s.audio.map((a) => ({ file: this.abs(a.src), start: (a.startFrame - start) / fps, volume: a.volume })).filter((a) => a.start >= 0);
-    const enc = startEncoder({ out: file, width: s.canvas.width, height: s.canvas.height, fps, frameCount: end - start, audio, crf: o.crf });
+    if (s.audio.some(a => a.sourceIn !== undefined || a.sourceOut !== undefined || a.startOffsetMs !== undefined || a.fadeInMs !== undefined || a.fadeOutMs !== undefined)) {
+      const audioValidation = validateScene({ canvas: { width: s.canvas.width, height: s.canvas.height, fps }, duration: s.duration, audio: s.audio }, { baseDir: this.dir });
+      if (!audioValidation.ok) throw errorFromIssues(audioValidation.errors, { sceneId });
+    }
+    const audio = o.audio === false ? [] : s.audio.map((a) => ({ file: this.abs(a.src), start: (a.startFrame - start) / fps + (a.startOffsetMs ?? 0) / 1000, volume: a.volume, sourceIn: a.sourceIn, sourceOut: a.sourceOut, fadeInMs: a.fadeInMs, fadeOutMs: a.fadeOutMs }));
+    const subtitles = o.subtitles ? await stageSubtitles(o.subtitles, this.dir) : undefined;
+    let enc: ReturnType<typeof startEncoder> | undefined;
+    const warnings: unknown[] = [];
+    const cancel = () => { void enc?.abort(); };
+    o.signal?.addEventListener("abort", cancel, { once: true });
     let chain = Promise.resolve();
     let encoded = 0;
     let poster: Buffer | null = null;
     try {
+      fs.mkdirSync(tmpDir, { recursive: true });
+      if (o.subtitles?.mode === "burn") {
+        const caps = await mediaCapabilities(o.subtitles.fontsDir);
+        if (!caps.subtitles.complexShaping) warnings.push({ severity: "warning", code: "SUBTITLE_SHAPING_UNAVAILABLE", message: caps.subtitles.reason });
+      }
+      if (o.signal?.aborted) throw new EngineError("RENDER_CANCELLED", "Render cancelled");
+      enc = startEncoder({ out: file, width: s.canvas.width, height: s.canvas.height, fps, frameCount: end - start, audio, crf: o.crf, preset: o.preset, subtitles, subtitleStartSeconds: start / fps });
       const frames = Array.from({ length: end - start }, (_, i) => ({ frame: start + i, out: path.join(tmpDir, `f${String(start + i).padStart(6, "0")}.png`) }));
       await renderFrames3D(ctx, frames, {
         signal: o.signal,
@@ -1373,7 +1409,7 @@ export class VideoWorkspace {
           chain = chain.then(async () => {
             const rgba = await this.compose3D(ctx, frame, png, true);
             if (!poster) poster = await sharp(rgba, { raw: { width: s.canvas.width, height: s.canvas.height, channels: 4 } }).png().toBuffer();
-            await enc.write(rgba);
+            await enc!.write(rgba);
             fs.rmSync(png, { force: true });
             o.onProgress?.(++encoded, end - start);
           });
@@ -1383,11 +1419,14 @@ export class VideoWorkspace {
       await enc.finish();
     } catch (e) {
       await chain.catch(() => undefined);
-      await enc.abort();
+      await enc?.abort();
+      if (o.signal?.aborted) throw new EngineError("RENDER_CANCELLED", "Render cancelled");
       if (e instanceof EngineError) throw e;
       const msg = e instanceof Error ? e.message : String(e);
       throw new EngineError(/ffmpeg/i.test(msg) ? "FFMPEG_FAILED" : "RENDER_FAILED", msg);
     } finally {
+      o.signal?.removeEventListener("abort", cancel);
+      await subtitles?.cleanup();
       fs.rmSync(tmpDir, { recursive: true, force: true });
     }
     const view = await makeViewImage(poster!, path.join(this.dir, "renders", `${sceneId}_${artifactId}.poster.jpg`));
@@ -1400,6 +1439,7 @@ export class VideoWorkspace {
       width: s.canvas.width,
       height: s.canvas.height,
       durationSeconds: (end - start) / fps,
+      ...(warnings.length ? { warnings } : {}),
       relativePath: this.rel(file),
       bytes: fs.statSync(file).size,
       view: { relativePath: `renders/${sceneId}_${artifactId}.poster.jpg`, ...view },
@@ -1494,15 +1534,22 @@ export class VideoWorkspace {
   /** Renders [startFrame, endFrame) to MP4 (H.264 + scene audio). Prefer RenderJobs for long renders. */
   async renderVideo(
     sceneId: string,
-    o: { startFrame?: number; endFrame?: number; crf?: number; audio?: boolean; signal?: AbortSignal; onProgress?: (done: number, total: number) => void; renderId?: string } = {},
+    o: RenderVideoOptions & { renderId?: string } = {},
   ) {
-    if (this.sceneKind(sceneId) === "3d") return this.renderVideo3D(sceneId, o);
-    const engine = await this.engine(sceneId);
+    if (o.subtitles) o = { ...o, subtitles: { ...o.subtitles, file: this.abs(o.subtitles.file), fontsDir: o.subtitles.fontsDir ? this.abs(o.subtitles.fontsDir) : undefined } };
+    if (this.sceneKind(sceneId) === "3d") {
+      if ((o.chunks ?? 1) > 1) throw new EngineError("INVALID_ARGUMENT", "Parallel chunks currently support 2D scenes only");
+      return this.renderVideo3D(sceneId, o);
+    }
+    // Jobs own their mutable renderer and decoder state; previews can use the cached engine.
+    const engine = new AnimationEngine(this.syncSceneAssets(this.getSceneDoc(sceneId)), this.dir);
+    await engine.prepare();
     const artifactId = this.nextId("video");
     const file = path.join(this.dir, "renders", `${sceneId}_${artifactId}.mp4`);
-    const r = await engine.renderVideo(file, { startFrame: o.startFrame, endFrame: o.endFrame, crf: o.crf, audio: o.audio, signal: o.signal, onProgress: o.onProgress });
+    const r = await engine.renderVideo(file, o);
     const start = o.startFrame ?? 0;
     const poster = await engine.renderFrame(start);
+    await engine.closeVideoSources();
     const view = await makeViewImage(await poster.png(), path.join(this.dir, "renders", `${sceneId}_${artifactId}.poster.jpg`));
     return this.saveArtifact({
       artifactId,
@@ -1513,6 +1560,7 @@ export class VideoWorkspace {
       width: engine.scene.canvas.width,
       height: engine.scene.canvas.height,
       durationSeconds: r.seconds,
+      timings: r.timings, warnings: r.warnings,
       relativePath: this.rel(file),
       bytes: fs.statSync(file).size,
       view: { relativePath: `renders/${sceneId}_${artifactId}.poster.jpg`, ...view },

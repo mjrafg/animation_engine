@@ -20,6 +20,8 @@ export interface LayerLayout {
   id: string;
   parent: string | null;
   asset: string | null;
+  sourceTime?: number;
+  sourceFrame?: number;
   z: number;
   /** Position in the final draw order (0 = drawn first), or null if not drawn this frame. */
   drawIndex: number | null;
@@ -77,7 +79,7 @@ function layerLayout(l: ResolvedLayer, frame: ResolvedFrame, drawIndex: number |
   const s = l.state;
   const world = geometry(l.boxMatrix, l.worldMatrix, s.width, s.height);
   const screenPivotFrame = { ...l.worldMatrix };
-  const cam = frame.cameraMatrix;
+  const cam = s.space === "screen" ? { a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 } : frame.cameraMatrix;
   const screenBox = l.screenBoxMatrix;
   const screenPivot = apply(cam, apply(screenPivotFrame, { x: 0, y: 0 }));
   const screen = geometry(screenBox, { a: 1, b: 0, c: 0, d: 1, e: screenPivot.x, f: screenPivot.y }, s.width, s.height);
@@ -95,6 +97,7 @@ function layerLayout(l: ResolvedLayer, frame: ResolvedFrame, drawIndex: number |
     id: s.id,
     parent: s.parent,
     asset: s.asset,
+    ...(s.sourceFrame !== undefined ? { sourceTime: s.sourceTime, sourceFrame: s.sourceFrame } : {}),
     z: s.z,
     drawIndex,
     visible: l.effectiveVisible,

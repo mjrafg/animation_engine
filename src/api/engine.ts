@@ -6,8 +6,14 @@
  *
  * Output depends only on (scene, asset files, frame number, renderer build). No clocks, no RNG.
  */
+import { stageSubtitles, mediaCapabilities, type SubtitleOptions } from "../subtitles/encode.js";
+import os from "node:os";
+import { performance } from "node:perf_hooks";
+import { renderChunks } from "../render/chunks.js";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { hashFile } from "../media/process.js";
+import { FFmpegFrameSource } from "../media/frames.js";
 import { AssetCatalog } from "../engine/assets.js";
 import { EngineError } from "../errors.js";
 import { buildDebugOverlay, type DebugOptions } from "../engine/debugOverlay.js";
@@ -22,6 +28,9 @@ import { SceneValidationError, resolveScenePath, validateScene, type ValidationR
 import { evaluateScene, type FrameState } from "../timeline/evaluate.js";
 
 export interface RenderVideoOptions {
+  subtitles?: SubtitleOptions;
+  chunks?: number;
+  videoCacheBytes?: number;
   startFrame?: number;
   /** Exclusive. Defaults to scene.duration. */
   endFrame?: number;
@@ -35,6 +44,8 @@ export interface RenderVideoOptions {
 }
 
 export class AnimationEngine {
+  private videoMode: "random" | "sequential" = "random";
+  private videoSources = new Map<string, FFmpegFrameSource>();
   private catalog = new AssetCatalog();
   private _scene: Scene | null = null;
   private renderer: Renderer;
@@ -78,6 +89,7 @@ export class AnimationEngine {
 
   /** Validates and loads assets. Throws SceneValidationError with machine-readable issues. */
   async prepare(): Promise<Scene> {
+    await this.closeVideoSources();
     const v = this.validate();
     if (!v.ok || !v.scene) throw new SceneValidationError(v.errors);
     await this.catalog.load(v.scene, this.baseDir);
@@ -125,6 +137,30 @@ export class AnimationEngine {
     return layout;
   }
 
+  async closeVideoSources() {
+    await Promise.all([...this.videoSources.values()].map(source => source.close()));
+    this.videoSources.clear();
+  }
+
+  private verifyVideoBytes() {
+    for (const a of this.catalog.all()) if (a.video) {
+      let actual: string;
+      try { actual = hashFile(a.file); }
+      catch { throw new SceneValidationError([{ severity: "error", code: "MISSING_VIDEO_FILE", path: ["assets", a.id, "src"], message: "Prepared video file is unavailable" }]); }
+      if (actual !== a.video.sha256) throw new SceneValidationError([{ severity: "error", code: "VIDEO_HASH_MISMATCH", path: ["assets", a.id, "video", "sha256"], message: "Prepared video bytes have changed" }]);
+    }
+  }
+
+  async configureVideoSources(mode: "sequential" | "random", signal?: AbortSignal, cacheBytes?: number) {
+    await this.closeVideoSources();
+    this.verifyVideoBytes();
+    this.videoMode = mode;
+    const videos = this.catalog.all().filter(a => a.video);
+    if (videos.length && !this.renderer.setVideoSources) throw new EngineError("UNSUPPORTED_RENDERER", "Renderer has no video frame source support");
+    for (const a of videos) this.videoSources.set(a.id, new FFmpegFrameSource(a.file, a.video!, { mode, signal, cacheBytes }));
+    this.renderer.setVideoSources?.(this.videoSources);
+  }
+
   private async ensureRendererAssets() {
     if (this.rendererAssetsVersion !== this.assetsVersion) {
       await this.renderer.loadAssets(this.catalog.all());
@@ -135,6 +171,8 @@ export class AnimationEngine {
   async renderFrame(frame: number): Promise<RenderedFrame> {
     this.checkFrame(frame);
     await this.ensureRendererAssets();
+    if (!this.videoSources.size) await this.configureVideoSources("random");
+    else if (this.videoMode === "random") this.verifyVideoBytes();
     return this.renderer.render(this.displayList(frame));
   }
 
@@ -148,6 +186,8 @@ export class AnimationEngine {
   async renderDebugPreview(frame: number, outPng: string, opts?: DebugOptions): Promise<string> {
     this.checkFrame(frame);
     await this.ensureRendererAssets();
+    if (!this.videoSources.size) await this.configureVideoSources("random");
+    else if (this.videoMode === "random") this.verifyVideoBytes();
     const resolved = this.resolve(frame);
     const overlay = buildDebugOverlay(measureResolvedLayout(resolved), opts);
     const f = await this.renderer.render(buildDisplayList(this.scene, resolved), overlay);
@@ -156,8 +196,12 @@ export class AnimationEngine {
     return outPng;
   }
 
-  async renderVideo(out: string, o: RenderVideoOptions = {}): Promise<{ file: string; frames: number; seconds: number }> {
+  async renderVideo(out: string, o: RenderVideoOptions = {}): Promise<{ file: string; frames: number; seconds: number; warnings?: unknown[]; timings?: Record<string, number> }> {
+    const t0 = performance.now();
+    const timings = { drawMs: 0, decodeMs: 0, encodeWriteMs: 0, encodeFinishMs: 0, chunksMs: 0, totalMs: 0 };
     const scene = this.scene;
+    const chunks = o.chunks ?? 1;
+    if (!Number.isInteger(chunks) || chunks < 1 || chunks > 16) throw new EngineError("INVALID_ARGUMENT", "chunks must be an integer in [1,16]");
     const start = o.startFrame ?? 0;
     const end = o.endFrame ?? scene.duration;
     if (!(Number.isInteger(start) && Number.isInteger(end) && start >= 0 && end <= scene.duration && end > start)) {
@@ -175,33 +219,69 @@ export class AnimationEngine {
         ? []
         : scene.audio.map((a) => ({
             file: resolveScenePath(this.baseDir, a.src),
-            start: (a.startFrame - start) / fps,
+            start: (a.startFrame - start) / fps + (a.startOffsetMs ?? 0) / 1000,
+            sourceIn: a.sourceIn, sourceOut: a.sourceOut, fadeInMs: a.fadeInMs, fadeOutMs: a.fadeOutMs,
             volume: a.volume,
-          })).filter((a) => a.start >= 0);
-    const enc = startEncoder({
-      out,
-      width: scene.canvas.width,
-      height: scene.canvas.height,
-      fps,
-      frameCount: end - start,
-      audio,
-      crf: o.crf,
-      preset: o.preset,
-    });
+          }));
+    const subtitles = o.subtitles ? await stageSubtitles(o.subtitles, this.baseDir) : undefined;
+    let enc: ReturnType<typeof startEncoder> | undefined;
+    let chunkDir: string | undefined, chunkSource: FFmpegFrameSource | undefined;
+    const cancel = () => { void enc?.abort(); };
+    o.signal?.addEventListener("abort", cancel, { once: true });
+    const warnings: { severity: "warning"; code: string; path: string[]; message: string }[] = [];
     try {
+      if (o.subtitles?.mode === "burn") {
+        const caps = await mediaCapabilities(path.resolve(this.baseDir, o.subtitles.fontsDir!));
+        if (!caps.subtitles.complexShaping) warnings.push({ severity: "warning", code: "SUBTITLE_SHAPING_UNAVAILABLE", path: ["subtitles"], message: caps.subtitles.reason ?? "Complex shaping unavailable" });
+      }
+      enc = startEncoder({
+        subtitles,
+        subtitleStartSeconds: start / fps,
+        out,
+        width: scene.canvas.width,
+        height: scene.canvas.height,
+        fps,
+        frameCount: end - start,
+        audio,
+        crf: o.crf,
+        preset: o.preset,
+      });
+
+      if (chunks > 1) {
+        chunkDir = await fs.mkdtemp(path.join(os.tmpdir(), "ae-chunks-"));
+        const chunkStart = performance.now();
+        const joined = await renderChunks(this.document, this.baseDir, chunkDir, start, end, Math.min(chunks, end - start), o.signal, undefined, o.videoCacheBytes);
+        timings.chunksMs = performance.now() - chunkStart;
+        chunkSource = new FFmpegFrameSource(joined, { ...scene.canvas, frameCount: end - start, duration: (end - start) / fps, preparedBy: "prepare_video_asset@1", sha256: "" }, { mode: "sequential", cacheBytes: 0, signal: o.signal });
+      }
+      await this.configureVideoSources("sequential", o.signal, o.videoCacheBytes);
       for (let f = start; f < end; f++) {
         if (o.signal?.aborted) throw new EngineError("RENDER_CANCELLED", "Render cancelled", { frame: f });
-        const frame = await this.renderer.render(this.displayList(f));
-        await enc.write(frame.rgba());
+        const drawStart = performance.now();
+        const rgba = chunkSource ? (await chunkSource.getFrame(f - start)).data : (await this.renderer.render(this.displayList(f))).rgba();
+        timings.drawMs += performance.now() - drawStart;
+        const encodeStart = performance.now();
+        await enc.write(rgba);
+        timings.encodeWriteMs += performance.now() - encodeStart;
         o.onProgress?.(f - start + 1, end - start);
       }
+      const finishStart = performance.now();
       await enc.finish();
+      timings.encodeFinishMs = performance.now() - finishStart;
     } catch (e) {
-      await enc.abort();
-      if (e instanceof EngineError) throw e;
+      await enc?.abort();
+      if (o.signal?.aborted) throw new EngineError("RENDER_CANCELLED", "Render cancelled");
+      if (e instanceof EngineError || e instanceof SceneValidationError) throw e;
       const msg = e instanceof Error ? e.message : String(e);
       throw new EngineError(/ffmpeg/i.test(msg) ? "FFMPEG_FAILED" : "RENDER_FAILED", msg);
+    } finally {
+      o.signal?.removeEventListener("abort", cancel);
+      timings.decodeMs = [...this.videoSources.values()].reduce((n, s) => n + s.decodeMs, 0) + (chunkSource?.decodeMs ?? 0);
+      timings.drawMs = Math.max(0, timings.drawMs - timings.decodeMs);
+      await this.closeVideoSources(); await chunkSource?.close(); await subtitles?.cleanup();
+      if (chunkDir) await fs.rm(chunkDir, { recursive: true, force: true });
     }
-    return { file: out, frames: end - start, seconds: (end - start) / fps };
+    timings.totalMs = performance.now() - t0;
+    return { file: out, frames: end - start, seconds: (end - start) / fps, timings, ...(warnings.length ? { warnings } : {}) };
   }
 }

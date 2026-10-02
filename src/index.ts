@@ -27,3 +27,7 @@ export { engineCapabilities, engineVersion, type EngineCapabilities } from "./ca
 export * from "./workspace/paths.js";
 export * from "./workspace/workspace.js";
 export * from "./workspace/jobs.js";
+
+export { prepareVideoAsset } from "./media/prepare.js";
+export { subtitlesFromTiming } from "./subtitles/timing.js";
+export { mediaCapabilities } from "./subtitles/encode.js";

@@ -43,7 +43,7 @@ const require = createRequire(import.meta.url);
 
 export function engineVersion(): { name: string; version: string } {
   try {
-    const pkg = require("../package.json") as { name: string; version: string };
+    const pkg = require("animation-engine/package.json") as { name: string; version: string };
     return { name: pkg.name, version: pkg.version };
   } catch {
     return { name: "animation-engine", version: "unknown" };

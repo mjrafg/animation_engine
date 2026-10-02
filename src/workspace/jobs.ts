@@ -4,6 +4,8 @@
  * cancel it. Job state lives in <workspace>/jobs/<renderId>.json; a job that was running when its
  * process died is reported as "interrupted" instead of hanging forever.
  */
+import type { PrepareVideoOptions } from "../media/prepare.js";
+import type { RenderVideoOptions } from "../api/engine.js";
 import fs from "node:fs";
 import path from "node:path";
 import { requireBlender } from "../scene3d/blender.js";
@@ -22,7 +24,9 @@ export interface RenderJob {
   frame: number;
   totalFrames: number;
   progress: number;
-  options: { startFrame?: number; endFrame?: number; crf?: number; audio?: boolean };
+  options: Omit<RenderVideoOptions, "signal" | "onProgress">;
+  preparation?: { input: string; options: PrepareVideoOptions; assetId?: string };
+  result?: unknown;
   createdAt: string;
   startedAt?: string;
   finishedAt?: string;
@@ -105,6 +109,16 @@ export class RenderJobs {
     return snapshot;
   }
 
+  async startPreparation(input: string, options: PrepareVideoOptions = {}, assetId?: string): Promise<RenderJob> {
+    const renderId = this.ws.nextId("render");
+    const job: RenderJob = { renderId, workspaceId: this.ws.id, sceneId: "", status: "queued", frame: 0, totalFrames: 1, progress: 0, options: {}, preparation: { input, options, assetId }, createdAt: new Date().toISOString(), pid: process.pid };
+    this.save(job);
+    const ctrl = new AbortController(); let resolve!: () => void;
+    const done = new Promise<void>(r => { resolve = r; });
+    this.active.set(renderId, { job, ctrl, done, resolve }); this.queue.push(renderId);
+    const snapshot = { ...job }; this.pump(); return snapshot;
+  }
+
   private pump() {
     while (this.running < this.maxConcurrent && this.queue.length) {
       const id = this.queue.shift()!;
@@ -133,21 +147,26 @@ export class RenderJobs {
     const t0 = Date.now();
     let lastSave = 0;
     try {
-      const artifact = await this.ws.renderVideo(job.sceneId, {
-        ...job.options,
-        signal: ctrl.signal,
-        renderId: job.renderId,
-        onProgress: (done, total) => {
-          job.frame = done;
-          job.progress = +(done / total).toFixed(4);
-          if (Date.now() - lastSave > 400 || done === total) {
-            lastSave = Date.now();
-            this.save(job);
-          }
-        },
-      });
+      if (job.preparation) {
+        const p = job.preparation;
+        job.result = await this.ws.prepareVideo(p.input, p.options, p.assetId, ctrl.signal);
+      } else {
+        const artifact = await this.ws.renderVideo(job.sceneId, {
+          ...job.options,
+          signal: ctrl.signal,
+          renderId: job.renderId,
+          onProgress: (done, total) => {
+            job.frame = done;
+            job.progress = +(done / total).toFixed(4);
+            if (Date.now() - lastSave > 400 || done === total) {
+              lastSave = Date.now();
+              this.save(job);
+            }
+          },
+        });
+        job.artifact = artifact;
+      }
       job.status = "completed";
-      job.artifact = artifact;
       job.progress = 1;
       job.frame = job.totalFrames;
     } catch (e) {

@@ -476,3 +476,18 @@ export function setAudio(doc: SceneDoc, audio: unknown[]): OpResult {
     d.audio = clone(audio);
   });
 }
+
+/** Index-based audio editing follows the existing ordered scene audio array. */
+export function addAudio(doc: SceneDoc, track: Record<string, unknown>): OpResult<number> {
+  return transact(doc, d => { d.audio ??= []; d.audio.push(track); return d.audio.length - 1; });
+}
+export function updateAudio(doc: SceneDoc, index: number, patch: Record<string, unknown>): OpResult {
+  if (!Number.isInteger(index) || !doc.audio?.[index]) return { ok: false, errors: [issue("AUDIO_NOT_FOUND", ["audio", index], "No audio track at index")] };
+  if (doc.audio[index].owner) return { ok: false, errors: [issue("OWNED_BY_CHARACTER", ["audio", index], "Edit generated speech through character actions")] };
+  return transact(doc, d => { for (const [k, v] of Object.entries(patch)) { if (v === null) delete d.audio[index][k]; else d.audio[index][k] = v; } });
+}
+export function removeAudio(doc: SceneDoc, index: number): OpResult {
+  if (!Number.isInteger(index) || !doc.audio?.[index]) return { ok: false, errors: [issue("AUDIO_NOT_FOUND", ["audio", index], "No audio track at index")] };
+  if (doc.audio[index].owner) return { ok: false, errors: [issue("OWNED_BY_CHARACTER", ["audio", index], "Edit generated speech through character actions")] };
+  return transact(doc, d => { d.audio.splice(index, 1); });
+}

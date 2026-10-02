@@ -44,10 +44,19 @@ export const CanvasSchema = z
   })
   .strict();
 
+export const VideoMetadataSchema = z.object({
+  width: z.number().int().positive(), height: z.number().int().positive(),
+  fps: num().gt(0).max(240), frameCount: z.number().int().positive(), duration: num().gt(0),
+  preparedBy: z.literal("prepare_video_asset@1"), sha256: z.string().regex(/^[a-f0-9]{64}$/),
+}).strict();
+export type VideoMetadata = z.infer<typeof VideoMetadataSchema>;
+
 export const AssetSchema = z
   .object({
     /** Image file path, relative to the scene file's directory (or absolute). PNG/JPEG/WebP. */
     src: z.string().min(1),
+    kind: z.enum(["image", "video"]).optional(),
+    video: VideoMetadataSchema.optional(),
     /** Named points in normalised asset-box coordinates. */
     attachmentPoints: AttachmentPointsSchema.optional(),
     /** Free-form metadata carried along for tools/agents; ignored by the renderer. */
@@ -87,12 +96,28 @@ export const MaskSchema = z.discriminatedUnion("type", [
     .strict(),
 ]);
 
+export const ShapeSchema = z.object({
+  type: z.enum(["rect", "ellipse", "path"]),
+  d: z.string().max(65536).optional(),
+  cornerRadius: num().min(0).optional(),
+  fill: ColorSchema.nullable().optional(),
+  stroke: ColorSchema.nullable().optional(),
+  strokeWidth: num().min(0).optional(),
+  strokeAlign: z.enum(["inside", "center", "outside"]).optional(),
+  feather: num().min(0).max(256).optional(),
+  shadow: z.object({ color: ColorSchema, blur: num().min(0).max(256), x: num(), y: num() }).strict().optional(),
+}).strict();
+export type Shape = z.infer<typeof ShapeSchema>;
+
 export const LayerSchema = z
   .object({
     id: IdSchema.describe("Unique layer id within the scene."),
     asset: IdSchema.nullable()
       .optional()
       .describe("Id of the image asset this layer shows. Omit for a transform-only group node or a `fill` rectangle."),
+    shape: ShapeSchema.optional(),
+    space: z.enum(["world", "screen"]).optional(),
+    sourceTime: num().optional(),
     fill: ColorSchema.optional().describe("Solid colour rectangle filling the layer box (#rrggbb). Used only when there is no asset."),
     parent: IdSchema.nullable()
       .optional()
@@ -167,6 +192,11 @@ export const AudioSchema = z
   .object({
     src: z.string().min(1),
     startFrame: z.number().int().min(0).default(0),
+    sourceIn: num().min(0).optional(),
+    sourceOut: num().gt(0).optional(),
+    startOffsetMs: num().min(0).optional(),
+    fadeInMs: num().min(0).optional(),
+    fadeOutMs: num().min(0).optional(),
     volume: num().min(0).max(10).default(1),
     owner: z.string().optional().describe("Set on audio added by a character instance (speech)."),
   })
@@ -224,6 +254,12 @@ export interface PropertySpec {
 }
 
 export const LAYER_PROPERTIES: Record<string, PropertySpec> = {
+  cornerRadius: { kind: "number", continuous: true, min: 0 },
+  strokeWidth: { kind: "number", continuous: true, min: 0 },
+  shadowBlur: { kind: "number", continuous: true, min: 0, max: 256 },
+  stroke: { kind: "string", continuous: false },
+  shapeFill: { kind: "string", continuous: false },
+  sourceTime: { kind: "number", continuous: true },
   x: { kind: "number", continuous: true },
   y: { kind: "number", continuous: true },
   width: { kind: "number", continuous: true, min: 0 },

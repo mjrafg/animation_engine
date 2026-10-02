@@ -7,6 +7,10 @@
  * tools later (see `toolDefinitions()` which emits JSON Schemas). Errors are never thrown to the
  * caller; they come back as machine-readable issues.
  */
+import { prepareVideoAsset, PrepareVideoOptionsSchema } from "../media/prepare.js";
+import { subtitlesFromTiming, TimingBlockSchema, SubtitlesTimingOptionsSchema } from "../subtitles/timing.js";
+import { SubtitleOptionsSchema, mediaCapabilities } from "../subtitles/encode.js";
+import { AudioSchema } from "../scene/schema.js";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
@@ -23,6 +27,12 @@ const Json = z.record(z.string(), z.unknown());
 const Frame = z.number().int().min(0);
 
 export const TOOLS = {
+  capabilities: { description: "Media decode and subtitle shaping capability of the active FFmpeg build.", args: z.object({ fontsDir: z.string().optional() }) },
+  prepare_video_asset: { description: "Prepare a CFR, silent video intermediate and return its metadata and asset entry.", args: z.object({ input: z.string(), outDir: z.string(), options: PrepareVideoOptionsSchema.optional() }) },
+  subtitles_from_timing: { description: "Build deterministic ASS and SRT files from provider-neutral speech alignment.", args: z.object({ blocks: z.array(TimingBlockSchema), options: SubtitlesTimingOptionsSchema, outDir: z.string() }) },
+  add_audio: { description: "Append an audio track; returns its index.", args: z.object({ track: AudioSchema }) },
+  update_audio: { description: "Patch an audio track by index, null removes a field.", args: z.object({ index: Frame, patch: Json }) },
+  remove_audio: { description: "Remove an audio track by index.", args: z.object({ index: Frame }) },
   create_scene: {
     description: "Create a new empty scene document (replaces the session's current scene).",
     args: z.object({
@@ -109,7 +119,7 @@ export const TOOLS = {
   },
   render_video: {
     description: "Render frames [startFrame, endFrame) to an H.264 MP4 via an FFmpeg pipe (with scene audio).",
-    args: z.object({ out: z.string(), startFrame: Frame.optional(), endFrame: Frame.optional(), crf: z.number().optional(), audio: z.boolean().optional() }),
+    args: z.object({ videoCacheBytes: z.number().int().min(0).optional(), subtitles: SubtitleOptionsSchema.optional(), chunks: z.number().int().min(1).max(16).optional(), out: z.string(), startFrame: Frame.optional(), endFrame: Frame.optional(), crf: z.number().optional(), audio: z.boolean().optional() }),
   },
 } as const;
 
@@ -190,6 +200,18 @@ export class EngineSession {
 
   private async run(name: ToolName, a: any): Promise<ToolResult> {
     switch (name) {
+      case "capabilities": return { ok: true, result: await mediaCapabilities(a.fontsDir ? this.resolvePath(a.fontsDir) : undefined) };
+      case "prepare_video_asset": return { ok: true, result: await prepareVideoAsset(this.resolvePath(a.input), this.resolvePath(a.outDir), { fps: this.doc?.canvas?.fps ?? 30, ...a.options }) };
+      case "subtitles_from_timing": {
+        const r = subtitlesFromTiming(a.blocks, a.options), dir = this.resolvePath(a.outDir);
+        await fs.mkdir(dir, { recursive: true });
+        await fs.writeFile(path.join(dir, "captions.ass"), r.ass);
+        await fs.writeFile(path.join(dir, "captions.srt"), r.srt);
+        return { ok: true, result: { ass: path.join(dir, "captions.ass"), srt: path.join(dir, "captions.srt"), cues: r.cues, warnings: r.warnings } };
+      }
+      case "add_audio": return this.edit(ops.addAudio(this.needDoc(), a.track));
+      case "update_audio": return this.edit(ops.updateAudio(this.needDoc(), a.index, a.patch));
+      case "remove_audio": return this.edit(ops.removeAudio(this.needDoc(), a.index));
       case "create_scene": {
         const r = ops.createScene(a);
         if (!r.ok) return r;

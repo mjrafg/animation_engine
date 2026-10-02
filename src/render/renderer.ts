@@ -8,6 +8,7 @@
  */
 import type { DisplayList } from "../engine/displayList.js";
 import type { LoadedAsset } from "../engine/assets.js";
+import type { VideoFrameSource } from "../media/frames.js";
 import type { Vec2 } from "../math/matrix.js";
 
 export type OverlayShape =
@@ -28,5 +29,6 @@ export interface Renderer {
   readonly name: string;
   /** Decode/upload assets. Called whenever the scene's asset set changes. */
   loadAssets(assets: LoadedAsset[]): Promise<void>;
+  setVideoSources?(sources: ReadonlyMap<string, VideoFrameSource>): void;
   render(list: DisplayList, overlay?: OverlayShape[]): Promise<RenderedFrame>;
 }
