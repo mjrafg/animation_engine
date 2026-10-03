@@ -15,7 +15,7 @@ export const PrepareVideoOptionsSchema = z
   })
   .strict();
 export type PrepareVideoOptions = z.infer<typeof PrepareVideoOptionsSchema>;
-export async function prepareVideoAsset(input: string, outDir: string, options: PrepareVideoOptions = {}, signal?: AbortSignal) {
+export async function prepareVideoAsset(input: string, outDir: string, options: PrepareVideoOptions = {}, signal?: AbortSignal, onProgress?: (frame: number, outTimeMs: number) => void) {
   const o = PrepareVideoOptionsSchema.parse(options);
   const fps = o.fps ?? 30;
   input = await fs.realpath(input);
@@ -83,11 +83,12 @@ export async function prepareVideoAsset(input: string, outDir: string, options: 
         "-y",
         prepared,
       ],
-      signal,
+      signal, undefined, onProgress,
     );
-    const outputProbe = probeMedia(prepared, true);
+    let outputProbe = probeMedia(prepared);
+    if (!Number.isInteger(Number(outputProbe.streams.find((s: any) => s.codec_type === "video")?.nb_frames))) outputProbe = probeMedia(prepared, true);
     const v = outputProbe.streams.find((s: any) => s.codec_type === "video");
-    const frameCount = Number(v.nb_read_frames);
+    const frameCount = Number(v.nb_read_frames ?? v.nb_frames);
     if (!Number.isInteger(frameCount) || frameCount < 1) throw new EngineError("MEDIA_PROBE_FAILED", "Prepared frame count unavailable");
     const video: VideoMetadata = {
       width: v.width,

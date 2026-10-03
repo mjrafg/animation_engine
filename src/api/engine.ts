@@ -36,6 +36,8 @@ export interface RenderVideoOptions {
   endFrame?: number;
   crf?: number;
   preset?: string;
+  /** Lossless RGB master for later mux/subtitle variants; use a Matroska output. */
+  intermediate?: "lossless-rgb";
   /** Include scene audio tracks (default true). */
   audio?: boolean;
   onProgress?: (frame: number, total: number) => void;
@@ -214,7 +216,7 @@ export class AnimationEngine {
     o: RenderVideoOptions = {},
   ): Promise<{ file: string; frames: number; seconds: number; warnings?: unknown[]; timings?: Record<string, number> }> {
     const t0 = performance.now();
-    const timings = { drawMs: 0, decodeMs: 0, encodeWriteMs: 0, encodeFinishMs: 0, chunksMs: 0, totalMs: 0 };
+    const timings = { drawMs: 0, decodeMs: 0, encodeWriteMs: 0, encodeFinishMs: 0, chunksMs: 0, totalMs: 0, reusedFrames: 0 };
     const scene = this.scene;
     const chunks = o.chunks ?? 1;
     if (!Number.isInteger(chunks) || chunks < 1 || chunks > 16)
@@ -231,6 +233,29 @@ export class AnimationEngine {
     await this.ensureRendererAssets();
     await fs.mkdir(path.dirname(path.resolve(out)), { recursive: true });
     const fps = scene.canvas.fps;
+    if (chunks > 1 && o.intermediate === "lossless-rgb" && o.audio === false && !o.subtitles) {
+      const directory = await fs.mkdtemp(path.join(path.dirname(path.resolve(out)), ".visual-chunks-"));
+      const chunkStart = performance.now();
+      try {
+        const joined = await renderChunks(this.document, this.baseDir, directory, start, end,
+          Math.min(chunks, end - start), o.signal, o.onProgress, o.videoCacheBytes, true, (metrics) => {
+            for (const name of ["drawMs", "decodeMs", "encodeWriteMs", "encodeFinishMs", "reusedFrames"] as const) timings[name] += metrics[name] ?? 0;
+          });
+        o.signal?.throwIfAborted();
+        // Each chunk is lossless RGB. Concatenation needs no pixel decode or
+        // second encoder pass; audio/subtitles are deliberately absent here.
+        await fs.copyFile(joined, out);
+        timings.chunksMs = performance.now() - chunkStart;
+        timings.totalMs = performance.now() - t0;
+        return { file: out, frames: end - start, seconds: (end - start) / scene.canvas.fps, timings };
+      } catch (error) {
+        await fs.rm(out, { force: true });
+        throw error;
+      } finally {
+        await fs.rm(directory, { recursive: true, force: true });
+        await this.closeVideoSources();
+      }
+    }
     const audio =
       o.audio === false
         ? []
@@ -273,6 +298,7 @@ export class AnimationEngine {
         audio,
         crf: o.crf,
         preset: o.preset,
+        lossless: o.intermediate === "lossless-rgb" ? "rgb" : false,
       });
 
       if (chunks > 1) {
@@ -297,10 +323,28 @@ export class AnimationEngine {
         );
       }
       await this.configureVideoSources("sequential", o.signal, o.videoCacheBytes);
+      let previousKey: string | undefined;
+      let previousPixels: Buffer | undefined;
       for (let f = start; f < end; f++) {
         if (o.signal?.aborted) throw new EngineError("RENDER_CANCELLED", "Render cancelled", { frame: f });
         const drawStart = performance.now();
-        const rgba = chunkSource ? (await chunkSource.getFrame(f - start)).data : (await this.renderer.render(this.displayList(f))).rgba();
+        let rgba: Buffer;
+        if (chunkSource) rgba = (await chunkSource.getFrame(f - start)).data;
+        else {
+          const list = this.displayList(f);
+          // The built-in renderer consumes commands, not the bookkeeping frame
+          // number. Equality is exact, including video source frame and masks.
+          // Custom renderers may use list.frame, so their calls are never elided.
+          const key = this.renderer instanceof SkiaRenderer ? JSON.stringify({ ...list, frame: 0 }) : undefined;
+          if (key !== undefined && key === previousKey && previousPixels) {
+            rgba = previousPixels;
+            timings.reusedFrames++;
+          } else {
+            rgba = (await this.renderer.render(list)).rgba();
+            previousKey = key;
+            previousPixels = rgba;
+          }
+        }
         timings.drawMs += performance.now() - drawStart;
         const encodeStart = performance.now();
         await enc.write(rgba);

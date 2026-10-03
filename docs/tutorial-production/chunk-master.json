@@ -1,0 +1,42 @@
+{
+  "source": "/benchmark/scene-compact.json",
+  "loadSeconds": 0.023168687999999975,
+  "prepareSeconds": 2.997210751,
+  "result": {
+    "file": "/benchmark/chunk-master.mkv",
+    "frames": 10527,
+    "seconds": 350.9,
+    "timings": {
+      "drawMs": 0,
+      "decodeMs": 0,
+      "encodeWriteMs": 0,
+      "encodeFinishMs": 0,
+      "chunksMs": 198436.188498,
+      "totalMs": 198487.057245,
+      "reusedFrames": 0
+    }
+  },
+  "wallSeconds": 201.601142266,
+  "cpu": {
+    "user": 465987931,
+    "system": 121146277
+  },
+  "resource": {
+    "userCPUTime": 466264593,
+    "systemCPUTime": 121401604,
+    "maxRSS": 1194712,
+    "sharedMemorySize": 0,
+    "unsharedDataSize": 0,
+    "unsharedStackSize": 0,
+    "minorPageFault": 14482975,
+    "majorPageFault": 1,
+    "swappedOut": 0,
+    "fsRead": 6440,
+    "fsWrite": 567888,
+    "ipcSent": 0,
+    "ipcReceived": 0,
+    "signalsCount": 0,
+    "voluntaryContextSwitches": 552637,
+    "involuntaryContextSwitches": 674429
+  }
+}

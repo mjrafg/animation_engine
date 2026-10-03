@@ -1,0 +1,41 @@
+{
+  "source": "/data/workspaces/saas-admin-trial-20261002/runs/run_c9d0a9ad-cdcf-48fb-8834-a9bb9fa67922/fa/scene.json",
+  "loadSeconds": 1.0298788790000002,
+  "prepareSeconds": 4.394618362999999,
+  "result": {
+    "file": "/benchmark/baseline.mp4",
+    "frames": 10527,
+    "seconds": 350.9,
+    "timings": {
+      "drawMs": 636228.5148159984,
+      "decodeMs": 132803.09643700067,
+      "encodeWriteMs": 93802.70458201191,
+      "encodeFinishMs": 634.6836960000219,
+      "chunksMs": 0,
+      "totalMs": 863682.20616
+    }
+  },
+  "wallSeconds": 869.107208078,
+  "cpu": {
+    "user": 2089367145,
+    "system": 297441994
+  },
+  "resource": {
+    "userCPUTime": 2089643318,
+    "systemCPUTime": 297680615,
+    "maxRSS": 771556,
+    "sharedMemorySize": 0,
+    "unsharedDataSize": 0,
+    "unsharedStackSize": 0,
+    "minorPageFault": 38604819,
+    "majorPageFault": 554,
+    "swappedOut": 0,
+    "fsRead": 387072,
+    "fsWrite": 0,
+    "ipcSent": 0,
+    "ipcReceived": 0,
+    "signalsCount": 0,
+    "voluntaryContextSwitches": 3837686,
+    "involuntaryContextSwitches": 322767
+  }
+}

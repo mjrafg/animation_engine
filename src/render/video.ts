@@ -46,7 +46,7 @@ export interface EncodeOptions {
   /** Scene time of the first encoded frame; subtitle files use scene time. */
   subtitleStartSeconds?: number;
   /** Internal lossless chunk intermediate, not an encode preset. */
-  lossless?: boolean;
+  lossless?: boolean | "rgb";
 }
 
 export interface VideoEncoder {
@@ -111,7 +111,8 @@ export function startEncoder(o: EncodeOptions): VideoEncoder {
     if (!audio.length) args.push("-map", "0:v");
     args.push("-map", `${audio.length + 1}:s:0`, "-c:s", "mov_text");
   }
-  if (o.lossless) args.push("-c:v", "ffv1", "-level", "3", "-pix_fmt", "bgra");
+  if (o.lossless === "rgb") args.push("-c:v", "libx264rgb", "-preset", "ultrafast", "-crf", "0", "-pix_fmt", "rgb24", "-threads", "2");
+  else if (o.lossless) args.push("-c:v", "ffv1", "-level", "3", "-pix_fmt", "bgra");
   else
     args.push(
       "-c:v",

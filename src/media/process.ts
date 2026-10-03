@@ -40,11 +40,24 @@ export function ffmpegBuild(): string {
   return r.stdout;
 }
 /** Bounded diagnostics, no shell, and awaited child cleanup on abort. */
-export async function runFFmpeg(args: string[], signal?: AbortSignal, cwd?: string): Promise<string> {
+export async function runFFmpeg(args: string[], signal?: AbortSignal, cwd?: string, onProgress?: (frame: number, outTimeMs: number) => void): Promise<string> {
   if (signal?.aborted) throw new EngineError("RENDER_CANCELLED", "Media operation cancelled");
-  const proc = spawn(ffmpegPath(), args, { cwd, stdio: ["ignore", "ignore", "pipe"] });
+  const proc = spawn(ffmpegPath(), onProgress ? ["-progress", "pipe:3", "-stats_period", "0.25", ...args] : args,
+    { cwd, stdio: ["ignore", "ignore", "pipe", "pipe"] });
+  let progress = "";
+  proc.stdio[3]?.on("data", (chunk: Buffer) => {
+    progress += chunk.toString();
+    let end: number;
+    while ((end = progress.indexOf("progress=")) >= 0) {
+      const newline = progress.indexOf("\n", end);
+      if (newline < 0) break;
+      const block = progress.slice(0, newline);
+      progress = progress.slice(newline + 1);
+      onProgress?.(Number(block.match(/(?:^|\n)frame=(\d+)/)?.[1] ?? 0), Number(block.match(/out_time_us=(\d+)/)?.[1] ?? 0) / 1000);
+    }
+  });
   let stderr = "";
-  proc.stderr.on("data", (d) => {
+  proc.stderr!.on("data", (d) => {
     stderr = (stderr + d.toString()).slice(-65536);
   });
   const cancel = () => {

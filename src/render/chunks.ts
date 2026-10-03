@@ -16,6 +16,8 @@ export async function renderChunks(
   signal?: AbortSignal,
   onProgress?: (done: number, total: number) => void,
   videoCacheBytes?: number,
+  losslessRgb = false,
+  onMetrics?: (metrics: Record<string, number>) => void,
 ) {
   const js = new URL("./chunk-worker.js", import.meta.url);
   const ts = new URL("./chunk-worker.ts", import.meta.url);
@@ -42,13 +44,14 @@ export async function renderChunks(
       const from = start + Math.floor(((end - start) * i) / count),
         to = start + Math.floor(((end - start) * (i + 1)) / count);
       const w = new Worker(entry, {
-        workerData: { document, baseDir, videoCacheBytes, start: from, end: to, out: path.join(dir, `chunk${i}.mkv`) },
+        workerData: { document, baseDir, videoCacheBytes, losslessRgb, start: from, end: to, out: path.join(dir, `chunk${i}.mkv`) },
       });
       workers.push(w);
       const completion = new Promise<void>((resolve, reject) => {
         let done = false,
           failure: string | undefined;
         w.on("message", (message) => {
+          if (message.metrics) onMetrics?.(message.metrics);
           if (message.progress) {
             progresses[i] = message.progress;
             onProgress?.(
